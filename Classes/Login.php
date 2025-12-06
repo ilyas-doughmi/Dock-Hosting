@@ -1,5 +1,5 @@
 <?php
-
+    session_start();
     Class Login extends db{
         private   $email;
         private $password;
