@@ -19,7 +19,11 @@
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if($user && password_verify($this->password,$user["password"])){
-                echo "good";
+                $_SESSION["id"] = $user["id"];
+                $_SESSION["username"] = $user["username"];
+                $_SESSION["email"] = $user["email"];
+                header("location: ../pages/dashboard.php");
+                exit;
             }
             else{
                 echo "problem";
