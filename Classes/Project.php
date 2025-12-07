@@ -80,10 +80,14 @@ Class Project extends db{
     
     public function deleteProject($container_name,$file_dir){
         $this->removeContainer($container_name);
+        $this->removeDir($file_dir);
     }
 
     private function removeContainer($container){
         shell_exec("docker rm -f ".$container);
+    }
+    private function removeDir($file_dir){
+        shell_exec("rmdir /s /q " . $file_dir);
     }
 }
 
