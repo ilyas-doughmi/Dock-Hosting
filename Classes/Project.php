@@ -52,7 +52,24 @@ Class Project extends db{
         $stmt->bindParam(":user_id",$_SESSION["id"]);
         $stmt->bindParam(":container_name",$container_name);
         $result = $stmt->execute();
-        
+
+        if($result){
+            return $result;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function startContainer($container_name){
+         shell_exec("docker start ".$container_name);
+        $start_query = "UPDATE Project SET status = 'stopped' WHERE user_id = :user_id AND container_name = :container_name";
+
+        $stmt = $this->connect()->prepare($start_query);
+        $stmt->bindParam(":user_id",$_SESSION["id"]);
+        $stmt->bindParam(":container_name",$container_name);
+        $result = $stmt->execute();
+
         if($result){
             return $result;
         }
