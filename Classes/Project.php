@@ -51,8 +51,15 @@ Class Project extends db{
         $stmt = $this->connect()->prepare($stop_query);
         $stmt->bindParam(":user_id",$_SESSION["id"]);
         $stmt->bindParam(":container_name",$container_name);
-        return $stmt->execute();
+        $result = $stmt->execute();
+        
+        if($result){
+            return $result;
+        }
+        else{
+            return false;
+        }
     }
-    
+
 }
 
