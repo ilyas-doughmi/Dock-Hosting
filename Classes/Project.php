@@ -22,7 +22,13 @@ Class Project extends db{
         $stmt->execute();  
         $result = $stmt->fetch(PDO::FETCH_ASSOC);  
 
-        return $result["port"];
+
+        if(!$result){
+            return false;
+        }
+        else{
+            return $result["port"];
+        }
     }
 }
 
