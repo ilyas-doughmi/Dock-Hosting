@@ -20,7 +20,9 @@ Class Project extends db{
         $port_query = "SELECT port FROM Project ORDER BY port DESC limit 1;";
         $stmt = $this->connect()->prepare($port_query);
         $stmt->execute();  
-        return $stmt->fetch(PDO::FETCH_ASSOC);  
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);  
+
+        return $result["port"];
     }
 }
 
