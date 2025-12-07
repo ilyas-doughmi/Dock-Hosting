@@ -144,7 +144,12 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                     <div class="font-bold text-sm truncate"><?= $_SESSION["username"] ?></div>
                     <div class="text-xs text-gray-500 font-mono truncate"><?= $_SESSION["email"] ?></div>
                 </div>
-                <i class="fas fa-sign-out-alt text-gray-500 hover:text-red-400 transition-colors"></i>
+                <form action="../includes/user_actions/logout.php" method="POST">
+                    <button>
+                            <i class="fas fa-sign-out-alt text-gray-500 hover:text-red-400 transition-colors"></i>
+
+                    </button>
+                </form>
             </div>
         </div>
     </aside>
