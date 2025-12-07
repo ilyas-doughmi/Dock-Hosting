@@ -252,12 +252,14 @@ $user_Projects = $projects->getProjects($_SESSION["id"]);
                                         </a>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        
-                                            <button type="submit" class="text-gray-500 hover:text-white p-2 transition-colors"><i class="fas fa-terminal"></i></button>
-                                        
-                                        <form action="../includes/stop.php" method="POST">
+                                        <form action="../includes/actions/start.php" method="POST">
                                             <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
-                                        <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-stop-circle"></i></button>
+                                            <button type="submit" class="text-gray-500 hover:text-white p-2 transition-colors"><i class="fas fa-terminal"></i></button>
+                                        </form>
+
+                                        <form action="../includes/actions/stop.php" method="POST">
+                                            <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
+                                            <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-stop-circle"></i></button>
                                         </form>
                                         <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
                                     </td>
