@@ -11,6 +11,9 @@ require_once("../Classes/Project.php");
 $projects = new Project();
 $user_Projects = $projects->getProjects($_SESSION["id"]);
 
+$user_projects_count = $projects->getContainersCount($_SESSION["id"]);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -189,7 +192,7 @@ $user_Projects = $projects->getProjects($_SESSION["id"]);
                         <i class="fas fa-server text-4xl"></i>
                     </div>
                     <div class="text-gray-500 text-xs font-mono uppercase mb-2">Active Containers</div>
-                    <div class="text-3xl font-bold">2<span class="text-lg text-gray-600">/5</span></div>
+                    <div class="text-3xl font-bold"><?= $user_projects_count["count"] ?></div>
                 </div>
 
                 <!-- Card 2 -->
