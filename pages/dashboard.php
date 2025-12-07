@@ -165,9 +165,9 @@ $user_Projects = $projects->getProjects($_SESSION["id"]);
                 <span class="text-gray-500">v2.4.0</span>
             </div>
             <a href="create-project.php">
-            <button class="bg-brand hover:bg-[#14b8a6] text-black font-bold py-2 px-4 rounded transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)] flex items-center gap-2 text-sm">
-                <i class="fas fa-plus"></i> New Project
-            </button>
+                <button class="bg-brand hover:bg-[#14b8a6] text-black font-bold py-2 px-4 rounded transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)] flex items-center gap-2 text-sm">
+                    <i class="fas fa-plus"></i> New Project
+                </button>
 
             </a>
         </header>
@@ -233,44 +233,49 @@ $user_Projects = $projects->getProjects($_SESSION["id"]);
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border">
-    <?php if ($user_Projects): ?>
-        <?php foreach ($user_Projects as $project): ?>
-            <tr class="group hover:bg-white/5 transition-colors">
-                <td class="px-6 py-4">
-                    <div class="flex items-center gap-2 text-brand text-xs font-mono">
-                        <span class="w-1.5 h-1.5 rounded-full bg-brand status-dot animate-pulse"></span>
-                        <?= $project['status'] ?? 'Unknown' ?>
-                    </div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="font-bold"><?= $project['project_name'] ?? 'Unnamed' ?></div>
-                </td>
-                <td class="px-6 py-4 font-mono text-gray-400 group-hover:text-white transition-colors">
-                    <a href="http://localhost:<?= $project['port'] ?>" target="_blank" class="hover:underline flex items-center gap-2">
-                        localhost:<?= $project['port'] ?>
-                        <i class="fas fa-external-link-alt text-xs"></i>
-                    </a>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <button class="text-gray-500 hover:text-white p-2 transition-colors"><i class="fas fa-terminal"></i></button>
-                    <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-stop-circle"></i></button>
-                    <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="4" class="p-12 text-center text-gray-500">
-                <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-box-open text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-300">No Containers Found</h3>
-                <p class="text-gray-500 text-sm mb-6">You haven't deployed any projects yet.</p>
-                <button class="text-brand text-sm font-bold hover:underline">Deploy your first project</button>
-            </td>
-        </tr>
-    <?php endif; ?>
-</tbody>
+                        <?php if ($user_Projects): ?>
+                            <?php foreach ($user_Projects as $project): ?>
+                                <tr class="group hover:bg-white/5 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2 text-brand text-xs font-mono">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-brand status-dot animate-pulse"></span>
+                                            <?= $project['status'] ?? 'Unknown' ?>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold"><?= $project['project_name'] ?? 'Unnamed' ?></div>
+                                    </td>
+                                    <td class="px-6 py-4 font-mono text-gray-400 group-hover:text-white transition-colors">
+                                        <a href="http://localhost:<?= $project['port'] ?>" target="_blank" class="hover:underline flex items-center gap-2">
+                                            localhost:<?= $project['port'] ?>
+                                            <i class="fas fa-external-link-alt text-xs"></i>
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        
+                                            <button type="submit" class="text-gray-500 hover:text-white p-2 transition-colors"><i class="fas fa-terminal"></i></button>
+                                        
+                                        <form action="../includes/stop.php" method="POST">
+                                            <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
+                                        <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-stop-circle"></i></button>
+                                        </form>
+                                        <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="4" class="p-12 text-center text-gray-500">
+                                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-box-open text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-gray-300">No Containers Found</h3>
+                                    <p class="text-gray-500 text-sm mb-6">You haven't deployed any projects yet.</p>
+                                    <button class="text-brand text-sm font-bold hover:underline">Deploy your first project</button>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
 
                     </tbody>
                 </table>
