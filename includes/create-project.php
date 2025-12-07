@@ -30,12 +30,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $last_port = $Projects->trackPort();
 
     if ($last_port) {
-        echo "find already port incremenet by 1";
         $last_port += 1;
     } else {
-        echo "finding nothing";
         $last_port = 8000;
     }
     
-    echo $last_port;
+
+    // creating project 
+
+    $create = $Projects->createProject($project_name,$last_port,$project_name,$_SESSION["id"]);
+
+    if(!$create){
+        echo "problem";
+    }
+    else{
+        echo "added";
+        header("location: ../pages/dashboard.php");
+        exit();
+    }
+
 }
