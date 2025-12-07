@@ -30,5 +30,18 @@ Class Project extends db{
             return $result["port"];
         }
     }
+
+    public function createProject($project_name,$port,$container_name,$user_id){
+        $create_query = "INSERT INTO Project(project_name,port,container_name,status,user_id) 
+                        VALUES(:project_name,:port,:container_name,:status,:user_id)";
+
+        $stmt = $this->connect()->prepare($create_query);
+        $stmt->bindParam(":project_name",$project_name);
+        $stmt->bindParam(":container_name",$container_name);
+        $stmt->bindParam(":port",$port);
+        $stmt->bindValue(":status","running");
+        $stmt->bindParam(":user_id",$user_id);
+        $stmt->execute();
+    }
 }
 
