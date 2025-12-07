@@ -77,6 +77,13 @@ Class Project extends db{
             return false;
         }
     }
+    
+    public function deleteProject($container_name,$file_dir){
+        $this->removeContainer($container_name);
+    }
 
+    private function removeContainer($container){
+        shell_exec("docker rm -f ".$container);
+    }
 }
 
