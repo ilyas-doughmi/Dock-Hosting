@@ -6,7 +6,7 @@
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
 * **User Authentication:** Secure Signup & Login system with password hashing.
 * **One-Click Deployment:** Upload a `.zip` file of your website, and the system handles the rest.
@@ -19,7 +19,7 @@
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Backend:** PHP 8.x (Native/Vanilla)
 * **Database:** MySQL / MariaDB
@@ -29,7 +29,7 @@
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 ### 1. Prerequisites
 Ensure you have the following installed on your machine:
@@ -53,7 +53,7 @@ Ensure you have the following installed on your machine:
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 Dock-Hosting/
