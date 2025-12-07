@@ -1,13 +1,6 @@
 <?php
 Class Project extends db{
-    private $project_id;
-    private $user_id;
-    private $project_name;
-    private $port;
-    private $container_name;
-    private $status;
-
-
+    
     public function getProjects($user_id){
         $query = "SELECT * FROM Project WHERE user_id =  :user_id";
         $stmt = $this->connect()->prepare($query);
