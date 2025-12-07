@@ -164,10 +164,12 @@ $user_Projects = $projects->getProjects($_SESSION["id"]);
                 <span class="text-gray-700">|</span>
                 <span class="text-gray-500">v2.4.0</span>
             </div>
-
+            <a href="create-project.php">
             <button class="bg-brand hover:bg-[#14b8a6] text-black font-bold py-2 px-4 rounded transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)] flex items-center gap-2 text-sm">
                 <i class="fas fa-plus"></i> New Project
             </button>
+
+            </a>
         </header>
 
         <!-- Content Scroll Area -->
