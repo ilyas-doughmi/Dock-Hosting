@@ -41,7 +41,7 @@ Class Project extends db{
         $stmt->bindParam(":port",$port);
         $stmt->bindValue(":status","running");
         $stmt->bindParam(":user_id",$user_id);
-        $stmt->execute();
+        return $stmt->execute();
     }
 }
 
