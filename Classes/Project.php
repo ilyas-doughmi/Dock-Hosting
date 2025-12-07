@@ -15,5 +15,12 @@ Class Project extends db{
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function trackPort(){
+        $port_query = "SELECT port FROM Project ORDER BY port DESC limit 1;";
+        $stmt = $this->connect()->prepare($port_query);
+        $stmt->execute();  
+        return $stmt->fetch(PDO::FETCH_ASSOC);  
+    }
 }
 
