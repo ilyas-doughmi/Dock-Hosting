@@ -6,6 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once "../Classes/Project.php";
 
     $project_name = $_POST["project_name"];
+    $project_name = str_replace(" ","-",$project_name);
     $file = $_FILES["files"];
     $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $project_name . "/";
 
@@ -44,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "problem";
     }
     else{
-        echo "added";
+        shell_exec("docker run -d -p " .$last_port.":80 --name ".$project_name." -v ".$path.":/var/www/html php:8.2-apache");
         header("location: ../pages/dashboard.php");
         exit();
     }
