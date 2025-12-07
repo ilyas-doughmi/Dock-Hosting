@@ -105,12 +105,12 @@ Class Project extends db{
             return false;
         }
     }
-
     public function getProjectFiles($container_name){
         $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/";
 
         if(is_dir($path)){
             $files = scandir($path); 
+            $files = array_diff($files,array('.','..'));
             return $files;
         }
         else{
