@@ -12,5 +12,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $file_dir = $path . $file["name"];
     move_uploaded_file($file["tmp_name"],$file_dir);
 
+        // extract file from zip
 
+    $extract = new ZipArchive;
+    if($extract->open($file_dir) === TRUE){
+        $extract->extractTo($path);
+        $extract->close();
+        echo "good :)";
+    }
 }
