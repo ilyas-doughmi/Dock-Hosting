@@ -15,17 +15,17 @@
             <nav class="p-4 space-y-2">
                 <div class="px-4 py-2 text-xs font-mono text-gray-500 uppercase tracking-wider">Main</div>
 
-                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-brand/10 text-brand rounded-lg border border-brand/20 transition-all">
+                <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-brand/10 text-brand rounded-lg border border-brand/20 transition-all">
                     <i class="fas fa-terminal w-5"></i>
                     <span class="font-medium text-sm">Console</span>
                 </a>
 
-                <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all group">
+                <a href="projects.php" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all group">
                     <i class="fas fa-folder w-5 group-hover:text-brand transition-colors"></i>
                     <span class="font-medium text-sm">Projects</span>
                 </a>
 
-                <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all group">
+                <a href="databases.php" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all group">
                     <i class="fas fa-database w-5 group-hover:text-brand transition-colors"></i>
                     <span class="font-medium text-sm">Databases</span>
                 </a>
