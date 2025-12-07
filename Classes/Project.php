@@ -1,13 +1,6 @@
 <?php
 Class Project extends db{
-    private $project_id;
-    private $user_id;
-    private $project_name;
-    private $port;
-    private $container_name;
-    private $status;
-
-
+    
     public function getProjects($user_id){
         $query = "SELECT * FROM Project WHERE user_id =  :user_id";
         $stmt = $this->connect()->prepare($query);
@@ -77,6 +70,32 @@ Class Project extends db{
             return false;
         }
     }
+    
+    public function deleteProject($container_name,$file_dir){
+        $this->removeContainer($container_name);
+        $this->removeDir($file_dir);
+        $this->removeDatabase($container_name);
+    }
 
+    private function removeContainer($container){
+        shell_exec("docker rm -f ".$container);
+    }
+    private function removeDir($file_dir){
+        shell_exec("rmdir /s /q " . $file_dir);
+    }
+    private function removeDatabase($container_name){
+        $remove_query = "DELETE FROM Project WHERE user_id = :user_id AND container_name = :container_name";
+        $stmt = $this->connect()->prepare($remove_query);
+        $stmt->bindParam(":container_name",$container_name);
+        $stmt->bindParam(":user_id",$_SESSION["id"]);
+        $result = $stmt->execute();
+
+        if($result){
+            return $result;
+        }
+        else{
+            return false;
+        }
+    }
 }
 

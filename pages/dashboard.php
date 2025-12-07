@@ -261,7 +261,12 @@ $user_Projects = $projects->getProjects($_SESSION["id"]);
                                             <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
                                             <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-stop-circle"></i></button>
                                         </form>
-                                        <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
+                                        <form action="../includes/actions/delete.php" method="POST">
+                                            <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
+                                            <input type="hidden" name="project_name" value="<?= $project["project_name"] ?>">
+                                            <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
+                                        </form>
+
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -284,6 +289,59 @@ $user_Projects = $projects->getProjects($_SESSION["id"]);
             </div>
         </div>
     </main>
+    <!-- delete modal -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden">
+
+        <!-- Backdrop (Click to close) -->
+        <div onclick="closeDeleteModal()" class="absolute inset-0 backdrop transition-opacity duration-300"></div>
+
+        <!-- Modal Content -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
+            <div class="glass-panel rounded-xl shadow-2xl animate-modal-in overflow-hidden">
+
+                <!-- Red Warning Strip -->
+                <div class="h-1 w-full bg-danger"></div>
+
+                <div class="p-6">
+                    <!-- Icon -->
+                    <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center text-danger mb-4 mx-auto">
+                        <i class="fas fa-exclamation-triangle text-xl"></i>
+                    </div>
+
+                    <!-- Text -->
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-bold mb-2">Delete Project?</h3>
+                        <p class="text-gray-400 text-sm">
+                            Are you sure you want to delete this project?
+                            <br>
+                            This action cannot be undone.
+                        </p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-3">
+                        <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-lg border border-[#333] hover:bg-[#1a1a1a] text-gray-300 font-medium transition-colors">
+                            Cancel
+                        </button>
+                        <button class="flex-1 py-3 rounded-lg bg-danger hover:bg-dangerHover text-white font-bold shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform active:scale-95">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Simple Open Function
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        // Simple Close Function
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+    </script>
 </body>
 
 </html>
