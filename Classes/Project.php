@@ -43,5 +43,16 @@ Class Project extends db{
         $stmt->bindParam(":user_id",$user_id);
         return $stmt->execute();
     }
+
+    public function stopContainer($container_name){
+        shell_exec("docker stop ".$container_name);
+        $stop_query = "UPDATE Project SET status = 'stopped' WHERE user_id = :user_id AND container_name = :container_name";
+
+        $stmt = $this->connect()->prepare($stop_query);
+        $stmt->bindParam(":user_id",$_SESSION["id"]);
+        $stmt->bindParam(":container_name",$container_name);
+        return $stmt->execute();
+    }
+    
 }
 
