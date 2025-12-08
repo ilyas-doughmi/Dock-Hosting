@@ -24,6 +24,12 @@ if(isset($_GET["file"])){
     $content = $project->getFileContent($container_name,$file_requested);
 }
 
+if($_SERVER["REQUEST_METHOD"] === "POST"){
+    $newcontent = $_POST["newcontent"];
+    $save = $project->saveFileChanges($container_name,$file_requested,$newcontent);
+}
+
+
 
 ?>
 
@@ -43,6 +49,10 @@ if(isset($_GET["file"])){
    <?php } ?>
 
    <h1>script text</h1>
-<textarea name="" id=""><?=htmlspecialchars($content)?></textarea>
+<form action="file-manager.php?container=<?= $container_name ?>&file=<?= $file_requested ?>" method="POST">
+        <textarea name="newcontent" id=""><?=htmlspecialchars($content)?></textarea>
+<button>save</button>
+</form>
+
 </body>
 </html>
