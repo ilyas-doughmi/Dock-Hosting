@@ -105,17 +105,44 @@ Class Project extends db{
             return false;
         }
     }
-    public function getProjectFiles($container_name){
-        $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/";
+    public function getProjectFiles($container_name,$sub_path = ""){
+        $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/" . $sub_path ."/";
 
-        if(is_dir($path)){
-            $files = scandir($path); 
-            $files = array_diff($files,array('.','..'));
-            return $files;
+        // old that only give us names of files & foulders
+
+        // if(is_dir($path)){
+        //     $files = scandir($path); 
+        //     $files = array_diff($files,array('.','..'));
+        //     return $files;
+        // }
+        // else{
+        //     return [];
+        // }
+        
+
+        // new to get files and foulders (not merged)
+
+        $files = scandir($path);
+        $result = [];
+        foreach($files as $file){
+            if($file == "." || $file == ".."){
+                continue;
+            }
+
+            $item_path = $path . $file;
+            
+            if(is_dir($item_path)){
+                $type = "folder";
+            }
+            else{
+                $type = "file";
+            }
+
+            $result[] = ["name" => $file,"type"=>$type];
+
         }
-        else{
-            return [];
-        }
+
+        return $result;
     }
 
     public function getFileContent($container_name,$file_name){
