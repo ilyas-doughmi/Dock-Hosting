@@ -23,6 +23,12 @@ class Signup extends db
         $stmt->bindParam(":username", $this->username);
         $stmt->bindParam(":email", $this->email);
         $stmt->bindParam(":password", $this->password);
-        $stmt->execute();
+        try{
+            $stmt->execute();
+            header("location: ../index.php");
+        }catch(PDOException $e){
+             echo $e->getMessage();
+             header("location: ../index.php?error=".$e->getMessage());
+        }
     }
 }
