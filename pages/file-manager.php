@@ -99,10 +99,10 @@ if (isset($_GET["file"])) {
                 <div class="p-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-border">Files</div>
                 <div class="flex-1 overflow-y-auto p-2 space-y-1">
                     <?php foreach($files as $fl): ?>
-                        <a href="file-manager.php?container=<?= $container_name ?>&file=<?= $fl ?>" 
+                        <a href="file-manager.php?container=<?= $container_name ?><?= ($fl["type"]  == "foulder" ? 'foulder' : 'file') ?>=<?= $fl["name"] ?>" 
                            class="block px-3 py-2 rounded text-sm font-mono hover:bg-white/5 <?= ($file_requested ?? '') === $fl ? 'text-brand bg-brand/10' : 'text-gray-400' ?> transition-colors truncate">
-                            <i class="fas fa-file-code w-5 text-center opacity-50"></i>
-                            <?= $fl ?>
+                           <?= ($fl["type"]) == "file" ? '<i class="fas fa-file-code w-5 text-center opacity-50"></i>' : '<i class="fa fa-folder w-5 text-center opacity-50" aria-hidden="true"></i>'?> 
+                            <?=  $fl["name"] ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
