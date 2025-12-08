@@ -128,8 +128,17 @@ Class Project extends db{
             if($file == "." || $file == ".."){
                 continue;
             }
+
+            $item_path = $path . $file;
             
-            $result[] = ["name" => $file];
+            if(is_dir($item_path)){
+                $type = "folder";
+            }
+            else{
+                $type = "file";
+            }
+
+            $result[] = ["name" => $file,"type"=>$type];
 
         }
 
