@@ -27,8 +27,12 @@ class Signup extends db
             $stmt->execute();
             header("location: ../index.php");
         }catch(PDOException $e){
-             echo $e->getMessage();
-             header("location: ../index.php?error=".$e->getMessage());
+            if($e->getCode() == '23000'){
+                header("location: ../index.php?error=email or username already used!!");
+            }
+        else{
+            header("location: ../index.php?error=unknown problem happend");
+        }
         }
     }
 }
