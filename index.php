@@ -83,6 +83,20 @@
         .box-glow { box-shadow: 0 0 30px rgba(45, 212, 191, 0.2); }
     </style>
 </head>
+
+ <?php if(isset($_GET["error"])){
+            $error_message = $_GET["error"];?>
+            <div class="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] max-w-xl 
+    bg-red-600/80 border border-red-400 text-white px-4 py-3 rounded-xl 
+    font-mono text-sm shadow-lg animate-slide-up z-50 backdrop-blur-md">
+    <div class="flex justify-between items-center">
+        <span><i class="fas fa-circle-exclamation mr-2"></i><?= $error_message ?></span>
+        <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+       <?php } ?>
 <body class="h-screen w-full flex items-center justify-center relative overflow-hidden font-sans selection:bg-brand selection:text-black">
 
     <!-- Background Elements -->
@@ -90,13 +104,14 @@
     <div class="absolute inset-0 z-0 opacity-20" 
          style="background-image: linear-gradient(#1f1f1f 1px, transparent 1px), linear-gradient(90deg, #1f1f1f 1px, transparent 1px); background-size: 40px 40px;">
     </div>
-    
+
     <!-- Teal Ambient Glow (Top Right & Bottom Left) -->
     <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-brand/10 rounded-full blur-[120px] pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand/5 rounded-full blur-[100px] pointer-events-none"></div>
-
+       
     <!-- Main Content Area -->
     <div class="w-full max-w-md z-10 px-6 animate-slide-up">
+        
         
         <!-- Logo Header -->
         <div class="text-center mb-10">
