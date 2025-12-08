@@ -43,6 +43,6 @@ if(isset($_GET["file"])){
    <?php } ?>
 
    <h1>script text</h1>
-<textarea name="" id=""><?= $content ?></textarea>
+<textarea name="" id=""><?=htmlspecialchars($content)?></textarea>
 </body>
 </html>
