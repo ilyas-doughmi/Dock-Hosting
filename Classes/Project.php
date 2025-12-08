@@ -128,5 +128,15 @@ Class Project extends db{
             return "file not found";
         } 
     }
+
+    public function saveFileChanges($container_name,$file_name,$new_content){
+        $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/" . $file_name ;
+        if(is_file($path)){
+            file_put_contents($path,$new_content);
+        }
+        else{
+            return "file not found";
+        }
+    }
 }
 
