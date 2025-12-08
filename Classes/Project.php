@@ -121,8 +121,12 @@ Class Project extends db{
     public function getFileContent($container_name,$file_name){
         $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/" . $file_name ;
 
-        return file_get_contents($path);
-
+        if(is_file($path)){
+            return file_get_contents($path);
+        }
+        else{
+            return "file not found";
+        } 
     }
 }
 
