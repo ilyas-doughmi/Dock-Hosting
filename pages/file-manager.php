@@ -9,7 +9,15 @@ require_once("../php/connect.php");
 require_once("../Classes/Project.php");
 
 $project = new Project;
-$files = $project->getProjectFiles("test");
+
+if(isset($_GET["container"])){
+    $container_name = $_GET["container"];
+    $files = $project->getProjectFiles($container_name);
+}
+else{
+    header("location: dashboard.php");
+}
+
 
 ?>
 

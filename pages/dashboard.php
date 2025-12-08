@@ -251,7 +251,9 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
+                                        <a href="./file-manager.php?container=<?= $project["container_name"] ?>">
                                         <div class="font-bold"><?= $project['project_name'] ?? 'Unnamed' ?></div>
+                                        </a>
                                     </td>
                                     <td class="px-6 py-4 font-mono text-gray-400 group-hover:text-white transition-colors">
                                         <a href="http://localhost:<?= $project['port'] ?>" target="_blank" class="hover:underline flex items-center gap-2">
