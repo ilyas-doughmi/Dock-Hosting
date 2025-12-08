@@ -18,16 +18,17 @@ else{
     header("location: dashboard.php");
 }
 
-
+if($_SERVER["REQUEST_METHOD"] === "POST"){
+    $file_requested = $_GET["file"];
+    $newcontent = $_POST["newcontent"];
+    $save = $project->saveFileChanges($container_name,$file_requested,$newcontent);
+}
 if(isset($_GET["file"])){
     $file_requested = $_GET["file"];
     $content = $project->getFileContent($container_name,$file_requested);
 }
 
-if($_SERVER["REQUEST_METHOD"] === "POST"){
-    $newcontent = $_POST["newcontent"];
-    $save = $project->saveFileChanges($container_name,$file_requested,$newcontent);
-}
+
 
 
 
