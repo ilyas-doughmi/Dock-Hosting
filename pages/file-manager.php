@@ -27,6 +27,15 @@ if (isset($_GET["file"])) {
     $content = $project->getFileContent($container_name, $file_requested);
 }
 
+if(isset($_GET["path"])){
+    $new_path = $_GET["path"];
+        $files = $project->getProjectFiles($container_name,$new_path);
+
+}
+else{
+    $new_path = "";
+}
+
 
 
 
@@ -35,6 +44,7 @@ if (isset($_GET["file"])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,15 +64,26 @@ if (isset($_GET["file"])) {
                         bg: '#000000',
                         panel: '#0a0a0a',
                         border: '#1f1f1f',
-                        brand: { DEFAULT: '#2dd4bf', hover: '#14b8a6' }
+                        brand: {
+                            DEFAULT: '#2dd4bf',
+                            hover: '#14b8a6'
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #000; color: #fff; }
-        .glass-panel { background: #0a0a0a; border: 1px solid #1f1f1f; }
+        body {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .glass-panel {
+            background: #0a0a0a;
+            border: 1px solid #1f1f1f;
+        }
+
         /* Make the textarea look like code */
         textarea {
             font-family: 'JetBrains Mono', monospace;
@@ -72,12 +93,13 @@ if (isset($_GET["file"])) {
         }
     </style>
 </head>
+
 <body class="h-screen w-full flex overflow-hidden">
 
     <?php include("../components/sidebar.php"); ?>
 
     <main class="flex-1 flex flex-col h-full relative">
-        
+
         <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-panel">
             <div class="flex items-center gap-2 text-sm text-gray-400">
                 <i class="fas fa-box text-brand"></i>
@@ -85,8 +107,8 @@ if (isset($_GET["file"])) {
                 <span>/</span>
                 <span class="text-white"><?= htmlspecialchars($file_requested ?? 'Select a file') ?></span>
             </div>
-            
-            <?php if(isset($file_requested)): ?>
+
+            <?php if (isset($file_requested)): ?>
                 <button onclick="document.getElementById('save-form').submit()" class="bg-brand hover:bg-brand-hover text-black text-xs font-bold py-2 px-4 rounded flex items-center gap-2 transition-colors">
                     <i class="fas fa-save"></i> SAVE
                 </button>
@@ -94,22 +116,34 @@ if (isset($_GET["file"])) {
         </header>
 
         <div class="flex-1 flex overflow-hidden">
-            
+
             <div class="w-64 border-r border-border bg-black/50 flex flex-col">
                 <div class="p-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-border">Files</div>
                 <div class="flex-1 overflow-y-auto p-2 space-y-1">
-                    <?php foreach($files as $fl): ?>
-                        <a href="file-manager.php?container=<?= $container_name ?><?= ($fl["type"]  == "foulder" ? 'foulder' : 'file') ?>=<?= $fl["name"] ?>" 
-                           class="block px-3 py-2 rounded text-sm font-mono hover:bg-white/5 <?= ($file_requested ?? '') === $fl ? 'text-brand bg-brand/10' : 'text-gray-400' ?> transition-colors truncate">
-                           <?= ($fl["type"]) == "file" ? '<i class="fas fa-file-code w-5 text-center opacity-50"></i>' : '<i class="fa fa-folder w-5 text-center opacity-50" aria-hidden="true"></i>'?> 
-                            <?=  $fl["name"] ?>
+                    <?php foreach ($files as $fl): ?>
+                        <?php
+                        $is_folder = ($fl["type"] == "folder");
+                        $param = $is_folder ? "path" : "file";
+                        $active = (isset($file_requested) && $file_requested === $fl["name"]);
+                        ?>
+
+                        <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $fl["name"] ?>"
+                            class="block px-3 py-2 rounded text-sm font-mono hover:bg-white/5 <?= $active ? 'text-brand bg-brand/10' : 'text-gray-400' ?> transition-colors truncate">
+
+                            <?php if ($is_folder): ?>
+                                <i class="fas fa-folder w-5 text-center opacity-50 text-yellow-500"></i>
+                            <?php else: ?>
+                                <i class="fas fa-file-code w-5 text-center opacity-50 text-blue-400"></i>
+                            <?php endif; ?>
+
+                            <?= $fl["name"] ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
             </div>
 
             <div class="flex-1 relative bg-[#050505]">
-                <?php if(isset($file_requested)): ?>
+                <?php if (isset($file_requested)): ?>
                     <form id="save-form" action="file-manager.php?container=<?= $container_name ?>&file=<?= $file_requested ?>" method="POST" class="h-full w-full">
                         <textarea name="newcontent" class="w-full h-full p-6 resize-none outline-none border-none text-sm" spellcheck="false"><?= htmlspecialchars($content) ?></textarea>
                     </form>
@@ -125,4 +159,5 @@ if (isset($_GET["file"])) {
     </main>
 
 </body>
+
 </html>
