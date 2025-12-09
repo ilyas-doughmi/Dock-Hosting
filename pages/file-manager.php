@@ -10,9 +10,16 @@ require_once("../Classes/Project.php");
 
 $project = new Project;
 $content = "";
+if(isset($_GET["path"])){
+    $new_path = $_GET["path"];
+
+}
+else{
+    $new_path = "";
+}
 if (isset($_GET["container"])) {
     $container_name = $_GET["container"];
-    $files = $project->getProjectFiles($container_name);
+    $files = $project->getProjectFiles($container_name,$new_path);
 } else {
     header("location: dashboard.php");
 }
@@ -27,14 +34,7 @@ if (isset($_GET["file"])) {
     $content = $project->getFileContent($container_name, $file_requested);
 }
 
-if(isset($_GET["path"])){
-    $new_path = $_GET["path"];
-        $files = $project->getProjectFiles($container_name,$new_path);
 
-}
-else{
-    $new_path = "";
-}
 
 
 
