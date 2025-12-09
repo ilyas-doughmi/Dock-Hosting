@@ -10,9 +10,16 @@ require_once("../Classes/Project.php");
 
 $project = new Project;
 $content = "";
+if(isset($_GET["path"])){
+    $new_path = $_GET["path"];
+
+}
+else{
+    $new_path = "";
+}
 if (isset($_GET["container"])) {
     $container_name = $_GET["container"];
-    $files = $project->getProjectFiles($container_name);
+    $files = $project->getProjectFiles($container_name,$new_path);
 } else {
     header("location: dashboard.php");
 }
@@ -27,14 +34,7 @@ if (isset($_GET["file"])) {
     $content = $project->getFileContent($container_name, $file_requested);
 }
 
-if(isset($_GET["path"])){
-    $new_path = $_GET["path"];
-        $files = $project->getProjectFiles($container_name,$new_path);
 
-}
-else{
-    $new_path = "";
-}
 
 
 
@@ -124,10 +124,11 @@ else{
                         <?php
                         $is_folder = ($fl["type"] == "folder");
                         $param = $is_folder ? "path" : "file";
-                        $active = (isset($file_requested) && $file_requested === $fl["name"]);
+                        $target_path = $new_path == ""? $fl["name"] : $new_path."/". $fl["name"];
+                        $active = (isset($file_requested) && $file_requested === $target_path);
                         ?>
 
-                        <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $fl["name"] ?>"
+                        <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $target_path ?>&path=<?= $is_folder ? $target_path : $new_path ?>"
                             class="block px-3 py-2 rounded text-sm font-mono hover:bg-white/5 <?= $active ? 'text-brand bg-brand/10' : 'text-gray-400' ?> transition-colors truncate">
 
                             <?php if ($is_folder): ?>
