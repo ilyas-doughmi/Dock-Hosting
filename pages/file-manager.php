@@ -124,10 +124,11 @@ if (isset($_GET["file"])) {
                         <?php
                         $is_folder = ($fl["type"] == "folder");
                         $param = $is_folder ? "path" : "file";
-                        $active = (isset($file_requested) && $file_requested === $fl["name"]);
+                        $target_path = $new_path == ""? $fl["name"] : $new_path."/". $fl["name"];
+                        $active = (isset($file_requested) && $file_requested === $target_path);
                         ?>
 
-                        <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $fl["name"] ?>"
+                        <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $target_path ?>&path=<?= $is_folder ? $target_path : $new_path ?>"
                             class="block px-3 py-2 rounded text-sm font-mono hover:bg-white/5 <?= $active ? 'text-brand bg-brand/10' : 'text-gray-400' ?> transition-colors truncate">
 
                             <?php if ($is_folder): ?>
