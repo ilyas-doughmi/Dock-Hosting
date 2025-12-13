@@ -21,6 +21,9 @@ else{
 $parent_path = "";
 if($new_path != ""){
     $parent_path = dirname($new_path);
+    if($parent_path == "."){
+        $parent_path = "";
+    }
 }
 if (isset($_GET["container"])) {
     $container_name = $_GET["container"];
