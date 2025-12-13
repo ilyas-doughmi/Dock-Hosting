@@ -10,24 +10,22 @@ require_once("../Classes/Project.php");
 
 $project = new Project;
 $content = "";
-if(isset($_GET["path"])){
+if (isset($_GET["path"])) {
     $new_path = $_GET["path"];
-
-}
-else{
+} else {
     $new_path = "";
 }
 
 $parent_path = "";
-if($new_path != ""){
+if ($new_path != "") {
     $parent_path = dirname($new_path);
-    if($parent_path == "."){
+    if ($parent_path == ".") {
         $parent_path = "";
     }
 }
 if (isset($_GET["container"])) {
     $container_name = $_GET["container"];
-    $files = $project->getProjectFiles($container_name,$new_path);
+    $files = $project->getProjectFiles($container_name, $new_path);
 } else {
     header("location: dashboard.php");
 }
@@ -126,19 +124,30 @@ if (isset($_GET["file"])) {
         <div class="flex-1 flex overflow-hidden">
 
             <div class="w-64 border-r border-border bg-black/50 flex flex-col">
-                <div class="p-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-border">Files</div>
+                <div class="p-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-border flex items-center justify-between">
+                    <span>Files</span>
+                    <div class="flex gap-2">
+                        <button onclick="openNewFileModal()" class="hover:text-brand transition-colors" title="New File">
+                            <i class="fas fa-file-circle-plus"></i>
+                        </button>
+
+                        <button onclick="openNewFolderModal()" class="hover:text-brand transition-colors" title="New Folder">
+                            <i class="fas fa-folder-plus"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="flex-1 overflow-y-auto p-2 space-y-1">
-                    <?php if($new_path != ""):?>
-                        <a href="file-manager.php?container=<?= $container_name ?>&path=<?= $parent_path ?>" 
-       class="block px-3 py-2 mb-2 rounded text-sm font-mono text-brand border border-dashed border-gray-800 hover:bg-white/5 transition-colors">
-        <i class="fas fa-level-up-alt w-5 text-center opacity-50"></i> ..
-    </a>
-                   <?php endif; ?>
+                    <?php if ($new_path != ""): ?>
+                        <a href="file-manager.php?container=<?= $container_name ?>&path=<?= $parent_path ?>"
+                            class="block px-3 py-2 mb-2 rounded text-sm font-mono text-brand border border-dashed border-gray-800 hover:bg-white/5 transition-colors">
+                            <i class="fas fa-level-up-alt w-5 text-center opacity-50"></i> ..
+                        </a>
+                    <?php endif; ?>
                     <?php foreach ($files as $fl): ?>
                         <?php
                         $is_folder = ($fl["type"] == "folder");
                         $param = $is_folder ? "path" : "file";
-                        $target_path = $new_path == ""? $fl["name"] : $new_path."/". $fl["name"];
+                        $target_path = $new_path == "" ? $fl["name"] : $new_path . "/" . $fl["name"];
                         $active = (isset($file_requested) && $file_requested === $target_path);
                         ?>
 
@@ -173,6 +182,82 @@ if (isset($_GET["file"])) {
         </div>
     </main>
 
+    <div id="newFileModal" class="fixed inset-0 z-50 hidden">
+    <div onclick="closeNewFileModal()" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
+        <div class="glass-panel rounded-xl shadow-2xl overflow-hidden">
+            <div class="p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-file-code text-brand"></i> New File
+                </h3>
+                
+                <form action="../includes/actions/create_file.php" method="POST">
+                    <input type="hidden" name="container" value="<?= $container_name ?>">
+                    <input type="hidden" name="path" value="<?= $new_path ?>">
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-mono text-gray-500 uppercase">Filename</label>
+                            <input type="text" name="name" placeholder="style.css" required
+                                class="w-full bg-[#050505] border border-border text-white text-sm rounded-lg p-3 mt-1 focus:border-brand focus:outline-none font-mono">
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="button" onclick="closeNewFileModal()" class="flex-1 py-3 rounded-lg border border-[#333] hover:bg-[#1a1a1a] text-gray-300 font-medium transition-colors">Cancel</button>
+                            <button type="submit" class="flex-1 py-3 rounded-lg bg-brand hover:bg-brand-hover text-black font-bold transition-colors">Create File</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="newFolderModal" class="fixed inset-0 z-50 hidden">
+    <div onclick="closeNewFolderModal()" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
+        <div class="glass-panel rounded-xl shadow-2xl overflow-hidden">
+            <div class="p-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-folder text-yellow-500"></i> New Folder
+                </h3>
+                
+                <form action="../includes/actions/create_folder.php" method="POST">
+                    <input type="hidden" name="container" value="<?= $container_name ?>">
+                    <input type="hidden" name="path" value="<?= $new_path ?>">
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-mono text-gray-500 uppercase">Folder Name</label>
+                            <input type="text" name="name" placeholder="includes" required
+                                class="w-full bg-[#050505] border border-border text-white text-sm rounded-lg p-3 mt-1 focus:border-brand focus:outline-none font-mono">
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="button" onclick="closeNewFolderModal()" class="flex-1 py-3 rounded-lg border border-[#333] hover:bg-[#1a1a1a] text-gray-300 font-medium transition-colors">Cancel</button>
+                            <button type="submit" class="flex-1 py-3 rounded-lg bg-brand hover:bg-brand-hover text-black font-bold transition-colors">Create Folder</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function openNewFileModal() {
+        document.getElementById('newFileModal').classList.remove('hidden');
+    }
+    function closeNewFileModal() {
+        document.getElementById('newFileModal').classList.add('hidden');
+    }
+
+    function openNewFolderModal() {
+        document.getElementById('newFolderModal').classList.remove('hidden');
+    }
+    function closeNewFolderModal() {
+        document.getElementById('newFolderModal').classList.add('hidden');
+    }
+</script>
 </body>
 
 </html>
