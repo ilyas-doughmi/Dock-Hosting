@@ -17,6 +17,14 @@ if(isset($_GET["path"])){
 else{
     $new_path = "";
 }
+
+$parent_path = "";
+if($new_path != ""){
+    $parent_path = dirname($new_path);
+    if($parent_path == "."){
+        $parent_path = "";
+    }
+}
 if (isset($_GET["container"])) {
     $container_name = $_GET["container"];
     $files = $project->getProjectFiles($container_name,$new_path);
@@ -120,6 +128,12 @@ if (isset($_GET["file"])) {
             <div class="w-64 border-r border-border bg-black/50 flex flex-col">
                 <div class="p-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-border">Files</div>
                 <div class="flex-1 overflow-y-auto p-2 space-y-1">
+                    <?php if($new_path != ""):?>
+                        <a href="file-manager.php?container=<?= $container_name ?>&path=<?= $parent_path ?>" 
+       class="block px-3 py-2 mb-2 rounded text-sm font-mono text-brand border border-dashed border-gray-800 hover:bg-white/5 transition-colors">
+        <i class="fas fa-level-up-alt w-5 text-center opacity-50"></i> ..
+    </a>
+                   <?php endif; ?>
                     <?php foreach ($files as $fl): ?>
                         <?php
                         $is_folder = ($fl["type"] == "folder");
