@@ -4,7 +4,7 @@ session_start();
     require_once "../../Classes/Project.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $container = $_POST["container_name"];
-    $project_name = $_POST["project_name"];
+    $project_name = $_POST["container_name"];
     $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $project_name . "/";
 
     $project = new Project;
@@ -12,7 +12,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (is_dir($path)) {
         $delete = $project->deleteProject($container,$path);
          header("location: ../../pages/dashboard.php");
-            exit();
-
+        exit();
     }
 }

@@ -271,12 +271,7 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                                             <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
                                             <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-stop-circle"></i></button>
                                         </form>
-                                        <form action="../includes/actions/delete.php" method="POST">
-                                            <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
-                                            <input type="hidden" name="project_name" value="<?= $project["project_name"] ?>">
-                                            <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
-                                        </form>
-
+                                        <button onclick="deleteContainer('<?= $project["container_name"] ?>')" class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -301,7 +296,7 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
     </main>
     <!-- delete modal -->
     <div id="deleteModal" class="fixed inset-0 z-50 hidden">
-
+        
         <!-- Backdrop (Click to close) -->
         <div onclick="closeDeleteModal()" class="absolute inset-0 backdrop transition-opacity duration-300"></div>
 
@@ -333,7 +328,7 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                         <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-lg border border-[#333] hover:bg-[#1a1a1a] text-gray-300 font-medium transition-colors">
                             Cancel
                         </button>
-                        <button class="flex-1 py-3 rounded-lg bg-danger hover:bg-dangerHover text-white font-bold shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform active:scale-95">
+                        <button id="deletebtn" class="flex-1 py-3 rounded-lg bg-danger hover:bg-dangerHover text-white font-bold shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform active:scale-95">
                             Delete
                         </button>
                     </div>
@@ -341,6 +336,7 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
             </div>
         </div>
     </div>
+    
     <script>
         // Simple Open Function
         function openDeleteModal() {
@@ -351,6 +347,26 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.add('hidden');
         }
+
+
+        const deletebtn = document.getElementById("deletebtn");
+        const deleteModal = document.getElementById("deleteModal");
+        
+        function deleteContainer(container){
+            deleteModal.classList.remove("hidden");
+            deletebtn.addEventListener("click",function(){
+                    data = new FormData();
+                    data.append("container_name",container);
+                  fetch("../includes/actions/delete.php",{
+                        method : "POST",
+                        body:data
+                })
+                location.reload();
+            })
+          
+        }
+        
+
     </script>
 </body>
 
