@@ -352,7 +352,7 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
         const deletebtn = document.getElementById("deletebtn");
         const deleteModal = document.getElementById("deleteModal");
         
-        function deleteContainer(container,project_name){
+        function deleteContainer(container){
             deleteModal.classList.remove("hidden");
             deletebtn.addEventListener("click",function(){
                     data = new FormData();
