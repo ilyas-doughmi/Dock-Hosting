@@ -9,6 +9,7 @@ class Signup extends db
 
     public function __construct($username, $email, $password)
     {
+        parent::__construct();
         $this->username = $username;
         $this->email = $email;
         $this-> password = password_hash($password,PASSWORD_DEFAULT);

@@ -6,6 +6,7 @@
 
         public function __construct($email,$password)
         {
+            parent::__construct();
             $this->email = $email;
             $this->password = $password;
             $this->login_user();

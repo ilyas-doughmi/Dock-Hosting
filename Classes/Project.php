@@ -1,6 +1,10 @@
 <?php
 Class Project extends db{
     
+    public function __construct() {
+        parent::__construct();
+    }
+
     public function getProjects($user_id){
         $query = "SELECT * FROM Project WHERE user_id =  :user_id";
         $stmt = $this->connect()->prepare($query);
