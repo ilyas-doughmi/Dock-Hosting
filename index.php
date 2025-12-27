@@ -1,23 +1,15 @@
 <?php
     session_start();
-    
-    if(isset($_SESSION["id"])){
-        header("location: pages/dashboard.php");
-        exit;
-    }
-
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOCK-HOSTING :: LOGIN</title>
+    <title>DOCK-HOSTING :: Professional Cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -27,28 +19,17 @@
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        bg: '#000000',      // Solid Black
-                        panel: '#0a0a0a',   // Slightly lighter for cards
-                        border: '#1f1f1f',  // Subtle borders
+                        bg: '#000000',
+                        panel: '#0a0a0a',
+                        border: '#1f1f1f',
                         brand: {
-                            DEFAULT: '#2dd4bf', // Teal-400 (Vibrant Teal)
-                            hover: '#14b8a6',   // Teal-500
-                            glow: 'rgba(45, 212, 191, 0.5)'
+                            DEFAULT: '#2dd4bf', 
+                            hover: '#14b8a6',
+                            dim: '#115e59',
                         }
                     },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                        'slide-up': 'slideUp 0.5s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(#1f1f1f 1px, transparent 1px), linear-gradient(90deg, #1f1f1f 1px, transparent 1px)",
                     }
                 }
             }
@@ -57,206 +38,127 @@
     <style>
         body { background-color: #000; color: #fff; }
         
-        /* Glass effect specifically for black background */
-        .glass-panel {
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid #1f1f1f;
-            box-shadow: 0 0 40px -10px rgba(45, 212, 191, 0.15); /* Teal shadow glow */
+        .glass-nav {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #1f1f1f;
         }
 
-        .input-field {
-            background: #050505;
+        .hero-glow {
+            box-shadow: 0 0 150px 60px rgba(45, 212, 191, 0.15);
+        }
+
+        .feature-card {
+            background: rgba(10, 10, 10, 0.5);
             border: 1px solid #1f1f1f;
-            color: white;
             transition: all 0.3s ease;
         }
-
-        .input-field:focus {
+        
+        .feature-card:hover {
             border-color: #2dd4bf;
-            background: #0a0a0a;
-            outline: none;
-            box-shadow: 0 0 0 1px #2dd4bf;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px -10px rgba(45, 212, 191, 0.2);
         }
-
-        /* Glow Utilities */
-        .box-glow { box-shadow: 0 0 30px rgba(45, 212, 191, 0.2); }
     </style>
 </head>
+<body class="font-sans antialiased selection:bg-brand selection:text-black">
 
- <?php if(isset($_GET["error"])){
-            $error_message = $_GET["error"];?>
-            <div class="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] max-w-xl 
-    bg-red-600/80 border border-red-400 text-white px-4 py-3 rounded-xl 
-    font-mono text-sm shadow-lg animate-slide-up z-50 backdrop-blur-md">
-    <div class="flex justify-between items-center">
-        <span><i class="fas fa-circle-exclamation mr-2"></i><?= $error_message ?></span>
-        <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-</div>
-       <?php } ?>
-<body class="h-screen w-full flex items-center justify-center relative overflow-hidden font-sans selection:bg-brand selection:text-black">
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass-nav border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.php" class="flex items-center gap-4 group">
+                <div class="w-12 h-12 rounded-xl bg-brand text-black flex items-center justify-center text-xl shadow-[0_0_20px_rgba(45,212,191,0.3)]">
+                    <i class="fas fa-cubes"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-2xl leading-none tracking-tight text-white group-hover:text-brand transition-colors">DOCK-HOSTING</span>
+                    <span class="text-[10px] text-gray-500  font-bold font-mono tracking-widest uppercase mt-1">Beta Release</span>
+                </div>
+            </a>
 
-    <!-- Background Elements -->
-    <!-- Grid -->
-    <div class="absolute inset-0 z-0 opacity-20" 
-         style="background-image: linear-gradient(#1f1f1f 1px, transparent 1px), linear-gradient(90deg, #1f1f1f 1px, transparent 1px); background-size: 40px 40px;">
-    </div>
+            <!-- Actions -->
+            <div class="flex items-center gap-6">
+                <!-- Update Logs Button -->
+                <a href="pages/changelog.php" class="hidden md:flex items-center gap-2 text-[10px] font-bold font-mono text-gray-500 uppercase tracking-widest hover:text-white transition-colors border border-white/10 px-3 py-1.5 rounded-full bg-white/5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
+                    Updates
+                </a>
 
-    <!-- Teal Ambient Glow (Top Right & Bottom Left) -->
-    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-brand/10 rounded-full blur-[120px] pointer-events-none"></div>
-    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand/5 rounded-full blur-[100px] pointer-events-none"></div>
-       
-    <!-- Main Content Area -->
-    <div class="w-full max-w-md z-10 px-6 animate-slide-up">
+                <?php if(isset($_SESSION["id"])): ?>
+                    <a href="pages/dashboard.php" class="text-sm font-mono text-gray-300 hover:text-white transition-colors">Dashboard</a>
+                    <a href="includes/user_actions/logout.php" class="px-6 py-3 rounded-full border border-white/10 bg-white/5 text-white text-xs font-bold font-mono hover:bg-white/10 hover:scale-105 transition-all">
+                        LOGOUT
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" class="hidden sm:block text-sm font-mono text-gray-400 hover:text-white transition-colors">Sign In</a>
+                    <a href="login.php" class="px-8 py-3 rounded-full bg-brand hover:bg-white text-black text-xs font-bold font-mono transition-all hover:scale-105 shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                        GET STARTED
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Hero Content -->
+    <main class="relative h-screen flex flex-col items-center justify-center overflow-hidden pt-20">
         
-        
-        <!-- Logo Header -->
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-brand/10 border border-brand/20 text-brand mb-4 box-glow">
-                <!-- Using a Box icon to represent Containers/Docker -->
-                <i class="fas fa-cubes text-2xl"></i>
-            </div>
-            <h1 class="text-3xl font-bold tracking-tight">DOCK<span class="text-brand">-HOSTING</span></h1>
-            <p class="text-gray-500 text-sm mt-2 font-mono">Containerized Student Cloud</p>
+        <!-- Animated Background -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 opacity-20 bg-grid-pattern bg-[length:60px_60px] animate-[pulse_4s_ease-in-out_infinite]"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand/10 rounded-full blur-[150px] pointer-events-none"></div>
+            <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none"></div>
         </div>
 
-        <!-- Auth Container -->
-        <div class="glass-panel rounded-2xl p-8 relative overflow-hidden">
+        <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
             
-            <!-- Decorative Top Border -->
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand to-transparent opacity-70"></div>
-
-            <!-- LOGIN FORM -->
-            <div id="login-form" class="transition-opacity duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold">Sign In</h2>
-                    <span class="text-xs font-mono text-gray-500">SECURE ACCESS</span>
-                </div>
-                
-                <form action="includes/login.php" method="POST">
-                    <div class="space-y-5">
-                        <!-- Email -->
-                        <div class="space-y-1">
-                            <label class="text-xs font-mono text-gray-400 uppercase ml-1">Email Address</label>
-                            <div class="relative">
-                                <i class="fas fa-envelope absolute left-4 top-3.5 text-gray-600"></i>
-                                <input type="email" name="email" placeholder="student@youcode.ma" 
-                                       class="input-field w-full py-3 pl-10 pr-4 rounded-lg text-sm placeholder-gray-700 font-mono" required>
-                            </div>
-                        </div>
-                        
-                        <!-- Password -->
-                        <div class="space-y-1">
-                            <label class="text-xs font-mono text-gray-400 uppercase ml-1">Password</label>
-                            <div class="relative">
-                                <i class="fas fa-key absolute left-4 top-3.5 text-gray-600"></i>
-                                <input type="password" name="password" placeholder="••••••••" 
-                                       class="input-field w-full py-3 pl-10 pr-4 rounded-lg text-sm placeholder-gray-700 font-mono" required>
-                            </div>
-                            <div class="text-right">
-                                <a href="#" class="text-[11px] text-gray-500 hover:text-brand transition-colors">Forgot Password?</a>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="w-full bg-brand hover:bg-brand-hover text-black font-bold py-3.5 rounded-lg transition-all transform hover:scale-[1.02] shadow-lg shadow-brand/20 flex items-center justify-center gap-2">
-                            <span>Access Terminal</span>
-                            <i class="fas fa-terminal text-xs"></i>
-                        </button>
-                    </div>
-                </form>
-
-                <div class="mt-8 pt-6 border-t border-border text-center">
-                    <p class="text-sm text-gray-500 mb-2">No active containers?</p>
-                    <button onclick="switchView('register')" class="text-brand font-bold text-sm hover:text-white transition-colors">
-                        Deploy New Instance
-                    </button>
-                </div>
+            <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-gray-300 text-xs font-mono mb-10 animate-[fade-in_1s_ease-out] hover:border-brand/30 transition-colors cursor-default">
+                <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+                <span>Beta Access Now Open</span>
             </div>
 
-            <!-- REGISTER FORM -->
-            <div id="register-form" class="hidden transition-opacity duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold">New Account</h2>
-                    <span class="text-xs font-mono text-brand">DOCKER READY</span>
-                </div>
-                
-                <form action="includes/signup.php" method="POST">
-                    <div class="space-y-4">
-                        <!-- Name Fields -->
-                        <div class="w-full">
-                            <div class="space-y-1">
-                                <label class="text-xs font-mono text-gray-400 uppercase ml-1">Username</label>
-                                <input type="text" name="username" class="input-field w-full py-3 px-4 rounded-lg text-sm font-mono" required>
-                            </div>
-                        </div>
+            <h1 class="text-6xl md:text-8xl font-bold tracking-tighter mb-8 leading-[1.1] animate-[slide-up_0.8s_ease-out] drop-shadow-2xl">
+                Deploy <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-brand">PHP Projects</span> <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand via-teal-200 to-white">From a Single ZIP.</span>
+            </h1>
 
-                        <!-- Email -->
-                        <div class="space-y-1">
-                            <label class="text-xs font-mono text-gray-400 uppercase ml-1">Academic Email</label>
-                            <div class="relative">
-                                <i class="fas fa-graduation-cap absolute left-4 top-3.5 text-gray-600"></i>
-                                <input type="email" name="email" placeholder="@student.youcode.ma" 
-                                       class="input-field w-full py-3 pl-10 pr-4 rounded-lg text-sm placeholder-gray-700 font-mono" required>
-                            </div>
-                        </div>
-                        
-                        <!-- Password -->
-                        <div class="space-y-1">
-                            <label class="text-xs font-mono text-gray-400 uppercase ml-1">Password</label>
-                            <div class="relative">
-                                <i class="fas fa-lock absolute left-4 top-3.5 text-gray-600"></i>
-                                <input type="password" name="password" 
-                                       class="input-field w-full py-3 pl-10 pr-4 rounded-lg text-sm placeholder-gray-700 font-mono" required>
-                            </div>
-                        </div>
+            <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light animate-[slide-up_1s_ease-out]">
+                Upload your archive and get a live URL in seconds. <br class="hidden md:block">
+                Powered by Docker containers for full isolation.
+            </p>
 
-                        <!-- Submit Button -->
-                        <button type="submit" class="w-full bg-white text-black hover:bg-gray-200 font-bold py-3.5 rounded-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
-                            <span>Initialize Environment</span>
-                            <i class="fas fa-bolt text-brand"></i>
-                        </button>
-                    </div>
-                </form>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 animate-[slide-up_1.2s_ease-out]">
+                <a href="login.php" class="relative w-full sm:w-auto px-10 py-5 rounded-full bg-brand hover:bg-white text-black font-bold text-lg transition-all transform hover:scale-105 shadow-[0_0_40px_rgba(45,212,191,0.4)] hover:shadow-[0_0_60px_rgba(45,212,191,0.6)] flex items-center justify-center gap-3 group overflow-hidden">
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    <span class="relative">DEPLOY PHP APP</span>
+                    <i class="fas fa-cloud-upload-alt relative group-hover:-translate-y-1 transition-transform duration-300"></i>
+                </a>
+            </div>
 
-                <div class="mt-8 pt-6 border-t border-border text-center">
-                    <p class="text-sm text-gray-500 mb-2">Already deployed?</p>
-                    <button onclick="switchView('login')" class="text-brand font-bold text-sm hover:text-white transition-colors">
-                        Return to Console
-                    </button>
-                </div>
+            <!-- Tech Badges -->
+            <div class="mt-24 flex justify-center gap-10 opacity-30 hover:opacity-100 transition-all duration-700 grayscale hover:grayscale-0">
+                <i class="fab fa-docker text-5xl hover:scale-110 transition-transform duration-300"></i>
+                <i class="fab fa-php text-5xl hover:scale-110 transition-transform duration-300"></i>
+                <i class="fab fa-linux text-5xl hover:scale-110 transition-transform duration-300"></i>
+                <i class="fas fa-database text-5xl hover:scale-110 transition-transform duration-300"></i>
             </div>
 
         </div>
 
-        <!-- Footer Info -->
-        <div class="mt-8 flex justify-center gap-6 text-xs text-gray-600 font-mono">
-            <span>&copy; 2025 Dock-Hosting</span>
-            <span>•</span>
-            <span class="flex items-center gap-1"><span class="w-2 h-2 bg-brand rounded-full animate-pulse"></span> Daemon Running</span>
+        <!-- Footer Strip -->
+        <div class="absolute bottom-0 w-full border-t border-white/5 bg-black/40 backdrop-blur-sm py-6">
+            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-gray-500">
+                <span>&copy; 2025 DOCK-HOSTING</span>
+                <div class="flex items-center gap-2">
+                    <span class="uppercase tracking-widest">Created at</span>
+                    <a href="https://youcode.ma/" target="_blank" class="hover:opacity-100 opacity-60 transition-opacity">
+                        <img src="https://youcode.ma/images/logos/youcode.png" alt="YouCode" class="h-6 filter brightness-0 invert">
+                    </a>
+                </div>
+            </div>
         </div>
+    </main>
 
-    </div>
 
-    <!-- JavaScript for Toggle -->
-    <script>
-        function switchView(view) {
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            
-            if (view === 'register') {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                registerForm.classList.add('animate-fade-in');
-            } else {
-                registerForm.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                loginForm.classList.add('animate-fade-in');
-            }
-        }
-    </script>
 </body>
 </html>
