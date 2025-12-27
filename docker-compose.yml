@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: dock-hosting-app
+    restart: always
+    volumes:
+      - ./:/var/www/html
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./users/Projects:/var/www/html/users/Projects
+    networks:
+      - proxy_network
+      - default
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+
+  db:
+    image: mysql:8.0
+    container_name: dock-hosting-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: dock_hosting
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - default
+
+volumes:
+  db_data:
+
+networks:
+  proxy_network:
+    external: true
