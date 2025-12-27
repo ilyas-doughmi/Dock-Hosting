@@ -3,6 +3,7 @@ FROM php:8.2-apache
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
+    docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install pdo pdo_mysql zip
