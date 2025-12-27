@@ -18,9 +18,9 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /var/www/Dock-Hosting
             git pull origin main
             sudo docker compose up -d --build
-            echo "✅ Deployment successful!"
+            echo "Deployment success"
