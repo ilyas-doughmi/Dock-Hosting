@@ -29,11 +29,11 @@ class Signup extends db
             exit;
         }catch(PDOException $e){
             if($e->getCode() == '23000'){
-                header("location: ../login.php?msg=Email or username already exists");
+                header("location: ../login.php?msg=Email or username already exists&type=error");
                 exit;
             }
         else{
-            header("location: ../login.php?msg=Registration failed. Please try again");
+            header("location: ../login.php?msg=Registration failed. Please try again&type=error");
             exit;
         }
         }
