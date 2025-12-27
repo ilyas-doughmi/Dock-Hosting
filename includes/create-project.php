@@ -8,25 +8,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $project_name = $_POST["project_name"];
     $project_name = str_replace(" ","-",$project_name);
     $file = $_FILES["files"];
-    $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $project_name . "/";
+    
+    $base_path = dirname(__DIR__) . "/users/Projects/";
+    $path = $base_path . $_SESSION["id"] . "/" . $project_name . "/";
 
     if (!is_dir($path)) {
-        mkdir($path, 0777, true);
+        if (!mkdir($path, 0777, true)) {
+            header("location: ../pages/create-project.php?msg=Failed to create project directory");
+            exit;
+        }
     }
 
     $file_dir = $path . $file["name"];
-    move_uploaded_file($file["tmp_name"], $file_dir);
+    if (!move_uploaded_file($file["tmp_name"], $file_dir)) {
+        header("location: ../pages/create-project.php?msg=Failed to upload file");
+        exit;
+    }
 
     // extract file from zip
-
     $extract = new ZipArchive;
     if ($extract->open($file_dir) === TRUE) {
         $extract->extractTo($path);
         $extract->close();
+        unlink($file_dir);
+    } else {
+        header("location: ../pages/create-project.php?msg=Failed to extract ZIP file");
+        exit;
     }
 
     // free port
-
     $Projects = New Project();
     $last_port = $Projects->trackPort();
 
@@ -38,15 +48,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
 
     // creating project 
-
     $create = $Projects->createProject($project_name,$last_port,$project_name,$_SESSION["id"]);
 
     if(!$create){
-        echo "problem";
+        header("location: ../pages/create-project.php?msg=Failed to create project in database");
+        exit;
     }
     else{
         shell_exec("docker run -d -p " .$last_port.":80 --name ".$project_name." -v ".$path.":/var/www/html php:8.2-apache");
-        header("location: ../pages/dashboard.php");
+        header("location: ../pages/dashboard.php?msg=Project created successfully!");
         exit();
     }
 
