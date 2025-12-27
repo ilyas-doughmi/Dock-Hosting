@@ -1,5 +1,6 @@
 <?php
     session_start();
+    echo "testing workflow";
 ?>
 <!DOCTYPE html>
 <html lang="en">
