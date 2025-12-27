@@ -26,7 +26,7 @@
                 exit;
             }
             else{
-                header("location: ../login.php?msg=Invalid email or password");
+                header("location: ../login.php?msg=Invalid email or password&type=error");
                 exit;
             }
         }
