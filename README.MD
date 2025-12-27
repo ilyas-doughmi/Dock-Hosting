@@ -1,66 +1,191 @@
 # 🐳 Dock-Hosting
 
-**Dock-Hosting** is a lightweight "Platform as a Service" (PaaS) simulation that allows users to upload PHP projects and instantly deploy them to live Docker containers.
+**Dock-Hosting** is a modern Platform-as-a-Service (PaaS) that enables users to deploy PHP applications instantly with automatic subdomain provisioning and free SSL certificates.
 
- **⚠️ Educational Project:** This application was built to demonstrate the interaction between **PHP**, **MySQL**, and **Docker System Commands**. It is a local simulation, not a production hosting environment.
+ **Live Demo:** [https://www.dockhosting.dev](https://www.dockhosting.dev)
 
 ---
 
 ##  Key Features
 
-* **User Authentication:** Secure Signup & Login system with password hashing.
-* **One-Click Deployment:** Upload a `.zip` file of your website, and the system handles the rest.
-* **Automated Docker Orchestration:**
-    * Unzips and isolates project files.
-    * Calculates the next available port (e.g., `8001`, `8002`).
-    * Spins up a dedicated Docker container (Apache/PHP 8.2).
-* **Live Dashboard:** Real-time overview of active containers and system status.
-* **Persistent Data:** All users and project metadata are stored in MySQL.
+### **Automatic Deployment**
+- **Framework Selection:** Choose PHP (more frameworks coming soon)
+- **Zero Configuration:** No manual setup required
+- **Instant Deployment:** Projects go live in seconds
+
+### **Smart Subdomain Management**
+- **Vercel-Style Naming:** Auto-generated unique names (e.g., `my-app-a1b2c3.dockhosting.dev`)
+- **Automatic DNS Routing:** Wildcard subdomain support via nginx-proxy
+- **Free SSL:** Let's Encrypt certificates auto-generated for all projects
+
+### **User Management**
+- **Secure Authentication:** Password hashing with bcrypt
+- **Personal Dashboard:** Real-time overview of deployments
+- **Project Isolation:** Each project runs in its own Docker container
+
+### **Built-in Code Editor**
+- **File Manager:** Browse and edit project files directly in the browser
+- **Live Updates:** Changes reflect immediately
 
 ---
 
-##  Tech Stack
+##  Architecture
 
-* **Backend:** PHP 8.x (Native/Vanilla)
-* **Database:** MySQL / MariaDB
-* **Infrastructure:** Docker & Docker Desktop
-* **Frontend:** HTML5, TailwindCSS (CDN)
-* **Server:** Apache (XAMPP/Localhost)
+```
+User Request → Dock-Hosting App → Docker Container (php:8.2-apache)
+                      ↓
+              nginx-proxy (Reverse Proxy)
+                      ↓
+        Auto SSL + Subdomain Routing
+                      ↓
+           https://project.dockhosting.dev
+```
+
+**Stack:**
+- **Backend:** PHP 8.2 (OOP, PDO)
+- **Database:** MySQL 8.0
+- **Containers:** Docker + nginx-proxy
+- **SSL:** Let's Encrypt (acme-companion)
+- **Frontend:** TailwindCSS, Vanilla JavaScript
 
 ---
 
-##  Installation & Setup
+##  Production Deployment
 
-### 1. Prerequisites
-Ensure you have the following installed on your machine:
-* [XAMPP](https://www.apachefriends.org/) (for PHP & MySQL).
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/) (must be running).
+### Prerequisites
+- Ubuntu/Debian VPS with public IP
+- Docker & Docker Compose installed
+- Domain name with DNS access
 
-### 2. Database Setup
-1.  Open **phpMyAdmin** (`http://localhost/phpmyadmin`).
-2.  Create a new database named `dockhosting`.
-3.  Import the `sql/install.sql` file provided in this repository to create the `users` and `Project` tables.
+### Quick Start
 
-### 3. Project Configuration
-1.  Clone or download this repo into your `htdocs` folder (e.g., `C:\xampp\htdocs\Dock-Hosting`).
-2.  Open `php/connect.php` and check your database credentials (default is usually `root` / empty password).
-3.  **Important:** Ensure your `storage` or `users` folder has write permissions so PHP can upload files.
+```bash
+# Clone repository
+git clone https://github.com/ilyas-doughmi/Dock-Hosting.git
+cd Dock-Hosting
 
-### 4. Running the App
-1.  Start **Apache** and **MySQL** in XAMPP.
-2.  Start **Docker Desktop**.
-3.  Navigate to `http://localhost/Dock-Hosting` in your browser.
+# Create environment file
+cp .env.example .env
+nano .env
+```
+
+**Edit `.env`:**
+```ini
+DB_PASSWORD=password123
+STORAGE_PATH=/home/deployer/users
+HOST_BASE_PATH=/home/deployer/users
+LETSENCRYPT_EMAIL=your@email.com
+```
+
+**Setup:**
+```bash
+# Create storage directory
+sudo mkdir -p /home/deployer/users/Projects
+sudo chmod -R 777 /home/deployer/users
+
+# Create proxy network
+docker network create proxy_network
+
+# Install nginx-proxy (reverse proxy + SSL)
+docker run -d -p 80:80 -p 443:443 \
+  --name nginx-proxy \
+  --network proxy_network \
+  -v /var/run/docker.sock:/tmp/docker.sock:ro \
+  -v /etc/nginx/certs \
+  -v /etc/nginx/vhost.d \
+  -v /usr/share/nginx/html \
+  nginxproxy/nginx-proxy
+
+# Install SSL companion
+docker run -d \
+  --name nginx-proxy-acme \
+  --network proxy_network \
+  --volumes-from nginx-proxy \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  -e DEFAULT_EMAIL=your@email.com \
+  nginxproxy/acme-companion
+
+# Start Dock-Hosting
+docker compose up -d --build
+```
+
+### DNS Configuration
+
+Add these records to your domain:
+
+| Type | Name | Value |
+|------|------|-------|
+| A | @ | `YOUR_VPS_IP` |
+| A | www | `YOUR_VPS_IP` |
+| A | * | `YOUR_VPS_IP` |
+
+The wildcard (`*`) enables automatic subdomains for user projects.
+
+---
+
+##  Local Development
+
+```bash
+# Requirements: Docker Desktop, Git
+
+# Clone and setup
+git clone https://github.com/ilyas-doughmi/Dock-Hosting.git
+cd Dock-Hosting
+
+# Create .env
+echo "DB_PASSWORD=root" > .env
+
+# Start services
+docker compose up -d
+
+# Access
+# Main app: http://localhost
+# Database: localhost:3306
+```
 
 ---
 
 ##  Project Structure
 
-```text
+```
 Dock-Hosting/
-├── Classes/          # OOP Logic (Login, Signup, Project)
-├── components/       # Reusable UI parts (Sidebar, etc.)
-├── includes/         # Form handlers (create-project.php, etc.)
-├── pages/            # View files (dashboard.php, login.php)
+├── Classes/          # OOP models (User, Project)
+├── components/       # Reusable UI components
+├── includes/         # Backend handlers (create-project, login)
+├── pages/            # Frontend views (dashboard, file-manager)
 ├── php/              # Database connection
 ├── sql/              # Database schema
-└── users/Projects/   # Storage for user uploads (Volume Mounts)
+├── .env.example      # Environment template
+├── docker-compose.yml
+└── Dockerfile
+```
+
+---
+
+##  How It Works
+
+1. **User creates project** → Selects framework and enters name
+2. **Backend generates** → Unique container name with random suffix
+3. **Docker launches** → `php:8.2-apache` container with volume mount
+4. **nginx-proxy detects** → Auto-configures subdomain routing
+5. **Let's Encrypt** → Issues SSL certificate automatically
+6. **Live in seconds** → `https://project-abc123.dockhosting.dev` 
+
+---
+
+##  Features Roadmap
+
+- [x] PHP framework support
+- [x] Automatic SSL certificates
+- [x] Subdomain routing
+- [x] File manager / Code editor
+
+---
+
+##  License
+
+MIT License - Feel free to use for learning and personal projects.
+
+---
+
+**Built with ❤️ by [Ilyas Doughmi](https://github.com/ilyas-doughmi)**
