@@ -102,9 +102,16 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
         $icon = $type === "error" ? 'fa-circle-exclamation' : 'fa-circle-check';
     ?>
         <div class="fixed top-5 right-5 w-full max-w-md <?= $bg_color ?> px-4 py-3 rounded-xl 
-            font-mono text-sm shadow-xl z-50 backdrop-blur-md flex items-center justify-between animate-slide-up">
-            <span class="flex items-center gap-3"><i class="fas <?= $icon ?> <?= $icon_color ?>"></i> <?= $message ?></span>
-            <button onclick="this.parentElement.remove()" class="<?= $icon_color ?> hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            font-mono text-sm shadow-xl z-50 backdrop-blur-md flex flex-col gap-2 animate-slide-up">
+            <div class="flex items-center justify-between">
+                <span class="flex items-center gap-3"><i class="fas <?= $icon ?> <?= $icon_color ?>"></i> <?= $message ?></span>
+                <button onclick="this.closest('.animate-slide-up').remove()" class="<?= $icon_color ?> hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <?php if(isset($_GET['url'])): ?>
+                <a href="<?= htmlspecialchars($_GET['url']) ?>" target="_blank" class="text-xs underline hover:text-white mt-1 ml-7">
+                    Visit: <?= htmlspecialchars($_GET['domain'] ?? $_GET['url']) ?> <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            <?php endif; ?>
         </div>
         <script>
             setTimeout(() => {
@@ -195,8 +202,8 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                                     </div>
 
                                     <h3 class="text-xl font-bold mb-1 truncate"><?= htmlspecialchars($project['project_name']) ?></h3>
-                                    <a href="http://localhost:<?= $project['port'] ?>" target="_blank" class="text-xs font-mono text-gray-500 hover:text-brand transition-colors flex items-center gap-2 mb-6">
-                                        <i class="fas fa-link"></i> localhost:<?= $project['port'] ?>
+                                    <a href="http://<?= $project['project_name'] ?>.dockhosting.dev" target="_blank" class="text-xs font-mono text-gray-500 hover:text-brand transition-colors flex items-center gap-2 mb-6">
+                                        <i class="fas fa-link"></i> <?= $project['project_name'] ?>.dockhosting.dev
                                     </a>
 
                                     <div class="grid grid-cols-2 gap-2 mb-6">
