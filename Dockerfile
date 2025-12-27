@@ -15,6 +15,6 @@ COPY . /var/www/html/
 
 RUN mkdir -p /var/www/html/users/Projects && \
     chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html/users
+    chmod -R 777 /var/www/html/users
 
 RUN echo "ServerName dockhosting.dev" >> /etc/apache2/apache2.conf
