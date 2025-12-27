@@ -127,113 +127,93 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
         <div class="flex-1 overflow-y-auto p-8 relative z-10">
 
             <!-- Welcome Message -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold tracking-tight mb-2">Welcome back, <span class="text-brand"><?= $_SESSION["username"] ?></span> 👋</h1>
-                <p class="text-gray-500 text-sm font-mono">Here is an overview of your active containers and system resources.</p>
+            <div class="mb-12 text-center max-w-2xl mx-auto">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand/10 text-brand mb-6 border border-brand/20 shadow-[0_0_30px_rgba(45,212,191,0.1)]">
+                    <i class="fas fa-cubes text-3xl"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                    Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-white"><?= $_SESSION["username"] ?></span>
+                </h1>
+                <p class="text-gray-400 text-lg">Manage and deploy your containerized PHP applications.</p>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Card 1 -->
-                <div class="glass-panel p-6 rounded-xl relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i class="fas fa-server text-4xl"></i>
-                    </div>
-                    <div class="text-gray-500 text-xs font-mono uppercase mb-2">Active Containers</div>
-                    <div class="text-3xl font-bold"><?= $user_projects_count["count"] ?></div>
+            <!-- Projects Grid -->
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-xl font-bold flex items-center gap-3">
+                        <i class="fas fa-layer-group text-brand"></i> My Deployments
+                    </h2>
+                    <a href="create-project.php" class="px-6 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-mono transition-colors flex items-center gap-2">
+                         <i class="fas fa-plus text-brand"></i> New Project
+                    </a>
                 </div>
 
-                <!-- Card 2 -->
-                <div class="glass-panel p-6 rounded-xl relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i class="fas fa-microchip text-4xl"></i>
-                    </div>
-                    <div class="text-gray-500 text-xs font-mono uppercase mb-2">CPU Usage</div>
-                    <div class="text-3xl font-bold font-mono">12<span class="text-lg text-gray-600">%</span></div>
-                    <div class="w-full h-1 bg-gray-800 mt-4 rounded-full overflow-hidden">
-                        <div class="h-full bg-brand w-[12%]"></div>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="glass-panel p-6 rounded-xl relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i class="fas fa-memory text-4xl"></i>
-                    </div>
-                    <div class="text-gray-500 text-xs font-mono uppercase mb-2">Memory (RAM)</div>
-                    <div class="text-3xl font-bold font-mono">256<span class="text-lg text-gray-600">MB</span></div>
-                    <div class="w-full h-1 bg-gray-800 mt-4 rounded-full overflow-hidden">
-                        <div class="h-full bg-purple-500 w-[15%]"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Projects Table -->
-            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-                <i class="fas fa-layer-group text-gray-600"></i> Deployments
-            </h2>
-
-            <div class="glass-panel rounded-xl overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="text-xs text-gray-500 bg-white/5 font-mono uppercase border-b border-border">
-                        <tr>
-                            <th class="px-6 py-4">Status</th>
-                            <th class="px-6 py-4">Project Name</th>
-                            <th class="px-6 py-4">Port</th>
-                            <th class="px-6 py-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-border">
-                        <?php if ($user_Projects): ?>
-                            <?php foreach ($user_Projects as $project): ?>
-                                <tr class="group hover:bg-white/5 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-2 text-brand text-xs font-mono">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-brand status-dot animate-pulse"></span>
-                                            <?= $project['status'] ?? 'Unknown' ?>
+                <?php if ($user_Projects): ?>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <?php foreach ($user_Projects as $project): ?>
+                            <!-- Project Card -->
+                            <div class="glass-panel group rounded-2xl p-6 relative overflow-hidden transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-brand/5 hover:border-brand/30">
+                                <div class="absolute inset-0 bg-gradient-to-br from-brand/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                
+                                <div class="relative z-10">
+                                    <div class="flex justify-between items-start mb-6">
+                                        <div class="w-12 h-12 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-xl">
+                                            <i class="fab fa-php text-blue-400"></i>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <a href="./file-manager.php?container=<?= $project["container_name"] ?>">
-                                        <div class="font-bold"><?= $project['project_name'] ?? 'Unnamed' ?></div>
-                                        </a>
-                                    </td>
-                                    <td class="px-6 py-4 font-mono text-gray-400 group-hover:text-white transition-colors">
-                                        <a href="http://localhost:<?= $project['port'] ?>" target="_blank" class="hover:underline flex items-center gap-2">
-                                            localhost:<?= $project['port'] ?>
-                                            <i class="fas fa-external-link-alt text-xs"></i>
-                                        </a>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <form action="../includes/actions/start.php" method="POST">
-                                            <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
-                                            <button type="submit" class="text-gray-500 hover:text-white p-2 transition-colors"><i class="fas fa-terminal"></i></button>
-                                        </form>
-
-                                        <form action="../includes/actions/stop.php" method="POST">
-                                            <input type="hidden" name="container_name" value="<?= $project["container_name"] ?>">
-                                            <button class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-stop-circle"></i></button>
-                                        </form>
-                                        <button onclick="deleteContainer('<?= $project["container_name"] ?>')" class="text-gray-500 hover:text-red-400 p-2 transition-colors"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4" class="p-12 text-center text-gray-500">
-                                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-box-open text-2xl"></i>
+                                        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold font-mono uppercase">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                            Running
+                                        </div>
                                     </div>
-                                    <h3 class="text-lg font-bold text-gray-300">No Containers Found</h3>
-                                    <p class="text-gray-500 text-sm mb-6">You haven't deployed any projects yet.</p>
-                                    <button class="text-brand text-sm font-bold hover:underline">Deploy your first project</button>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
 
-                    </tbody>
-                </table>
+                                    <h3 class="text-xl font-bold mb-1 truncate"><?= htmlspecialchars($project['project_name']) ?></h3>
+                                    <a href="http://localhost:<?= $project['port'] ?>" target="_blank" class="text-xs font-mono text-gray-500 hover:text-brand transition-colors flex items-center gap-2 mb-6">
+                                        <i class="fas fa-link"></i> localhost:<?= $project['port'] ?>
+                                    </a>
+
+                                    <div class="grid grid-cols-2 gap-2 mb-6">
+                                        <div class="bg-white/5 rounded-lg p-3 text-center">
+                                            <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">CPU</div>
+                                            <div class="font-mono text-sm font-bold">4%</div>
+                                        </div>
+                                        <div class="bg-white/5 rounded-lg p-3 text-center">
+                                            <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">RAM</div>
+                                            <div class="font-mono text-sm font-bold">128MB</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 pt-4 border-t border-white/5">
+                                        <a href="./file-manager.php?container=<?= $project["container_name"] ?>" class="flex-1 py-2.5 rounded-lg bg-brand/10 hover:bg-brand text-brand hover:text-black font-bold text-xs text-center transition-all">
+                                            CODE EDITOR
+                                        </a>
+                                        <button onclick="deleteContainer('<?= $project["container_name"] ?>')" class="w-10 h-10 rounded-lg border border-red-500/20 hover:bg-red-500/10 text-red-400 flex items-center justify-center transition-colors">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                        
+                        <!-- Add New Card -->
+                        <a href="create-project.php" class="border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-6 text-gray-500 hover:text-brand hover:border-brand/30 hover:bg-white/5 transition-all group cursor-pointer h-full min-h-[300px]">
+                            <div class="w-16 h-16 rounded-full bg-white/5 group-hover:bg-brand/10 flex items-center justify-center mb-4 transition-colors">
+                                <i class="fas fa-plus text-2xl group-hover:scale-110 transition-transform"></i>
+                            </div>
+                            <span class="font-bold">Deploy New Container</span>
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <div class="text-center py-20">
+                        <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-box-open text-3xl text-gray-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-300 mb-2">No Projects Found</h3>
+                        <p class="text-gray-500 mb-8">Get started by deploying your first PHP container.</p>
+                        <a href="create-project.php" class="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-brand hover:bg-brand-hover text-black font-bold transition-transform hover:scale-105">
+                            <i class="fas fa-plus"></i> Create Project
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </main>
