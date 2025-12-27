@@ -1,10 +1,17 @@
 <?php
 
 class db {
-    private $host = "localhost";
-    private $name = "root";
-    private $password = "";
-    private $db_name = "dockhosting";
+    private $host;
+    private $name;
+    private $password;
+    private $db_name;
+
+    public function __construct() {
+        $this->host = getenv('DB_HOST') ?: 'localhost';
+        $this->name = getenv('DB_USER') ?: 'root';
+        $this->password = getenv('DB_PASSWORD') ?: '';
+        $this->db_name = getenv('DB_NAME') ?: 'dockhosting';
+    }
 
     protected function connect() {
         try {

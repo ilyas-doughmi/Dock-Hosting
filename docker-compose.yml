@@ -14,6 +14,10 @@ services:
       - default
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=dock_hosting
 
   db:
     image: mysql:8.0
