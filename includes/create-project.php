@@ -21,18 +21,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $file_dir = $path . $file["name"];
     if (!move_uploaded_file($file["tmp_name"], $file_dir)) {
-        header("location: ../pages/create-project.php?msg=Failed to upload file&type=error");
+        error_log("Upload failed: " . print_r(error_get_last(), true));
+        header("location: ../pages/create-project.php?msg=Failed to upload file. Error code: " . $file["error"] . "&type=error");
         exit;
     }
 
     // extract file from zip
     $extract = new ZipArchive;
-    if ($extract->open($file_dir) === TRUE) {
+    $res = $extract->open($file_dir);
+    if ($res === TRUE) {
         $extract->extractTo($path);
         $extract->close();
         unlink($file_dir);
     } else {
-        header("location: ../pages/create-project.php?msg=Failed to extract ZIP file&type=error");
+        error_log("Zip extraction failed. Result code: " . $res . " File: " . $file_dir);
+        header("location: ../pages/create-project.php?msg=Failed to extract ZIP file. Code: " . $res . "&type=error");
         exit;
     }
 
