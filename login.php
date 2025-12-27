@@ -97,13 +97,11 @@
 
 <?php if(isset($_GET["msg"])){
     $message = htmlspecialchars($_GET["msg"]);
-    $is_error = (strpos(strtolower($message), 'invalid') !== false || 
-                 strpos(strtolower($message), 'failed') !== false || 
-                 strpos(strtolower($message), 'exists') !== false);
+    $type = $_GET["type"] ?? "success";
     
-    $bg_color = $is_error ? 'bg-red-900/40 border-red-500/30 text-red-200' : 'bg-green-900/40 border-green-500/30 text-green-200';
-    $icon_color = $is_error ? 'text-red-400' : 'text-green-400';
-    $icon = $is_error ? 'fa-circle-exclamation' : 'fa-circle-check';
+    $bg_color = $type === "error" ? 'bg-red-900/40 border-red-500/30 text-red-200' : 'bg-green-900/40 border-green-500/30 text-green-200';
+    $icon_color = $type === "error" ? 'text-red-400' : 'text-green-400';
+    $icon = $type === "error" ? 'fa-circle-exclamation' : 'fa-circle-check';
 ?>
     <div class="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] max-w-xl 
         <?= $bg_color ?> px-4 py-3 rounded-xl 
