@@ -14,14 +14,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!is_dir($path)) {
         if (!mkdir($path, 0777, true)) {
-            header("location: ../pages/create-project.php?msg=Failed to create project directory");
+            header("location: ../pages/create-project.php?msg=Failed to create project directory&type=error");
             exit;
         }
     }
 
     $file_dir = $path . $file["name"];
     if (!move_uploaded_file($file["tmp_name"], $file_dir)) {
-        header("location: ../pages/create-project.php?msg=Failed to upload file");
+        header("location: ../pages/create-project.php?msg=Failed to upload file&type=error");
         exit;
     }
 
@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $extract->close();
         unlink($file_dir);
     } else {
-        header("location: ../pages/create-project.php?msg=Failed to extract ZIP file");
+        header("location: ../pages/create-project.php?msg=Failed to extract ZIP file&type=error");
         exit;
     }
 
@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $create = $Projects->createProject($project_name,$last_port,$project_name,$_SESSION["id"]);
 
     if(!$create){
-        header("location: ../pages/create-project.php?msg=Failed to create project in database");
+        header("location: ../pages/create-project.php?msg=Failed to create project in database&type=error");
         exit;
     }
     else{
