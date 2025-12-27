@@ -160,10 +160,17 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                                         <div class="w-12 h-12 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-xl">
                                             <i class="fab fa-php text-blue-400"></i>
                                         </div>
-                                        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold font-mono uppercase">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                                            Running
-                                        </div>
+                                        <?php if(strtolower($project['status']) === 'running'): ?>
+                                            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold font-mono uppercase">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                                Running
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold font-mono uppercase">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                                Stopped
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
 
                                     <h3 class="text-xl font-bold mb-1 truncate"><?= htmlspecialchars($project['project_name']) ?></h3>
