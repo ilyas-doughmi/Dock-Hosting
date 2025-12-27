@@ -85,7 +85,29 @@ if (!isset($_SESSION["id"])) {
 </head>
 <body class="h-screen w-full flex overflow-hidden font-sans selection:bg-brand selection:text-black">
 
+    <?php if(isset($_GET["msg"])){
+        $message = htmlspecialchars($_GET["msg"]);
+        $type = $_GET["type"] ?? "success";
+        
+        $bg_color = $type === "error" ? 'bg-red-900/40 border-red-500/30 text-red-200' : 'bg-green-900/40 border-green-500/30 text-green-200';
+        $icon_color = $type === "error" ? 'text-red-400' : 'text-green-400';
+        $icon = $type === "error" ? 'fa-circle-exclamation' : 'fa-circle-check';
+    ?>
+        <div class="fixed top-5 right-5 w-full max-w-md <?= $bg_color ?> px-4 py-3 rounded-xl 
+            font-mono text-sm shadow-xl z-50 backdrop-blur-md flex items-center justify-between animate-slide-up">
+            <span class="flex items-center gap-3"><i class="fas <?= $icon ?> <?= $icon_color ?>"></i> <?= $message ?></span>
+            <button onclick="this.parentElement.remove()" class="<?= $icon_color ?> hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+        </div>
+        <script>
+            setTimeout(() => {
+                const notification = document.querySelector('.animate-slide-up');
+                if (notification) notification.remove();
+            }, 5000);
+        </script>
+    <?php } ?>
+
     <?php include_once("../components/sidebar.php") ?>
+
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col relative overflow-hidden bg-bg">
