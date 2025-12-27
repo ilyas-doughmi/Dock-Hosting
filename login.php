@@ -95,13 +95,21 @@
     </style>
 </head>
 
-<?php if(isset($_GET["error"])){
-    $error_message = $_GET["error"];?>
+<?php if(isset($_GET["msg"])){
+    $message = htmlspecialchars($_GET["msg"]);
+    $is_error = (strpos(strtolower($message), 'invalid') !== false || 
+                 strpos(strtolower($message), 'failed') !== false || 
+                 strpos(strtolower($message), 'exists') !== false);
+    
+    $bg_color = $is_error ? 'bg-red-900/40 border-red-500/30 text-red-200' : 'bg-green-900/40 border-green-500/30 text-green-200';
+    $icon_color = $is_error ? 'text-red-400' : 'text-green-400';
+    $icon = $is_error ? 'fa-circle-exclamation' : 'fa-circle-check';
+?>
     <div class="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] max-w-xl 
-        bg-red-900/40 border border-red-500/30 text-red-200 px-4 py-3 rounded-xl 
+        <?= $bg_color ?> px-4 py-3 rounded-xl 
         font-mono text-sm shadow-xl animate-slide-up z-50 backdrop-blur-md flex items-center justify-between">
-        <span class="flex items-center gap-3"><i class="fas fa-circle-exclamation text-red-400"></i> <?= $error_message ?></span>
-        <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-100 transition-colors"><i class="fas fa-times"></i></button>
+        <span class="flex items-center gap-3"><i class="fas <?= $icon ?> <?= $icon_color ?>"></i> <?= $message ?></span>
+        <button onclick="this.parentElement.remove()" class="<?= $icon_color ?> hover:text-white transition-colors"><i class="fas fa-times"></i></button>
     </div>
 <?php } ?>
 

@@ -25,13 +25,16 @@ class Signup extends db
         $stmt->bindParam(":password", $this->password);
         try{
             $stmt->execute();
-            header("location: ../index.php");
+            header("location: ../login.php?msg=Account created successfully! Please login");
+            exit;
         }catch(PDOException $e){
             if($e->getCode() == '23000'){
-                header("location: ../index.php?error=email or username already used!!");
+                header("location: ../login.php?msg=Email or username already exists");
+                exit;
             }
         else{
-            header("location: ../index.php?error=unknown problem happend");
+            header("location: ../login.php?msg=Registration failed. Please try again");
+            exit;
         }
         }
     }
