@@ -25,6 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("location: ../pages/create-project.php?msg=Failed to upload file. Error code: " . $file["error"] . "&type=error");
         exit;
     }
+    
+    error_log("File uploaded to: " . $file_dir . " | Size: " . filesize($file_dir));
 
     // extract file from zip
     $extract = new ZipArchive;
