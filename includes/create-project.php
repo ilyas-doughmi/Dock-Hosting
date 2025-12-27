@@ -46,7 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         $host_project_path = $host_base . "/Projects/" . $_SESSION["id"] . "/" . $project_name;
 
-        $cmd = "docker run -d -p " .$last_port.":80 --name ".$project_name." -v \"".$host_project_path."\":/var/www/html php:8.2-apache";
+        $subdomain = $project_name . ".dockhosting.dev";
+        $cmd = "docker run -d -p " .$last_port.":80 --name ".$project_name." --network proxy_network -e VIRTUAL_HOST=".$subdomain." -e LETSENCRYPT_HOST=".$subdomain." -v \"".$host_project_path."\":/var/www/html php:8.2-apache";
         shell_exec($cmd);
         
         header("location: ../pages/dashboard.php?msg=Project created successfully");
