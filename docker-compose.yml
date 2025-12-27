@@ -6,9 +6,10 @@ services:
     container_name: dock-hosting-app
     restart: always
     volumes:
-      - ./:/var/www/html
+      - .:/var/www/html
+      - ${STORAGE_PATH:-./users}:/var/www/html/users
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./users/Projects:/var/www/html/users/Projects
+
     networks:
       - proxy_network
       - default
@@ -18,6 +19,7 @@ services:
       - DB_USER=root
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=dock_hosting
+      - HOST_BASE_PATH=${HOST_BASE_PATH:-/var/www/html/users}
 
   db:
     image: mysql:8.0

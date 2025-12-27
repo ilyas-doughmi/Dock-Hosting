@@ -135,10 +135,10 @@ if (!isset($_SESSION["id"])) {
                     <p class="text-gray-500 text-sm font-mono">Upload your PHP code to initialize a new container.</p>
                 </div>
 
-                <form action="../includes/create-project.php" method="POST" enctype="multipart/form-data" class="glass-panel p-8 rounded-xl space-y-8">
+                <form action="../includes/create-project.php" method="POST" class="glass-panel p-8 rounded-xl space-y-8">
                     
                     <!-- 1. Project Name -->
-                    <div class="space-y-2">
+                    <div class="space-y-4">
                         <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Project Name</label>
                         <div class="relative">
                             <i class="fas fa-tag absolute left-4 top-3.5 text-gray-600"></i>
@@ -148,30 +148,48 @@ if (!isset($_SESSION["id"])) {
                         <p class="text-[10px] text-gray-600 ml-1">This will be used to identify your container.</p>
                     </div>
 
-                    <!-- 2. File Upload -->
-                    <div class="space-y-2">
-                        <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Source Code (.zip)</label>
+                    <!-- 2. Framework Selection -->
+                    <div class="space-y-4">
+                        <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Select Framework</label>
                         
-                        <div class="upload-zone rounded-xl p-8 text-center cursor-pointer relative" id="drop-zone">
-                            <input type="file" required name="files" id="file-input" accept=".zip" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
-                            
-                            <div class="flex flex-col items-center justify-center space-y-4 pointer-events-none">
-                                <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center text-brand mb-2">
-                                    <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- PHP Option (Active) -->
+                            <label class="cursor-pointer relative group">
+                                <input type="radio" name="framework" value="php" checked class="peer sr-only">
+                                <div class="p-4 rounded-xl border border-[#333] bg-[#050505] peer-checked:border-brand peer-checked:bg-brand/5 hover:border-gray-500 transition-all duration-300 flex flex-col items-center gap-3">
+                                    <div class="w-12 h-12 flex items-center justify-center">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" alt="PHP" class="h-10 w-auto">
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-bold text-sm text-white group-hover:text-brand transition-colors">PHP Native</div>
+                                        <div class="text-[10px] text-gray-500 mt-1">Version 8.2</div>
+                                    </div>
+                                    <div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity text-brand">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="font-bold text-lg" id="file-label">Click or Drag ZIP file here</p>
-                                    <p class="text-sm text-gray-500 mt-1 font-mono">Max size: 10MB</p>
+                            </label>
+
+                            <!-- Node.js Option (Disabled/Coming Soon) -->
+                            <div class="opacity-50 cursor-not-allowed relative">
+                                <div class="p-4 rounded-xl border border-[#1f1f1f] bg-[#0a0a0a] flex flex-col items-center gap-3 grayscale">
+                                    <div class="w-12 h-12 flex items-center justify-center">
+                                        <i class="fab fa-node text-3xl text-gray-600"></i>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-bold text-sm text-gray-500">Node.js</div>
+                                        <div class="text-[10px] text-gray-600 mt-1">Coming Soon</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-[10px] text-gray-600 ml-1">Ensure your zip contains an index.php file in the root.</p>
+                        <p class="text-[10px] text-gray-600 ml-1">Your container will be initialized with a default index.php file.</p>
                     </div>
 
                     <!-- Submit -->
                     <div class="pt-4 border-t border-border">
                         <button type="submit" class="w-full bg-brand hover:bg-[#14b8a6] text-black font-bold py-4 rounded-lg transition-all transform hover:scale-[1.01] shadow-[0_0_20px_rgba(45,212,191,0.2)] flex items-center justify-center gap-2">
-                            <span>Launch Container</span>
+                            <span>Initialize Container</span>
                             <i class="fas fa-rocket"></i>
                         </button>
                     </div>
@@ -181,34 +199,9 @@ if (!isset($_SESSION["id"])) {
 
         </div>
     </main>
-
+    <!-- Removed JS script for file upload -->
     <script>
-        const fileInput = document.getElementById('file-input');
-        const fileLabel = document.getElementById('file-label');
-        const dropZone = document.getElementById('drop-zone');
-
-        // Drag effects
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-            });
-        });
-
-        // File Selection Logic
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                const fileName = e.target.files[0].name;
-                fileLabel.innerHTML = `<span class="text-brand">${fileName}</span> selected`;
-            }
-        });
+        // No custom JS needed for this simple form interactions are handled by CSS/Tailwind
     </script>
 </body>
 </html>

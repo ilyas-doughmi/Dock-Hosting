@@ -155,7 +155,8 @@ Class Project extends db{
     }
 
     public function getFileContent($container_name,$file_name){
-        $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/" . $file_name ;
+        $base_path = dirname(__DIR__) . "/users/Projects/";
+        $path = $base_path . $_SESSION["id"] . "/" . $container_name . "/" . $file_name ;
 
         if(is_file($path)){
             return file_get_contents($path);
@@ -166,7 +167,8 @@ Class Project extends db{
     }
 
     public function saveFileChanges($container_name,$file_name,$new_content){
-        $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/" . $file_name ;
+        $base_path = dirname(__DIR__) . "/users/Projects/";
+        $path = $base_path . $_SESSION["id"] . "/" . $container_name . "/" . $file_name ;
         if(is_file($path)){
             file_put_contents($path,$new_content);
         }
