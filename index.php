@@ -64,35 +64,42 @@
 <body class="font-sans antialiased selection:bg-brand selection:text-black">
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 glass-nav border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+    <!-- Navbar -->
+    <nav class="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+        <div class="w-full max-w-5xl bg-black/40 backdrop-blur-xl border border-white/10 rounded-full px-6 py-4 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-brand/20 hover:bg-black/50">
             <!-- Logo -->
-            <a href="index.php" class="flex items-center gap-4 group">
-                <div class="w-12 h-12 rounded-xl bg-brand text-black flex items-center justify-center text-xl shadow-[0_0_20px_rgba(45,212,191,0.3)]">
+            <a href="index.php" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-brand text-black flex items-center justify-center text-lg shadow-[0_0_15px_rgba(45,212,191,0.2)] group-hover:shadow-[0_0_25px_rgba(45,212,191,0.4)] group-hover:scale-110 transition-all duration-300">
                     <i class="fas fa-cubes"></i>
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-bold text-2xl leading-none tracking-tight text-white group-hover:text-brand transition-colors">DOCK-HOSTING</span>
-                    <span class="text-[10px] text-gray-500  font-bold font-mono tracking-widest uppercase mt-1">Beta Release</span>
+                    <span class="font-bold text-lg tracking-tight text-white group-hover:text-brand transition-colors">DOCK-HOSTING</span>
                 </div>
             </a>
 
             <!-- Actions -->
             <div class="flex items-center gap-6">
-                <!-- Update Logs Button -->
-                <a href="pages/changelog.php" class="hidden md:flex items-center gap-2 text-[10px] font-bold font-mono text-gray-500 uppercase tracking-widest hover:text-white transition-colors border border-white/10 px-3 py-1.5 rounded-full bg-white/5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
-                    Updates
-                </a>
+                
+                <div class="hidden md:flex items-center gap-6 border-r border-white/10 pr-6 mr-2">
+                     <a href="pages/about.php" class="text-xs font-mono font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-widest relative group">
+                        About
+                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
+                     </a>
+                     
+                     <a href="pages/changelog.php" class="flex items-center gap-2 text-[10px] font-bold font-mono text-gray-500 uppercase tracking-widest hover:text-brand transition-colors">
+                        <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
+                        Updates
+                    </a>
+                </div>
 
                 <?php if(isset($_SESSION["id"])): ?>
-                    <a href="pages/dashboard.php" class="text-sm font-mono text-gray-300 hover:text-white transition-colors">Dashboard</a>
-                    <a href="includes/user_actions/logout.php" class="px-6 py-3 rounded-full border border-white/10 bg-white/5 text-white text-xs font-bold font-mono hover:bg-white/10 hover:scale-105 transition-all">
-                        LOGOUT
+                    <a href="pages/dashboard.php" class="text-xs font-mono font-medium text-white hover:text-brand transition-colors uppercase tracking-widest">Dashboard</a>
+                    <a href="includes/user_actions/logout.php" class="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all">
+                        <i class="fas fa-power-off text-xs"></i>
                     </a>
                 <?php else: ?>
-                    <a href="login.php" class="hidden sm:block text-sm font-mono text-gray-400 hover:text-white transition-colors">Sign In</a>
-                    <a href="login.php" class="px-8 py-3 rounded-full bg-brand hover:bg-white text-black text-xs font-bold font-mono transition-all hover:scale-105 shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                    <a href="login.php" class="hidden sm:block text-xs font-mono font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-widest">Sign In</a>
+                    <a href="login.php?view=register" class="px-6 py-2.5 rounded-full bg-brand hover:bg-[#14b8a6] text-black text-xs font-bold font-mono transition-all hover:scale-105 shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
                         GET STARTED
                     </a>
                 <?php endif; ?>

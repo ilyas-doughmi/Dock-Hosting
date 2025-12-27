@@ -1,6 +1,5 @@
 <?php
     session_start();
-    
     if(isset($_SESSION["id"])){
         header("location: pages/dashboard.php");
         exit;
@@ -11,10 +10,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOCK-HOSTING :: AUTHENTICATION</title>
+    <title>DOCK-HOSTING :: Authentication</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.11/dist/dotlottie-wc.js" type="module"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -24,32 +24,13 @@
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        bg: '#000000',
-                        panel: '#0a0a0a',
-                        border: '#1f1f1f',
                         brand: {
                             DEFAULT: '#2dd4bf', 
-                            hover: '#14b8a6', 
-                            dim: '#115e59',
+                            hover: '#14b8a6',
                         }
                     },
                     backgroundImage: {
                         'grid-pattern': "linear-gradient(#1f1f1f 1px, transparent 1px), linear-gradient(90deg, #1f1f1f 1px, transparent 1px)",
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                        'slide-up': 'slideUp 0.6s ease-out forwards',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
                     }
                 }
             }
@@ -57,234 +38,181 @@
     </script>
     <style>
         body { background-color: #000; color: #fff; }
-        
         .glass-panel {
-            background: rgba(10, 10, 10, 0.4);
+            background: rgba(10, 10, 10, 0.6);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .input-group {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .input-field {
+        .form-input {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
             transition: all 0.3s ease;
         }
-
-        .input-field:focus {
+        .form-input:focus {
             background: rgba(45, 212, 191, 0.05);
             border-color: #2dd4bf;
             outline: none;
-            box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.2);
-        }
-
-        .input-field:focus ~ i {
-            color: #2dd4bf; 
-        }
-
-        /* Subtle glow behind the card */
-        .card-glow {
-            box-shadow: 0 0 100px 20px rgba(45, 212, 191, 0.1);
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.1);
         }
     </style>
 </head>
+<body class="h-screen flex items-center justify-center p-4 relative overflow-hidden bg-black selection:bg-brand selection:text-black">
 
-<?php if(isset($_GET["msg"])){
-    $message = htmlspecialchars($_GET["msg"]);
-    $type = $_GET["type"] ?? "success";
-    
-    $bg_color = $type === "error" ? 'bg-red-900/40 border-red-500/30 text-red-200' : 'bg-green-900/40 border-green-500/30 text-green-200';
-    $icon_color = $type === "error" ? 'text-red-400' : 'text-green-400';
-    $icon = $type === "error" ? 'fa-circle-exclamation' : 'fa-circle-check';
-?>
-    <div class="absolute top-5 left-1/2 -translate-x-1/2 w-[90%] max-w-xl 
-        <?= $bg_color ?> px-4 py-3 rounded-xl 
-        font-mono text-sm shadow-xl animate-slide-up z-50 backdrop-blur-md flex items-center justify-between">
-        <span class="flex items-center gap-3"><i class="fas <?= $icon ?> <?= $icon_color ?>"></i> <?= $message ?></span>
-        <button onclick="this.parentElement.remove()" class="<?= $icon_color ?> hover:text-white transition-colors"><i class="fas fa-times"></i></button>
-    </div>
-<?php } ?>
-
-<body class="h-screen w-full flex items-center justify-center relative overflow-hidden font-sans selection:bg-brand selection:text-black">
-
-    <!-- Dynamic Background -->
-    <div class="absolute inset-0 z-0 bg-black">
-        <div class="absolute inset-0 opacity-20 bg-grid-pattern bg-[length:50px_50px] animate-[pulse-slow_8s_ease-in-out_infinite]"></div>
-        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-brand/5 rounded-full blur-[150px] pointer-events-none animate-pulse-slow"></div>
-        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none"></div>
+    <!-- Background Grid -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 opacity-20 bg-grid-pattern bg-[length:40px_40px] animate-[pulse_8s_ease-in-out_infinite]"></div>
+        <div class="absolute top-1/2 left-1/4 w-[500px] h-[500px] bg-brand/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"></div>
     </div>
 
-    <!-- Main Card Container -->
-    <div class="w-full max-w-md z-10 px-6 animate-slide-up relative">
+    <!-- Notification -->
+    <?php if(isset($_GET["msg"]) || isset($_GET["error"])): 
+        $msg = $_GET["msg"] ?? $_GET["error"];
+        $type = isset($_GET["error"]) ? "error" : "success";
+        $color = $type == "error" ? "red" : "brand";
+    ?>
+    <div class="fixed top-5 right-5 z-50 animate-[slide-in_0.5s_ease-out]">
+        <div class="glass-panel px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 text-sm font-mono border-l-4 border-<?= $color ?>-500">
+            <i class="fas fa-<?= $type == 'error' ? 'exclamation-triangle' : 'check-circle' ?> text-<?= $color ?>-400"></i>
+            <span><?= htmlspecialchars($msg) ?></span>
+            <button onclick="this.parentElement.parentElement.remove()" class="hover:text-white text-gray-500 ml-4"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Main Card -->
+    <div class="relative z-10 w-full max-w-5xl h-[600px] glass-panel rounded-3xl overflow-hidden shadow-2xl flex">
         
-        <!-- Decoration behind card -->
-        <div class="absolute inset-0 bg-brand/20 blur-[100px] opacity-20 pointer-events-none"></div>
-
-        <!-- content -->
-        <div class="relative">
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <a href="index.php" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group">
-                    <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-brand/30 group-hover:bg-brand/10 transition-all">
-                        <i class="fas fa-arrow-left text-xs group-hover:text-brand"></i>
-                    </div>
-                    <span class="text-sm font-mono">Back to Home</span>
-                </a>
-                
-       
-                
-                <h1 class="text-4xl font-bold tracking-tight mb-2 text-white">Welcome Back</h1>
-                <p class="text-gray-400 text-sm font-mono">Enter your credentials to access the console</p>
-            </div>
-
-            <!-- Auth Card -->
-            <div class="glass-panel rounded-3xl p-8 sm:p-10 relative overflow-hidden border-t border-white/10">
-                
-                <!-- Top sheen -->
-                <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand/50 to-transparent opacity-50"></div>
-
-                <!-- Login Form -->
-                <div id="login-form" class="transition-all duration-500 ease-in-out">
-                    <form action="includes/login.php" method="POST" class="space-y-6">
-                        
-                        <div class="space-y-2">
-                            <label class="text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
-                            <div class="input-group">
-                                <i class="fas fa-envelope absolute left-4 top-4 text-gray-500 transition-colors pointer-events-none"></i>
-                                <input type="email" name="email" placeholder="student@youcode.ma" 
-                                       class="input-field w-full py-3.5 pl-11 pr-4 rounded-xl text-sm font-mono placeholder-gray-700" required>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <label class="text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">Password</label>
-                            <div class="input-group">
-                                <i class="fas fa-lock absolute left-4 top-4 text-gray-500 transition-colors pointer-events-none"></i>
-                                <input type="password" name="password" placeholder="••••••••" 
-                                       class="input-field w-full py-3.5 pl-11 pr-4 rounded-xl text-sm font-mono placeholder-gray-700" required>
-                            </div>
-                            <div class="flex justify-end">
-                                <a href="#" class="text-[11px] text-gray-500 hover:text-brand transition-colors">Forgot Password?</a>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full group relative overflow-hidden bg-brand hover:bg-white text-black font-bold py-4 rounded-xl transition-all shadow-[0_0_30px_rgba(45,212,191,0.2)] hover:shadow-[0_0_50px_rgba(45,212,191,0.4)]">
-                            <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                            <span class="flex items-center justify-center gap-2 relative z-10">
-                                SIGN IN <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                            </span>
-                        </button>
-                    </form>
-
-                    <div class="mt-8 text-center pt-6 border-t border-white/5">
-                        <p class="text-sm text-gray-500 mb-3">No account yet?</p>
-                        <button onclick="switchView('register')" class="text-white font-bold hover:text-brand transition-colors text-sm flex items-center justify-center gap-2 mx-auto group">
-                            Create Student Account 
-                            <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-brand transition-colors"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Register Form -->
-                <div id="register-form" class="hidden transition-all duration-500 ease-in-out opacity-0 translate-x-10">
-                    <form action="includes/signup.php" method="POST" class="space-y-5">
-                        
-                        <div class="space-y-2">
-                            <label class="text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">Username</label>
-                            <div class="input-group">
-                                <i class="fas fa-user absolute left-4 top-4 text-gray-500 transition-colors pointer-events-none"></i>
-                                <input type="text" name="username" 
-                                       class="input-field w-full py-3.5 pl-11 pr-4 rounded-xl text-sm font-mono" required>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <label class="text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">Academic Email</label>
-                            <div class="input-group">
-                                <i class="fas fa-graduation-cap absolute left-4 top-4 text-gray-500 transition-colors pointer-events-none"></i>
-                                <input type="email" name="email" placeholder="@student.youcode.ma"
-                                       class="input-field w-full py-3.5 pl-11 pr-4 rounded-xl text-sm font-mono placeholder-gray-700" required>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <label class="text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">Set Password</label>
-                            <div class="input-group">
-                                <i class="fas fa-key absolute left-4 top-4 text-gray-500 transition-colors pointer-events-none"></i>
-                                <input type="password" name="password" 
-                                       class="input-field w-full py-3.5 pl-11 pr-4 rounded-xl text-sm font-mono" required>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 mt-4">
-                            <span>INITIALIZE ACCOUNT</span>
-                            <i class="fas fa-bolt text-brand"></i>
-                        </button>
-                    </form>
-
-                    <div class="mt-8 text-center pt-6 border-t border-white/5">
-                        <p class="text-sm text-gray-500 mb-3">Already have credentials?</p>
-                        <button onclick="switchView('login')" class="text-white font-bold hover:text-brand transition-colors text-sm flex items-center justify-center gap-2 mx-auto group">
-                            Back to Login
-                            <i class="fas fa-chevron-left text-xs text-gray-600 group-hover:text-brand transition-colors"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Branding -->
-            <div class="mt-12 flex items-center justify-center gap-3 opacity-50 hover:opacity-100 transition-opacity duration-300">
-                <span class="text-[10px] font-mono text-gray-500 tracking-widest uppercase">Created at</span>
-                <a href="https://youcode.ma/" target="_blank" class="block transition-transform hover:scale-105">
-                    <img src="https://youcode.ma/images/logos/youcode.png" alt="YouCode" class="h-6 filter grayscale hover:grayscale-0 transition-all">
-                </a>
+        <!-- Left Side: Animation -->
+        <div class="hidden lg:flex w-1/2 bg-black/40 relative items-center justify-center flex-col p-12 border-r border-white/5">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand/5 via-transparent to-transparent"></div>
+            
+            <dotlottie-wc src="https://lottie.host/c47e3d43-9351-4bf6-9e77-e84a4f5d5e1b/jgQCDmysWv.lottie" autoplay loop style="width: 100%; height: 100%; max-width: 400px;"></dotlottie-wc>
+            
+            <div class="text-center mt-[-40px] relative z-10">
+                <h2 class="text-2xl font-bold mb-2">Deploy in Seconds</h2>
+                <p class="text-gray-500 text-sm font-mono">Your Code. Containerized. Live.</p>
             </div>
         </div>
 
+        <!-- Right Side: Forms -->
+        <div class="w-full lg:w-1/2 p-8 md:p-12 relative flex flex-col justify-center">
+            
+            <!-- Logo -->
+            <a href="index.php" class="absolute top-8 right-8 flex items-center gap-2 group opacity-50 hover:opacity-100 transition-opacity">
+                <i class="fas fa-cubes text-brand"></i>
+                <span class="font-bold tracking-tight text-sm">DOCK-HOSTING</span>
+            </a>
+
+            <!-- Toggle Buttons -->
+            <div class="flex gap-6 mb-10 border-b border-white/10 pb-1 w-fit">
+                <button onclick="switchTab('login')" id="tab-login" class="text-lg font-bold pb-2 border-b-2 border-brand text-white transition-all">Sign In</button>
+                <button onclick="switchTab('register')" id="tab-register" class="text-lg font-bold pb-2 border-b-2 border-transparent text-gray-500 hover:text-white transition-all">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="form-login" action="includes/login.php" method="POST" class="space-y-5 animate-[fade-in_0.3s_ease-out]">
+                <div>
+                    <label class="block text-xs font-mono text-gray-500 uppercase mb-2">Email Address</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="email" name="email" required placeholder="name@company.com" 
+                            class="w-full pl-11 pr-4 py-3 rounded-xl form-input text-sm text-white placeholder-gray-600 focus:placeholder-gray-500">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-mono text-gray-500 uppercase">Password</label>
+                        <a href="#" class="text-[10px] text-brand hover:underline">Forgot password?</a>
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="password" name="password" required placeholder="••••••••" 
+                            class="w-full pl-11 pr-4 py-3 rounded-xl form-input text-sm text-white placeholder-gray-600">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-xl bg-brand hover:bg-brand-hover text-black font-bold tracking-wide shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(45,212,191,0.4)] transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 mt-4">
+                    <span>ACCESS CONSOLE</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Register Form (Hidden by default) -->
+            <form id="form-register" action="includes/signup.php" method="POST" class="space-y-4 hidden animate-[fade-in_0.3s_ease-out]">
+                <div>
+                    <label class="block text-xs font-mono text-gray-500 uppercase mb-2">Username</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" name="username" required placeholder="dev_master" 
+                            class="w-full pl-11 pr-4 py-3 rounded-xl form-input text-sm text-white placeholder-gray-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-gray-500 uppercase mb-2">Email Address</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="email" name="email" required placeholder="name@company.com" 
+                            class="w-full pl-11 pr-4 py-3 rounded-xl form-input text-sm text-white placeholder-gray-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-gray-500 uppercase mb-2">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="password" name="password" required placeholder="Create a strong password" 
+                            class="w-full pl-11 pr-4 py-3 rounded-xl form-input text-sm text-white placeholder-gray-600">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-xl bg-white hover:bg-gray-200 text-black font-bold tracking-wide transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 mt-6">
+                    <i class="fas fa-rocket text-brand"></i>
+                    <span>CREATE ACCOUNT</span>
+                </button>
+            </form>
+            
+            <div class="text-center mt-8 text-xs text-gray-600">
+                By continuing, you agree to our <a href="#" class="underline hover:text-white">Terms of Service</a>.
+            </div>
+
+        </div>
     </div>
 
     <script>
-        function switchView(view) {
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            
-            if (view === 'register') {
-                // Hide Login
-                loginForm.style.opacity = '0';
-                loginForm.style.transform = 'translateX(-20px)';
+        function switchTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const registerForm = document.getElementById('form-register');
+            const loginTab = document.getElementById('tab-login');
+            const registerTab = document.getElementById('tab-register');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
                 
-                setTimeout(() => {
-                    loginForm.classList.add('hidden');
-                    registerForm.classList.remove('hidden');
-                    
-                    // Show Register
-                    requestAnimationFrame(() => {
-                        registerForm.style.opacity = '1';
-                        registerForm.style.transform = 'translateX(0)';
-                    });
-                }, 300);
+                loginTab.classList.add('border-brand', 'text-white');
+                loginTab.classList.remove('border-transparent', 'text-gray-500');
+                
+                registerTab.classList.remove('border-brand', 'text-white');
+                registerTab.classList.add('border-transparent', 'text-gray-500');
             } else {
-                // Hide Register
-                registerForm.style.opacity = '0';
-                registerForm.style.transform = 'translateX(20px)';
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
                 
-                setTimeout(() => {
-                    registerForm.classList.add('hidden');
-                    loginForm.classList.remove('hidden');
-                    
-                    // Show Login
-                    requestAnimationFrame(() => {
-                        loginForm.style.opacity = '1';
-                        loginForm.style.transform = 'translateX(0)';
-                    });
-                }, 300);
+                registerTab.classList.add('border-brand', 'text-white');
+                registerTab.classList.remove('border-transparent', 'text-gray-500');
+                
+                loginTab.classList.remove('border-brand', 'text-white');
+                loginTab.classList.add('border-transparent', 'text-gray-500');
             }
+        }
+
+        // Check URL for view parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.get('view') === 'register'){
+            switchTab('register');
         }
     </script>
 </body>
