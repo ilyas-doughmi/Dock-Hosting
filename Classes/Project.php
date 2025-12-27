@@ -93,7 +93,11 @@ Class Project extends db{
         shell_exec("docker rm -f ".$container);
     }
     private function removeDir($file_dir){
-        shell_exec("rmdir /s /q " . $file_dir);
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            shell_exec("rmdir /s /q " . escapeshellarg($file_dir));
+        } else {
+            shell_exec("rm -rf " . escapeshellarg($file_dir));
+        }
     }
     private function removeDatabase($container_name){
         $remove_query = "DELETE FROM Project WHERE user_id = :user_id AND container_name = :container_name";
@@ -110,7 +114,8 @@ Class Project extends db{
         }
     }
     public function getProjectFiles($container_name,$sub_path = ""){
-        $path = "C:/xampp/htdocs/Dock-Hosting/users/Projects/" . $_SESSION["id"] . "/" . $container_name . "/" . $sub_path ."/";
+        $base_path = dirname(__DIR__) . "/users/Projects/";
+        $path = $base_path . $_SESSION["id"] . "/" . $container_name . "/" . $sub_path ."/";
 
         // old that only give us names of files & foulders
 
