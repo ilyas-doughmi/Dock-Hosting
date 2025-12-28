@@ -70,6 +70,44 @@ session_start();
 
         <div class="space-y-12 relative border-l border-white/10 ml-3 pl-10">
             
+            <!-- v1.1.0 -->
+            <div class="relative">
+                <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>
+                <div class="flex items-baseline justify-between mb-4">
+                    <h2 class="text-2xl font-bold">Database & Security Update <span class="text-brand text-sm font-mono ml-2">v1.1.0</span></h2>
+                    <span class="text-xs font-mono text-gray-500">2025-12-28</span>
+                </div>
+                
+                <div class="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6">
+                    <div class="mb-6">
+                        <span class="px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold font-mono border border-brand/20">NEW RELEASE</span>
+                    </div>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">User Databases (MySQL)</strong>
+                                <span class="text-sm text-gray-400">Every project now comes with full MySQL support. Create, delete and manage databases directly from the sidebar.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">Enhanced Security</strong>
+                                <span class="text-sm text-gray-400">Critical security hardening for all containers. Custom execution policies and malware prevention systems deployed.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">Custom PHP Environments</strong>
+                                <span class="text-sm text-gray-400">Resolved driver issues with custom Docker images featuring pre-installed PDO/MySQLi extensions.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- v1.0.0 -->
             <div class="relative">
                 <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>

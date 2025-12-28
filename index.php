@@ -65,7 +65,15 @@
 
     <!-- Navbar -->
     <!-- Navbar -->
-    <nav class="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+    <!-- Announcement Banner -->
+    <div class="fixed top-0 left-0 right-0 z-[60] bg-brand text-black text-xs font-mono font-bold py-2 text-center transform transition-transform duration-300 hover:py-3 group cursor-pointer" onclick="window.location.href='pages/changelog.php'">
+        <span class="animate-pulse mr-2">●</span>
+        NEW UPDATE v1.1.0: User Databases & Security Hardening Available Now
+        <span class="ml-2 opacity-60 group-hover:opacity-100 transition-opacity underline">Read Changelog &rarr;</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-12 left-0 right-0 z-50 flex justify-center px-4">
         <div class="w-full max-w-5xl bg-black/40 backdrop-blur-xl border border-white/10 rounded-full px-6 py-4 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-brand/20 hover:bg-black/50">
             <!-- Logo -->
             <a href="index.php" class="flex items-center gap-3 group">
