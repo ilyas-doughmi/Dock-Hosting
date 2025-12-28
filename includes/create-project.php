@@ -23,6 +23,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $default_content = "<?php\n\necho '<h1>" . htmlspecialchars($project_name) . "</h1>';\n";
     file_put_contents($path . "index.php", $default_content);
 
+    $htaccess = "php_flag display_errors off\nphp_flag log_errors on\nphp_value error_log /var/www/html/error.log";
+    file_put_contents($path . ".htaccess", $htaccess);
+
+    file_put_contents($path . "error.log", "");
+    chmod($path . "error.log", 0666);
+
     $Projects = New Project();
     $last_port = $Projects->trackPort();
 

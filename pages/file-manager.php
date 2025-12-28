@@ -246,6 +246,7 @@ if (isset($_GET["file"])) {
                 <div class="flex-1 p-4 font-mono text-xs text-gray-400 overflow-y-auto">
                     <div class="mb-1"><span class="text-green-500">➜</span> <span class="text-blue-400">~</span> Container started successfully [ID: <?= substr(md5($container_name), 0, 8) ?>]</div>
                     <div class="mb-1"><span class="text-green-500">➜</span> <span class="text-blue-400">~</span> Port binding: 0.0.0.0:80->80/tcp</div>
+                    <div class="mb-1"><span class="text-yellow-500">➜</span> <span class="text-gray-400">If your app crashes, check <b>error.log</b> for details.</span></div>
                     <div class="text-gray-600 mt-2">_ Ready for input...</div>
                 </div>
             </div>
