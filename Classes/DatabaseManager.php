@@ -48,4 +48,27 @@ class DatabaseManager extends db {
         $stmt->execute([':uid' => $userId, ':pname' => $projectName]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function deleteDatabase($userId, $projectName) {
+        $db = $this->getDatabase($userId, $projectName);
+        if (!$db) return false;
+
+        $dbName = $db['db_name'];
+        $dbUser = $db['db_user'];
+
+        try {
+            $pdo = $this->connect();
+            
+            $pdo->exec("DROP DATABASE IF EXISTS `$dbName`");
+            $pdo->exec("DROP USER IF EXISTS '$dbUser'@'%'");
+
+            $sql = "DELETE FROM user_databases WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':id' => $db['id']]);
+
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
