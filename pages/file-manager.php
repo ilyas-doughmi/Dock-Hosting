@@ -42,6 +42,10 @@ if (isset($_GET["file"])) {
     $file_requested = $_GET["file"];
     $content = $project->getFileContent($container_name, $file_requested);
 }
+
+require_once("../Classes/DatabaseManager.php");
+$dbManager = new DatabaseManager();
+$userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -144,6 +148,9 @@ if (isset($_GET["file"])) {
 
                 <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-yellow-500/20 text-yellow-500 transition-colors" title="Restart Container">
                     <i class="fas fa-redo text-xs"></i>
+                </button>
+                <button onclick="openDatabaseModal()" class="w-8 h-8 flex items-center justify-center rounded hover:bg-blue-500/20 text-blue-500 transition-colors" title="Database Settings">
+                    <i class="fas fa-database text-xs"></i>
                 </button>
             </div>
 
@@ -308,11 +315,76 @@ if (isset($_GET["file"])) {
         </div>
     </div>
 
+    <!-- Database Modal -->
+    <div id="databaseModal" class="fixed inset-0 z-50 hidden">
+        <div onclick="closeDatabaseModal()" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-4">
+            <div class="glass-panel rounded-xl shadow-2xl overflow-hidden border border-white/10">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-database text-blue-500"></i> Database
+                    </h3>
+                    
+                    <?php if($userDB): ?>
+                        <div class="space-y-4">
+                            <div class="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-sm">
+                                <p class="text-blue-400 mb-2 font-bold"><i class="fas fa-check-circle mr-2"></i>Database Active</p>
+                                <p class="text-gray-400">Use these credentials in your application's config.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-3">
+                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Hostname</label>
+                                    <div class="font-mono text-sm text-white">db</div>
+                                </div>
+                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Database Name</label>
+                                    <div class="font-mono text-sm text-yellow-500"><?= $userDB['db_name'] ?></div>
+                                </div>
+                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Username</label>
+                                    <div class="font-mono text-sm text-green-500"><?= $userDB['db_user'] ?></div>
+                                </div>
+                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Password</label>
+                                    <div class="font-mono text-sm text-red-400 select-all"><?= $userDB['db_password'] ?></div>
+                                </div>
+                            </div>
+                            
+                            <a href="http://pma.dockhosting.dev" target="_blank" class="block w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-center transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i> Open phpMyAdmin
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-4 text-2xl">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h4 class="text-lg font-bold mb-2">No Database Found</h4>
+                            <p class="text-gray-500 text-sm mb-6">This project does not have a database yet. Create one instantly.</p>
+                            
+                            <form action="../includes/actions/create_database.php" method="POST">
+                                <input type="hidden" name="container" value="<?= $container_name ?>">
+                                <button type="submit" class="w-full py-3 rounded-lg bg-brand hover:bg-brand-hover text-black font-bold transition-colors">
+                                    Create Database
+                                </button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+
+                    <button onclick="closeDatabaseModal()" class="mt-4 w-full py-3 rounded-lg border border-[#333] hover:bg-[#1a1a1a] text-gray-400 font-medium transition-colors">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openNewFileModal() { document.getElementById('newFileModal').classList.remove('hidden'); }
         function closeNewFileModal() { document.getElementById('newFileModal').classList.add('hidden'); }
         function openNewFolderModal() { document.getElementById('newFolderModal').classList.remove('hidden'); }
         function closeNewFolderModal() { document.getElementById('newFolderModal').classList.add('hidden'); }
+        function openDatabaseModal() { document.getElementById('databaseModal').classList.remove('hidden'); }
+        function closeDatabaseModal() { document.getElementById('databaseModal').classList.add('hidden'); }
     </script>
 </body>
 </html>
