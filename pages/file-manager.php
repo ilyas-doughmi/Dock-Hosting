@@ -149,9 +149,6 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                 <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-yellow-500/20 text-yellow-500 transition-colors" title="Restart Container">
                     <i class="fas fa-redo text-xs"></i>
                 </button>
-                <button onclick="openDatabaseModal()" class="w-8 h-8 flex items-center justify-center rounded hover:bg-blue-500/20 text-blue-500 transition-colors" title="Database Settings">
-                    <i class="fas fa-database text-xs"></i>
-                </button>
             </div>
 
             <div class="w-[1px] h-8 bg-white/10"></div>
@@ -167,52 +164,129 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
     <!-- Main Workspace -->
     <div class="flex-1 flex overflow-hidden">
         
-        <!-- File Explorer Sidebar -->
-        <aside class="w-72 bg-[#0a0a0a] border-r border-border flex flex-col flex-shrink-0">
-            <!-- Explorer Header -->
-            <div class="p-4 border-b border-border flex items-center justify-between">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Explorer</span>
-                <div class="flex gap-2 text-gray-500">
-                    <button onclick="openNewFileModal()" class="hover:text-white transition-colors"><i class="fas fa-file-circle-plus"></i></button>
-                    <button onclick="openNewFolderModal()" class="hover:text-white transition-colors"><i class="fas fa-folder-plus"></i></button>
+        <nav class="w-14 bg-[#050505] border-r border-border flex flex-col items-center py-4 gap-6 z-10 flex-shrink-0">
+            <button onclick="switchView('explorer')" id="btn-explorer" class="w-10 h-10 rounded-xl flex items-center justify-center text-brand bg-brand/10 transition-all">
+                <i class="fas fa-copy text-lg"></i>
+            </button>
+            <button onclick="switchView('database')" id="btn-database" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/5 transition-all">
+                <i class="fas fa-database text-lg"></i>
+            </button>
+        </nav>
+
+        <!-- Sidebar Panel -->
+        <aside class="w-72 bg-[#0a0a0a] border-r border-border flex flex-col flex-shrink-0 relative">
+            
+            <!-- VIEW: EXPLORER -->
+            <div id="view-explorer" class="flex-1 flex flex-col h-full absolute inset-0 transition-opacity duration-200">
+                <div class="p-4 border-b border-border flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Explorer</span>
+                    <div class="flex gap-2 text-gray-500">
+                        <button onclick="openNewFileModal()" class="hover:text-white transition-colors"><i class="fas fa-file-circle-plus"></i></button>
+                        <button onclick="openNewFolderModal()" class="hover:text-white transition-colors"><i class="fas fa-folder-plus"></i></button>
+                    </div>
+                </div>
+
+                <div class="px-4 py-2 text-[10px] font-mono text-gray-600 border-b border-border bg-black/20 truncate">
+                    root/<?= $new_path ?>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-2">
+                    <?php if ($new_path != ""): ?>
+                        <a href="file-manager.php?container=<?= $container_name ?>&path=<?= $parent_path ?>"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-white hover:bg-white/5 transition-colors font-mono mb-1">
+                            <i class="fas fa-level-up-alt w-4"></i> ..
+                        </a>
+                    <?php endif; ?>
+
+                    <?php foreach ($files as $fl): ?>
+                        <?php
+                        $is_folder = ($fl["type"] == "folder");
+                        $param = $is_folder ? "path" : "file";
+                        $target_path = $new_path == "" ? $fl["name"] : $new_path . "/" . $fl["name"];
+                        $active = (isset($file_requested) && $file_requested === $target_path);
+                        ?>
+
+                        <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $target_path ?>&path=<?= $is_folder ? $target_path : $new_path ?>"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-mono transition-colors mb-1 truncate group <?= $active ? 'bg-brand/10 text-brand' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200' ?>">
+                            
+                            <?php if ($is_folder): ?>
+                                <i class="fas fa-folder w-4 text-center text-yellow-500/80 group-hover:text-yellow-400 transition-colors"></i>
+                            <?php else: ?>
+                                <i class="fas fa-file-code w-4 text-center text-blue-400/80 group-hover:text-blue-300 transition-colors"></i>
+                            <?php endif; ?>
+                            
+                            <?= $fl["name"] ?>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
-            <!-- Path Breadcrumb -->
-            <div class="px-4 py-2 text-[10px] font-mono text-gray-600 border-b border-border bg-black/20 truncate">
-                root/<?= $new_path ?>
+            <!-- VIEW: DATABASE -->
+            <div id="view-database" class="flex-1 flex flex-col h-full absolute inset-0 opacity-0 pointer-events-none transition-opacity duration-200 bg-[#0a0a0a]">
+                <div class="p-4 border-b border-border flex items-center justify-between">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Database</span>
+                </div>
+
+                <div class="flex-1 p-4 overflow-y-auto">
+                    <?php if($userDB): ?>
+                        <div class="space-y-4">
+                            <div class="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-xs">
+                                <p class="text-blue-400 mb-1 font-bold"><i class="fas fa-check-circle mr-2"></i>Active</p>
+                                <p class="text-gray-500">Credentials for your app config.</p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">Host</label>
+                                    <div class="font-mono text-xs text-white">db</div>
+                                </div>
+                                <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">Name</label>
+                                    <div class="font-mono text-xs text-yellow-500 truncate" title="<?= $userDB['db_name'] ?>"><?= $userDB['db_name'] ?></div>
+                                </div>
+                                <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">User</label>
+                                    <div class="font-mono text-xs text-green-500 truncate" title="<?= $userDB['db_user'] ?>"><?= $userDB['db_user'] ?></div>
+                                </div>
+                                <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
+                                    <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">Pass</label>
+                                    <div class="font-mono text-xs text-red-400 select-all truncate"><?= $userDB['db_password'] ?></div>
+                                </div>
+                            </div>
+                            
+                            <a href="http://pma.dockhosting.dev" target="_blank" class="block w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-center text-xs transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i> Open phpMyAdmin
+                            </a>
+
+                            <div class="pt-4 border-t border-white/5">
+                                <p class="text-[10px] text-gray-500 mb-2">Danger Zone</p>
+                                <form action="../includes/actions/delete_database.php" method="POST" onsubmit="return confirm('Are you sure? This cannot be undone.');">
+                                    <input type="hidden" name="container" value="<?= $container_name ?>">
+                                    <button type="submit" class="w-full py-2 rounded-lg border border-red-500/20 hover:bg-red-500/10 text-red-500 text-xs transition-colors">
+                                        Delete Database
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center py-10">
+                            <div class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-4 text-xl">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h4 class="text-sm font-bold mb-2">No Database</h4>
+                            <p class="text-gray-500 text-xs mb-6">Create a MySQL database for this project.</p>
+                            
+                            <form action="../includes/actions/create_database.php" method="POST">
+                                <input type="hidden" name="container" value="<?= $container_name ?>">
+                                <button type="submit" class="w-full py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-black text-xs font-bold transition-colors">
+                                    Create Database
+                                </button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
-            <!-- File List -->
-            <div class="flex-1 overflow-y-auto p-2">
-                <?php if ($new_path != ""): ?>
-                    <a href="file-manager.php?container=<?= $container_name ?>&path=<?= $parent_path ?>"
-                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-white hover:bg-white/5 transition-colors font-mono mb-1">
-                        <i class="fas fa-level-up-alt w-4"></i> ..
-                    </a>
-                <?php endif; ?>
-
-                <?php foreach ($files as $fl): ?>
-                    <?php
-                    $is_folder = ($fl["type"] == "folder");
-                    $param = $is_folder ? "path" : "file";
-                    $target_path = $new_path == "" ? $fl["name"] : $new_path . "/" . $fl["name"];
-                    $active = (isset($file_requested) && $file_requested === $target_path);
-                    ?>
-
-                    <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $target_path ?>&path=<?= $is_folder ? $target_path : $new_path ?>"
-                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-mono transition-colors mb-1 truncate group <?= $active ? 'bg-brand/10 text-brand' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200' ?>">
-                        
-                        <?php if ($is_folder): ?>
-                            <i class="fas fa-folder w-4 text-center text-yellow-500/80 group-hover:text-yellow-400 transition-colors"></i>
-                        <?php else: ?>
-                            <i class="fas fa-file-code w-4 text-center text-blue-400/80 group-hover:text-blue-300 transition-colors"></i>
-                        <?php endif; ?>
-                        
-                        <?= $fl["name"] ?>
-                    </a>
-                <?php endforeach; ?>
-            </div>
         </aside>
 
         <!-- Editor Area -->
@@ -315,76 +389,32 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
         </div>
     </div>
 
-    <!-- Database Modal -->
-    <div id="databaseModal" class="fixed inset-0 z-50 hidden">
-        <div onclick="closeDatabaseModal()" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-4">
-            <div class="glass-panel rounded-xl shadow-2xl overflow-hidden border border-white/10">
-                <div class="p-6">
-                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-                        <i class="fas fa-database text-blue-500"></i> Database
-                    </h3>
-                    
-                    <?php if($userDB): ?>
-                        <div class="space-y-4">
-                            <div class="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-sm">
-                                <p class="text-blue-400 mb-2 font-bold"><i class="fas fa-check-circle mr-2"></i>Database Active</p>
-                                <p class="text-gray-400">Use these credentials in your application's config.</p>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Hostname</label>
-                                    <div class="font-mono text-sm text-white">db</div>
-                                </div>
-                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Database Name</label>
-                                    <div class="font-mono text-sm text-yellow-500"><?= $userDB['db_name'] ?></div>
-                                </div>
-                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Username</label>
-                                    <div class="font-mono text-sm text-green-500"><?= $userDB['db_user'] ?></div>
-                                </div>
-                                <div class="bg-[#050505] p-3 rounded-lg border border-[#1f1f1f]">
-                                    <label class="text-[10px] uppercase text-gray-500 font-bold block mb-1">Password</label>
-                                    <div class="font-mono text-sm text-red-400 select-all"><?= $userDB['db_password'] ?></div>
-                                </div>
-                            </div>
-                            
-                            <a href="http://pma.dockhosting.dev" target="_blank" class="block w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-center transition-colors">
-                                <i class="fas fa-external-link-alt mr-2"></i> Open phpMyAdmin
-                            </a>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-8">
-                            <div class="w-16 h-16 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-4 text-2xl">
-                                <i class="fas fa-database"></i>
-                            </div>
-                            <h4 class="text-lg font-bold mb-2">No Database Found</h4>
-                            <p class="text-gray-500 text-sm mb-6">This project does not have a database yet. Create one instantly.</p>
-                            
-                            <form action="../includes/actions/create_database.php" method="POST">
-                                <input type="hidden" name="container" value="<?= $container_name ?>">
-                                <button type="submit" class="w-full py-3 rounded-lg bg-brand hover:bg-brand-hover text-black font-bold transition-colors">
-                                    Create Database
-                                </button>
-                            </form>
-                        </div>
-                    <?php endif; ?>
-
-                    <button onclick="closeDatabaseModal()" class="mt-4 w-full py-3 rounded-lg border border-[#333] hover:bg-[#1a1a1a] text-gray-400 font-medium transition-colors">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         function openNewFileModal() { document.getElementById('newFileModal').classList.remove('hidden'); }
         function closeNewFileModal() { document.getElementById('newFileModal').classList.add('hidden'); }
         function openNewFolderModal() { document.getElementById('newFolderModal').classList.remove('hidden'); }
         function closeNewFolderModal() { document.getElementById('newFolderModal').classList.add('hidden'); }
-        function openDatabaseModal() { document.getElementById('databaseModal').classList.remove('hidden'); }
-        function closeDatabaseModal() { document.getElementById('databaseModal').classList.add('hidden'); }
+
+        function switchView(viewName) {
+            // Hide all views
+            document.getElementById('view-explorer').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('view-database').classList.add('opacity-0', 'pointer-events-none');
+            
+            // Deactivate all buttons
+            document.getElementById('btn-explorer').classList.remove('text-brand', 'bg-brand/10');
+            document.getElementById('btn-explorer').classList.add('text-gray-500');
+            document.getElementById('btn-database').classList.remove('text-brand', 'bg-brand/10');
+            document.getElementById('btn-database').classList.add('text-gray-500');
+
+            // Show selected view
+            const view = document.getElementById('view-' + viewName);
+            view.classList.remove('opacity-0', 'pointer-events-none');
+            
+            // Activate button
+            const btn = document.getElementById('btn-' + viewName);
+            btn.classList.remove('text-gray-500');
+            btn.classList.add('text-brand', 'bg-brand/10');
+        }
     </script>
 </body>
 </html>
