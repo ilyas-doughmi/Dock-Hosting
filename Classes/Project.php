@@ -134,7 +134,7 @@ Class Project extends db{
         $files = scandir($path);
         $result = [];
         foreach($files as $file){
-            if($file == "." || $file == ".."){
+            if($file == "." || $file == ".." || $file == ".htaccess"){
                 continue;
             }
 
