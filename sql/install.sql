@@ -22,3 +22,14 @@ CREATE TABLE Project(
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 
 );
+
+CREATE TABLE IF NOT EXISTS user_databases (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    project_name VARCHAR(100) NOT NULL,
+    db_name VARCHAR(64) NOT NULL UNIQUE,
+    db_user VARCHAR(64) NOT NULL,
+    db_password VARCHAR(255) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

@@ -36,6 +36,22 @@ services:
     networks:
       - default
 
+  pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: dock-hosting-pma
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - UPLOAD_LIMIT=100M
+      - VIRTUAL_HOST=pma.dockhosting.dev
+      - LETSENCRYPT_HOST=pma.dockhosting.dev
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@dockhosting.dev}
+    networks:
+      - default
+      - proxy_network
+    depends_on:
+      - db
+
 volumes:
   db_data:
 
