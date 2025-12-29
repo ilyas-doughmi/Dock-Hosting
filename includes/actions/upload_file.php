@@ -26,19 +26,49 @@ if (strpos(realpath($target_dir), realpath($base_path . "/users/Projects/" . $_S
     exit;
 }
 
-$file = $_FILES['file'];
-$file_name = basename($file['name']);
-$target_file = $target_dir . $file_name;
+$files = $_FILES['file'];
+$upload_count = 0;
+$errors = [];
 
-if ($file['size'] > 10 * 1024 * 1024) { 
-    header("location: ../../pages/file-manager.php?container=" . $container_name . "&path=" . $path_rel . "&msg=File too large (Max 10MB)&type=error");
-    exit;
-}
+if (is_array($files['name'])) {
+    $count = count($files['name']);
+    
+    for ($i = 0; $i < $count; $i++) {
+        $name = $files['name'][$i];
+        $tmp_name = $files['tmp_name'][$i];
+        $size = $files['size'][$i];
+        $error = $files['error'][$i];
 
-if (move_uploaded_file($file['tmp_name'], $target_file)) {
-    chmod($target_file, 0644); 
-    header("location: ../../pages/file-manager.php?container=" . $container_name . "&path=" . $path_rel . "&msg=File uploaded successfully&type=success");
+        if ($error === UPLOAD_ERR_OK) {
+            $target_file = $target_dir . basename($name);
+
+            if ($size > 10 * 1024 * 1024) { 
+                $errors[] = "$name too large";
+                continue;
+            }
+
+            if (move_uploaded_file($tmp_name, $target_file)) {
+                chmod($target_file, 0644);
+                $upload_count++;
+            } else {
+                $errors[] = "Failed to move $name";
+            }
+        }
+    }
 } else {
-    header("location: ../../pages/file-manager.php?container=" . $container_name . "&path=" . $path_rel . "&msg=Upload failed&type=error");
+    $name = $files['name'];
+    $target_file = $target_dir . basename($name);
+    
+    if ($files['size'] <= 10 * 1024 * 1024 && move_uploaded_file($files['tmp_name'], $target_file)) {
+        chmod($target_file, 0644);
+        $upload_count++;
+    }
 }
+
+$msg = "Uploaded $upload_count files.";
+if (!empty($errors)) {
+    $msg .= " Errors: " . implode(", ", $errors);
+}
+
+header("location: ../../pages/file-manager.php?container=" . $container_name . "&path=" . $path_rel . "&msg=" . urlencode($msg) . "&type=" . (empty($errors) ? "success" : "warning"));
 exit;
