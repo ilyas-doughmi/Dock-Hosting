@@ -52,7 +52,6 @@ session_start();
                 </div>
                 <div class="flex flex-col">
                     <span class="font-bold text-2xl leading-none tracking-tight text-white group-hover:text-brand transition-colors">DOCK-HOSTING</span>
-                    <span class="text-[10px] text-gray-500 font-mono tracking-widest uppercase mt-1">Beta v1.0.0</span>
                 </div>
             </a>
             
@@ -78,6 +77,43 @@ session_start();
 
         <div class="space-y-12 relative border-l border-white/10 ml-3 pl-10">
             
+            <div class="relative">
+                <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>
+                <div class="flex items-baseline justify-between mb-4">
+                    <h2 class="text-2xl font-bold">UX & Community Update <span class="text-brand text-sm font-mono ml-2">v1.2.0</span></h2>
+                    <span class="text-xs font-mono text-gray-500">2025-12-29</span>
+                </div>
+                
+                <div class="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6">
+                    <div class="mb-6">
+                        <span class="px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold font-mono border border-brand/20">LATEST</span>
+                    </div>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">Responsive Design</strong>
+                                <span class="text-sm text-gray-400">Complete mobile optimization for Dashboard, File Manager, and Deploy pages.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">File Manager 2.0</strong>
+                                <span class="text-sm text-gray-400">Multiple file uploads, progress tracking, and direct image previews.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">Community Integration</strong>
+                                <span class="text-sm text-gray-400">Added official Discord server link for community support.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- v1.1.0 -->
             <div class="relative">
                 <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>
@@ -87,9 +123,6 @@ session_start();
                 </div>
                 
                 <div class="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6">
-                    <div class="mb-6">
-                        <span class="px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold font-mono border border-brand/20">NEW RELEASE</span>
-                    </div>
                     <ul class="space-y-4 text-gray-300">
                         <li class="flex gap-3">
                             <i class="fas fa-check-circle text-gray-500 mt-1"></i>

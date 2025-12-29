@@ -148,8 +148,6 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                     <span class="w-2 h-2 rounded-full bg-brand status-dot animate-pulse"></span>
                     <span class="hidden sm:inline">System Online</span>
                 </div>
-                <span class="text-gray-700 hidden sm:inline">|</span>
-                <span class="text-gray-500 hidden sm:inline">v2.4.0</span>
             </div>
             <a href="create-project.php">
                 <button class="bg-brand hover:bg-[#14b8a6] text-black font-bold py-2 px-4 rounded transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)] flex items-center gap-2 text-sm">
