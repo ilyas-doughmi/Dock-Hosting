@@ -31,7 +31,7 @@
 
             <div class="px-4 py-2 mt-8 text-[10px] font-mono text-gray-600 uppercase tracking-widest">Personal</div>
 
-            <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all group <?= $current_page == 'settings.php' ? 'bg-brand/10 text-brand border border-brand/10' : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent' ?>">
+            <a href="settings.php" class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all group <?= $current_page == 'settings.php' ? 'bg-brand/10 text-brand border border-brand/10' : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent' ?>">
                 <i class="fas fa-cog w-5 <?= $current_page == 'settings.php' ? '' : 'text-gray-600 group-hover:text-white' ?> transition-colors text-center"></i>
                 <span class="font-medium text-sm">Settings</span>
             </a>
