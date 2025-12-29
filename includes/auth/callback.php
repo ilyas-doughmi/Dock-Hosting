@@ -1,11 +1,20 @@
 <?php
+session_start();
+
+
+if(!isset($_SESSION["id"])){
+    return "you need to loggin first";
+}
 
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '../../../php/connect.php';
 
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
+
+$db =  new db;
 
 
 if(isset($_GET["code"])){
@@ -27,9 +36,18 @@ if(isset($_GET["code"])){
     curl_close($ch);
     $data = json_decode($response, true);
     
-    echo "<pre>";
-    print_r($data);
-    echo "</pre>";
+    if(isset($data["access_token"])){
+        $token = $data["access_token"];
+        $query = "INSERT INTO oauth_tokens(user_id,access_token) VALUES(:user_id,:acc_token)";
+        $stmt = $db->connect()->prepare($query);
+        $stmt->bindValue(":user_id",$_SESSION["id"]);
+        $stmt->bindParam(":acc_token",$token);
+        $stmt->execute();
+        echo "done";
+    }
+    else{
+        echo "nothing found";
+    }
 }
 else{
     echo "problem";
