@@ -148,6 +148,11 @@
                     <span class="relative">DEPLOY PHP APP</span>
                     <i class="fas fa-cloud-upload-alt relative group-hover:-translate-y-1 transition-transform duration-300"></i>
                 </a>
+                
+                <a href="https://discord.gg/rkFvJ9xE" target="_blank" class="relative w-full sm:w-auto px-10 py-5 rounded-full border border-white/10 bg-white/5 hover:bg-[#5865F2] hover:border-[#5865F2] text-white font-bold text-lg transition-all transform hover:scale-105 flex items-center justify-center gap-3">
+                    <i class="fab fa-discord text-xl"></i>
+                    <span>JOIN DISCORD</span>
+                </a>
             </div>
 
             <!-- Tech Badges -->
