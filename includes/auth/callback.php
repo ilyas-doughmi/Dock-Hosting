@@ -1,21 +1,20 @@
 <?php
 session_start();
 
-
 if(!isset($_SESSION["id"])){
-    return "you need to loggin first";
+    header("Location: ../../login.php?error=Please login first");
+    exit;
 }
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '../../../php/connect.php';
+require_once __DIR__ . '/../../php/connect.php';
 
 use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
-$db =  new db;
-
+$db = new db(); 
 
 if(isset($_GET["code"])){
     $code = $_GET["code"];
@@ -31,24 +30,47 @@ if(isset($_GET["code"])){
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json']);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
 
     $response = curl_exec($ch);
     curl_close($ch);
-    $data = json_decode($response, true);
     
+    $data = json_decode($response, true);
+
     if(isset($data["access_token"])){
-        $token = $data["access_token"];
-        $query = "INSERT INTO oauth_tokens(user_id,access_token) VALUES(:user_id,:acc_token)";
-        $stmt = $db->connect()->prepare($query);
-        $stmt->bindValue(":user_id",$_SESSION["id"]);
-        $stmt->bindParam(":acc_token",$token);
-        $stmt->execute();
-        echo "done";
+        saveToken($db, $_SESSION["id"], $data["access_token"]); 
+        header("Location: ../../pages/dashboard.php?msg=GitHub Connected Successfully!");
+        exit;
     }
     else{
-        echo "nothing found";
+        echo "Error: GitHub did not return a token. Response: <br>";
+        print_r($data);
     }
 }
 else{
-    echo "problem";
+    echo "Error: No code received.";
 }
+
+
+function saveToken($db, $userId, $token){
+    $query = "SELECT id FROM oauth_tokens WHERE user_id = :user_id";
+    $stmt = $db->connect()->prepare($query);
+    $stmt->execute([":user_id" => $userId]);
+    $exists = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if(!$exists){
+        $query = "INSERT INTO oauth_tokens(user_id, access_token) VALUES(:user_id, :acc_token)";
+        $stmt = $db->connect()->prepare($query);
+        $stmt->bindValue(":user_id", $userId);
+        $stmt->bindValue(":acc_token", $token);
+        $stmt->execute();
+    }
+    else{
+        $query = "UPDATE oauth_tokens SET access_token = :acc_token WHERE user_id = :user_id";
+        $stmt = $db->connect()->prepare($query);
+        $stmt->bindValue(":user_id", $userId);
+        $stmt->bindValue(":acc_token", $token);
+        $stmt->execute();
+    }
+}
+?>
