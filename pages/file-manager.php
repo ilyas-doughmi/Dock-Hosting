@@ -38,9 +38,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $newcontent = $_POST["newcontent"];
     $save = $project->saveFileChanges($container_name, $file_requested, $newcontent);
 }
+
+$is_image = false;
+$image_url = "";
+
 if (isset($_GET["file"])) {
     $file_requested = $_GET["file"];
-    $content = $project->getFileContent($container_name, $file_requested);
+    $ext = pathinfo($file_requested, PATHINFO_EXTENSION);
+    
+    if (in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
+        $is_image = true;
+        $image_url = "http://" . $container_name . ".dockhosting.dev/" . $file_requested;
+    } else {
+        $content = $project->getFileContent($container_name, $file_requested);
+    }
 }
 
 require_once("../Classes/DatabaseManager.php");
@@ -69,7 +80,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                         panel: '#0a0a0a',
                         border: '#1f1f1f',
                         brand: {
-                            DEFAULT: '#2dd4bf',
+                            DEFAULT: '#2dd4bf', 
                             hover: '#14b8a6'
                         }
                     }
@@ -153,7 +164,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
 
             <div class="w-[1px] h-8 bg-white/10"></div>
 
-            <?php if (isset($file_requested)): ?>
+            <?php if (isset($file_requested) && !$is_image): ?>
                 <button onclick="document.getElementById('save-form').submit()" class="bg-brand hover:bg-brand-hover text-black text-xs font-bold py-2 px-5 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-brand/10">
                     <i class="fas fa-save"></i> SAVE CHANGES
                 </button>
@@ -181,10 +192,16 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                 <div class="p-4 border-b border-border flex items-center justify-between">
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Explorer</span>
                     <div class="flex gap-2 text-gray-500">
-                        <button onclick="openNewFileModal()" class="hover:text-white transition-colors"><i class="fas fa-file-circle-plus"></i></button>
-                        <button onclick="openNewFolderModal()" class="hover:text-white transition-colors"><i class="fas fa-folder-plus"></i></button>
+                        <button onclick="document.getElementById('uploadInput').click()" class="hover:text-white transition-colors" title="Upload File"><i class="fas fa-cloud-upload-alt"></i></button>
+                        <button onclick="openNewFileModal()" class="hover:text-white transition-colors" title="New File"><i class="fas fa-file-circle-plus"></i></button>
+                        <button onclick="openNewFolderModal()" class="hover:text-white transition-colors" title="New Folder"><i class="fas fa-folder-plus"></i></button>
                     </div>
                 </div>
+
+                <!-- Hidden Upload Form -->
+                <form id="uploadForm" class="hidden">
+                    <input type="file" id="uploadInput" multiple onchange="handleFileUpload(this.files)">
+                </form>
 
                 <div class="px-4 py-2 text-[10px] font-mono text-gray-600 border-b border-border bg-black/20 truncate">
                     root/<?= $new_path ?>
@@ -296,13 +313,20 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                 <div class="h-10 bg-[#0a0a0a] border-b border-border flex items-center px-4">
                     <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
                         <span class="text-brand"><?= basename($file_requested) ?></span>
-                        <span class="text-gray-600 text-[10px] ml-2 opacity-50">Edited</span>
+                        <span class="text-gray-600 text-[10px] ml-2 opacity-50"><?= $is_image ? 'Image Preview' : 'Edited' ?></span>
                     </div>
                 </div>
                 
-                <form id="save-form" action="file-manager.php?container=<?= $container_name ?>&file=<?= $file_requested ?>" method="POST" class="flex-1 relative">
-                    <textarea name="newcontent" class="w-full h-full p-6 resize-none outline-none border-none text-sm font-mono focus:bg-white/[0.02] transition-colors" spellcheck="false"><?= htmlspecialchars($content) ?></textarea>
-                </form>
+                <?php if ($is_image): ?>
+                    <div class="flex-1 flex items-center justify-center overflow-auto bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+                        <img src="<?= $image_url ?>" class="max-w-[90%] max-h-[90%] shadow-2xl rounded-lg border border-white/10" alt="Preview">
+                    </div>
+                <?php else: ?>
+                    <form id="save-form" action="file-manager.php?container=<?= $container_name ?>&file=<?= $file_requested ?>" method="POST" class="flex-1 relative">
+                        <textarea name="newcontent" class="w-full h-full p-6 resize-none outline-none border-none text-sm font-mono focus:bg-white/[0.02] transition-colors" spellcheck="false"><?= htmlspecialchars($content) ?></textarea>
+                    </form>
+                <?php endif; ?>
+
             <?php else: ?>
                 <div class="h-full w-full flex flex-col items-center justify-center text-gray-700">
                     <div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center mb-6">
@@ -313,7 +337,6 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                 </div>
             <?php endif; ?>
 
-            <!-- Terminal/Console Area (Mock for UI) -->
             <div class="h-48 border-t border-border bg-[#0a0a0a] flex flex-col">
                 <div class="h-9 border-b border-border flex items-center px-4 justify-between bg-black/20">
                     <span class="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
@@ -324,7 +347,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                          <button class="text-gray-600 hover:text-gray-400"><i class="fas fa-chevron-down text-[10px]"></i></button>
                     </div>
                 </div>
-                <div class="flex-1 p-4 font-mono text-xs text-gray-400 overflow-y-auto">
+                <div class="flex-1 p-4 font-mono text-xs text-gray-400 overflow-y-auto" id="console-output">
                     <div class="mb-1"><span class="text-green-500">➜</span> <span class="text-blue-400">~</span> Container started successfully [ID: <?= substr(md5($container_name), 0, 8) ?>]</div>
                     <div class="mb-1"><span class="text-green-500">➜</span> <span class="text-blue-400">~</span> Port binding: 0.0.0.0:80->80/tcp</div>
                     <div class="mb-1"><span class="text-yellow-500">➜</span> <span class="text-gray-400">If your app crashes, check <b>error.log</b> for details.</span></div>
@@ -334,7 +357,6 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
         </main>
     </div>
 
-    <!-- Modals (Re-styled) -->
     <div id="newFileModal" class="fixed inset-0 z-50 hidden">
         <div onclick="closeNewFileModal()" class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"></div>
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
@@ -389,6 +411,21 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
         </div>
     </div>
 
+    <!-- Upload Progress Modal -->
+    <div id="uploadProgressModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm p-4 text-center">
+            <div class="w-16 h-16 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-cloud-upload-alt text-brand text-2xl animate-bounce"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Uploading Files...</h3>
+            <p class="text-gray-500 text-sm mb-6" id="uploadStatus">Preparing to upload...</p>
+            <div class="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                <div id="progressBar" class="bg-brand h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openNewFileModal() { document.getElementById('newFileModal').classList.remove('hidden'); }
         function closeNewFileModal() { document.getElementById('newFileModal').classList.add('hidden'); }
@@ -396,24 +433,68 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
         function closeNewFolderModal() { document.getElementById('newFolderModal').classList.add('hidden'); }
 
         function switchView(viewName) {
-            // Hide all views
             document.getElementById('view-explorer').classList.add('opacity-0', 'pointer-events-none');
             document.getElementById('view-database').classList.add('opacity-0', 'pointer-events-none');
             
-            // Deactivate all buttons
             document.getElementById('btn-explorer').classList.remove('text-brand', 'bg-brand/10');
             document.getElementById('btn-explorer').classList.add('text-gray-500');
             document.getElementById('btn-database').classList.remove('text-brand', 'bg-brand/10');
             document.getElementById('btn-database').classList.add('text-gray-500');
 
-            // Show selected view
             const view = document.getElementById('view-' + viewName);
             view.classList.remove('opacity-0', 'pointer-events-none');
             
-            // Activate button
             const btn = document.getElementById('btn-' + viewName);
             btn.classList.remove('text-gray-500');
             btn.classList.add('text-brand', 'bg-brand/10');
+        }
+
+        async function handleFileUpload(files) {
+            if (files.length === 0) return;
+
+            const modal = document.getElementById('uploadProgressModal');
+            const statusText = document.getElementById('uploadStatus');
+            const progressBar = document.getElementById('progressBar');
+            const consoleOutput = document.getElementById('console-output');
+
+            modal.classList.remove('hidden');
+            let completed = 0;
+            const total = files.length;
+
+            for (let i = 0; i < total; i++) {
+                const file = files[i];
+                statusText.innerText = `Uploading ${file.name} (${i + 1}/${total})...`;
+                progressBar.style.width = `${((i / total) * 100)}%`;
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('container', '<?= $container_name ?>');
+                formData.append('path', '<?= $new_path ?>');
+
+                try {
+                    await fetch('../includes/actions/upload_file.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const log = document.createElement('div');
+                    log.className = "mb-1";
+                    log.innerHTML = `<span class="text-green-500">➜</span> <span class="text-gray-400">Uploaded: ${file.name}</span>`;
+                    consoleOutput.appendChild(log);
+                    
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                }
+
+                completed++;
+            }
+
+            statusText.innerText = "Finalizing...";
+            progressBar.style.width = "100%";
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         }
     </script>
 </body>
