@@ -13,7 +13,7 @@ class db {
         $this->db_name = getenv('DB_NAME') ?: 'dockhosting';
     }
 
-    protected function connect() {
+    public function connect() {
         try {
             $pdo = new PDO(
                 "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
