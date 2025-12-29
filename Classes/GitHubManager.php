@@ -22,4 +22,27 @@ class GitHubManager{
 
         return $result ? $result["access_token"] : null;
     }
+    public function getAllRepos($user_id)
+    {
+        $access_token = $this->getAccessToken($user_id);
+
+        if(!$access_token){
+            return [];
+        }
+
+        $ch = curl_init("https://api.github.com/user/repos");
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/vnd.github+json',
+            'Authorization: Bearer ' . $access_token,
+            'User-Agent: Dock-Hosting'
+        ]);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response, true);
+    }
 }
