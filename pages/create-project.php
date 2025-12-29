@@ -106,6 +106,8 @@ if (!isset($_SESSION["id"])) {
         </script>
     <?php } ?>
 
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 z-10 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
     <?php include_once("../components/sidebar.php") ?>
 
 
@@ -118,16 +120,21 @@ if (!isset($_SESSION["id"])) {
         </div>
 
         <!-- Top Header -->
-        <header class="h-20 border-b border-border flex items-center justify-between px-8 bg-black/50 backdrop-blur z-10">
-            <div class="flex items-center gap-2 text-sm text-gray-500">
-                <a href="user_dashboard.html" class="hover:text-brand transition-colors">Console</a>
+        <header class="h-20 border-b border-border flex items-center justify-between px-6 md:px-8 bg-black/50 backdrop-blur z-10">
+            <div class="flex items-center gap-4 text-sm text-gray-500">
+                <!-- Mobile Toggle -->
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <a href="dashboard.php" class="hover:text-brand transition-colors">Console</a>
                 <span>/</span>
                 <span class="text-white">Deploy</span>
             </div>
         </header>
 
         <!-- Form Area -->
-        <div class="flex-1 overflow-y-auto p-8 relative z-10 flex justify-center">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 relative z-10 flex justify-center">
             
             <div class="w-full max-w-2xl">
                 <div class="mb-8">
@@ -135,7 +142,7 @@ if (!isset($_SESSION["id"])) {
                     <p class="text-gray-500 text-sm font-mono">Upload your PHP code to initialize a new container.</p>
                 </div>
 
-                <form action="../includes/create-project.php" method="POST" class="glass-panel p-8 rounded-xl space-y-8">
+                <form action="../includes/create-project.php" method="POST" class="glass-panel p-6 md:p-8 rounded-xl space-y-8">
                     
                     <!-- 1. Project Name -->
                     <div class="space-y-4">
@@ -152,7 +159,7 @@ if (!isset($_SESSION["id"])) {
                     <div class="space-y-4">
                         <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Select Framework</label>
                         
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <!-- PHP Option (Active) -->
                             <label class="cursor-pointer relative group">
                                 <input type="radio" name="framework" value="php" checked class="peer sr-only">
@@ -199,9 +206,22 @@ if (!isset($_SESSION["id"])) {
 
         </div>
     </main>
-    <!-- Removed JS script for file upload -->
+    
     <script>
-        // No custom JS needed for this simple form interactions are handled by CSS/Tailwind
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
     </script>
 </body>
 </html>

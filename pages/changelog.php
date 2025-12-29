@@ -45,7 +45,7 @@ session_start();
 
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 glass-nav border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between relative">
             <a href="../index.php" class="flex items-center gap-4 group">
                 <div class="w-12 h-12 rounded-xl bg-brand text-black flex items-center justify-center text-xl shadow-[0_0_20px_rgba(45,212,191,0.3)]">
                     <i class="fas fa-cubes"></i>
@@ -56,9 +56,17 @@ session_start();
                 </div>
             </a>
             
-            <a href="../index.php" class="text-sm font-mono text-gray-400 hover:text-white transition-colors">
+            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-2">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+            <a href="../index.php" class="hidden md:flex text-sm font-mono text-gray-400 hover:text-white transition-colors items-center">
                 <i class="fas fa-arrow-left mr-2"></i> Back to Home
             </a>
+            <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 bg-[#0a0a0a] border-b border-white/10 p-4 shadow-2xl md:hidden flex flex-col gap-4">
+                 <a href="../index.php" class="text-sm font-mono text-white hover:text-brand px-4 py-3 hover:bg-white/5 rounded-lg transition-colors flex items-center">
+                    <i class="fas fa-arrow-left mr-3"></i> Back to Home
+                </a>
+            </div>
         </div>
     </nav>
 

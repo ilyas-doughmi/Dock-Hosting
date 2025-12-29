@@ -172,22 +172,29 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
         </div>
     </header>
 
-    <!-- Main Workspace -->
-    <div class="flex-1 flex overflow-hidden">
-        
-        <nav class="w-14 bg-[#050505] border-r border-border flex flex-col items-center py-4 gap-6 z-10 flex-shrink-0">
-            <button onclick="switchView('explorer')" id="btn-explorer" class="w-10 h-10 rounded-xl flex items-center justify-center text-brand bg-brand/10 transition-all">
-                <i class="fas fa-copy text-lg"></i>
-            </button>
-            <button onclick="switchView('database')" id="btn-database" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/5 transition-all">
-                <i class="fas fa-database text-lg"></i>
-            </button>
-        </nav>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 z-20 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-        <!-- Sidebar Panel -->
-        <aside class="w-72 bg-[#0a0a0a] border-r border-border flex flex-col flex-shrink-0 relative">
-            
-            <!-- VIEW: EXPLORER -->
+    <div class="flex-1 flex overflow-hidden relative">
+        
+        <button onclick="toggleSidebar()" class="absolute bottom-6 right-6 md:hidden z-50 w-12 h-12 bg-brand text-black rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div id="ide-sidebar-wrapper" class="flex h-full absolute inset-y-0 left-0 z-30 bg-[#050505] md:static transform -translate-x-full md:translate-x-0 transition-transform duration-300 border-r border-white/5 md:border-none">
+            <nav class="w-14 bg-[#050505] border-r border-border flex flex-col items-center py-4 gap-6 z-10 flex-shrink-0">
+                <button onclick="switchView('explorer')" id="btn-explorer" class="w-10 h-10 rounded-xl flex items-center justify-center text-brand bg-brand/10 transition-all">
+                    <i class="fas fa-copy text-lg"></i>
+                </button>
+                <button onclick="switchView('database')" id="btn-database" class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/5 transition-all">
+                    <i class="fas fa-database text-lg"></i>
+                </button>
+            </nav>
+
+            <!-- Sidebar Panel -->
+            <aside class="w-72 bg-[#0a0a0a] border-r border-border flex flex-col flex-shrink-0 relative">
+                
+                <!-- VIEW: EXPLORER -->
+
             <div id="view-explorer" class="flex-1 flex flex-col h-full absolute inset-0 transition-opacity duration-200">
                 <div class="p-4 border-b border-border flex items-center justify-between">
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Explorer</span>
@@ -305,6 +312,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
             </div>
 
         </aside>
+        </div>
 
         <!-- Editor Area -->
         <main class="flex-1 flex flex-col relative bg-[#050505]">
@@ -495,6 +503,21 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
             setTimeout(() => {
                 window.location.reload();
             }, 500);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('ide-sidebar-wrapper');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
         }
     </script>
 </body>

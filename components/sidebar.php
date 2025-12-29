@@ -2,7 +2,7 @@
     $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!-- SIDEBAR -->
-<aside class="w-64 sidebar flex flex-col justify-between h-full z-20 flex-shrink-0 border-r border-white/5 bg-black/80 backdrop-blur-xl">
+<aside id="sidebar" class="w-64 sidebar flex flex-col justify-between h-full z-20 flex-shrink-0 border-r border-white/5 bg-black/80 backdrop-blur-xl absolute md:static transition-transform duration-300 -translate-x-full md:translate-x-0">
     <div>
         <!-- Logo -->
         <div class="h-24 flex items-center px-8 border-b border-white/5">

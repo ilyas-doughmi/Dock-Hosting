@@ -121,12 +121,15 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
         </script>
     <?php } ?>
 
+    <!-- SIDEBAR OVERLAY (Mobile) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 z-10 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
     <!-- SIDEBAR -->
     <?php include '../components/sidebar.php'; ?>
 
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 flex flex-col relative overflow-hidden bg-bg">
+    <main class="flex-1 flex flex-col relative overflow-hidden bg-bg w-full">
 
         <!-- Background Grid -->
         <div class="absolute inset-0 z-0 opacity-10 pointer-events-none"
@@ -134,18 +137,23 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
         </div>
 
         <!-- Top Header -->
-        <header class="h-20 border-b border-border flex items-center justify-between px-8 bg-black/50 backdrop-blur z-10">
+        <header class="h-20 border-b border-border flex items-center justify-between px-6 md:px-8 bg-black/50 backdrop-blur z-10">
             <div class="flex items-center gap-4 text-sm font-mono">
+                <!-- Mobile Toggle -->
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white mr-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+
                 <div class="flex items-center gap-2 text-brand">
                     <span class="w-2 h-2 rounded-full bg-brand status-dot animate-pulse"></span>
-                    <span>System Online</span>
+                    <span class="hidden sm:inline">System Online</span>
                 </div>
-                <span class="text-gray-700">|</span>
-                <span class="text-gray-500">v2.4.0</span>
+                <span class="text-gray-700 hidden sm:inline">|</span>
+                <span class="text-gray-500 hidden sm:inline">v2.4.0</span>
             </div>
             <a href="create-project.php">
                 <button class="bg-brand hover:bg-[#14b8a6] text-black font-bold py-2 px-4 rounded transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)] flex items-center gap-2 text-sm">
-                    <i class="fas fa-plus"></i> New Project
+                    <i class="fas fa-plus"></i> <span class="hidden sm:inline">New Project</span>
                 </button>
 
             </a>
@@ -323,8 +331,23 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
             })
           
         }
+          
         
 
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            sidebar.classList.toggle('-translate-x-full');
+            
+            if (overlay.classList.contains('hidden')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
     </script>
 </body>
 

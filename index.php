@@ -64,17 +64,8 @@
 <body class="font-sans antialiased selection:bg-brand selection:text-black">
 
     <!-- Navbar -->
-    <!-- Navbar -->
-    <!-- Announcement Banner -->
-    <div class="fixed top-0 left-0 right-0 z-[60] bg-brand text-black text-xs font-mono font-bold py-2 text-center transform transition-transform duration-300 hover:py-3 group cursor-pointer" onclick="window.location.href='pages/changelog.php'">
-        <span class="animate-pulse mr-2">●</span>
-        NEW UPDATE v1.1.0: User Databases & Security Hardening Available Now
-        <span class="ml-2 opacity-60 group-hover:opacity-100 transition-opacity underline">Read Changelog &rarr;</span>
-    </div>
-
-    <!-- Navbar -->
     <nav class="fixed top-12 left-0 right-0 z-50 flex justify-center px-4">
-        <div class="w-full max-w-5xl bg-black/40 backdrop-blur-xl border border-white/10 rounded-full px-6 py-4 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-brand/20 hover:bg-black/50">
+        <div class="w-full max-w-5xl bg-black/40 backdrop-blur-xl border border-white/10 rounded-full px-6 py-4 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-brand/20 hover:bg-black/50 relative">
             <!-- Logo -->
             <a href="index.php" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 rounded-full bg-brand text-black flex items-center justify-center text-lg shadow-[0_0_15px_rgba(45,212,191,0.2)] group-hover:shadow-[0_0_25px_rgba(45,212,191,0.4)] group-hover:scale-110 transition-all duration-300">
@@ -85,10 +76,15 @@
                 </div>
             </a>
 
-            <!-- Actions -->
-            <div class="flex items-center gap-6">
+            <!-- Mobile Menu Button -->
+            <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+
+            <!-- Actions (Desktop) -->
+            <div class="hidden md:flex items-center gap-6">
                 
-                <div class="hidden md:flex items-center gap-6 border-r border-white/10 pr-6 mr-2">
+                <div class="flex items-center gap-6 border-r border-white/10 pr-6 mr-2">
                      <a href="pages/about.php" class="text-xs font-mono font-medium text-gray-400 hover:text-white transition-colors uppercase tracking-widest relative group">
                         About
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand transition-all group-hover:w-full"></span>
@@ -110,6 +106,20 @@
                     <a href="login.php?view=register" class="px-6 py-2.5 rounded-full bg-brand hover:bg-[#14b8a6] text-black text-xs font-bold font-mono transition-all hover:scale-105 shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
                         GET STARTED
                     </a>
+                <?php endif; ?>
+            </div>
+
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#0a0a0a] border border-white/10 rounded-2xl p-4 flex flex-col gap-4 shadow-2xl md:hidden">
+                <a href="pages/about.php" class="text-sm font-mono text-gray-300 hover:text-brand px-4 py-2 hover:bg-white/5 rounded-lg transition-colors">About</a>
+                <a href="pages/changelog.php" class="text-sm font-mono text-gray-300 hover:text-brand px-4 py-2 hover:bg-white/5 rounded-lg transition-colors">Updates</a>
+                <div class="h-[1px] bg-white/10 w-full"></div>
+                <?php if(isset($_SESSION["id"])): ?>
+                    <a href="pages/dashboard.php" class="text-sm font-mono text-white hover:text-brand px-4 py-2 hover:bg-white/5 rounded-lg transition-colors">Dashboard</a>
+                    <a href="includes/user_actions/logout.php" class="text-sm font-mono text-red-400 hover:text-red-300 px-4 py-2 hover:bg-red-500/10 rounded-lg transition-colors">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" class="text-sm font-mono text-gray-300 hover:text-white px-4 py-2 hover:bg-white/5 rounded-lg transition-colors">Sign In</a>
+                    <a href="login.php?view=register" class="text-center w-full py-3 rounded-xl bg-brand text-black font-bold font-mono">GET STARTED</a>
                 <?php endif; ?>
             </div>
         </div>

@@ -81,7 +81,7 @@
     <?php endif; ?>
 
     <!-- Main Card -->
-    <div class="relative z-10 w-full max-w-5xl h-[600px] glass-panel rounded-3xl overflow-hidden shadow-2xl flex">
+    <div class="relative z-10 w-full max-w-5xl h-auto lg:h-[600px] glass-panel rounded-3xl overflow-hidden shadow-2xl flex">
         
         <!-- Left Side: Animation -->
         <div class="hidden lg:flex w-1/2 bg-black/40 relative items-center justify-center flex-col p-12 border-r border-white/5">

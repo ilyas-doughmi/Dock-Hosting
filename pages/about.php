@@ -28,16 +28,27 @@
 <body class="font-sans antialiased selection:bg-brand selection:text-black">
     
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 p-6 flex justify-between items-center backdrop-blur-md border-b border-white/5 bg-black/50">
+    <nav class="fixed top-0 w-full z-50 p-6 flex justify-between items-center backdrop-blur-md border-b border-white/5 bg-black/50 relative">
         <a href="../index.php" class="flex items-center gap-3 group">
             <div class="w-10 h-10 rounded-xl bg-brand text-black flex items-center justify-center text-lg group-hover:shadow-[0_0_15px_rgba(45,212,191,0.4)] transition-all">
                 <i class="fas fa-cubes"></i>
             </div>
             <span class="font-bold text-xl tracking-tight">DOCK-HOSTING</span>
         </a>
-        <a href="../index.php" class="text-gray-400 hover:text-white transition-colors font-mono text-xs uppercase tracking-widest border border-white/10 px-4 py-2 rounded-full hover:bg-white/5">
+
+        <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-2">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+
+        <a href="../index.php" class="hidden md:flex text-gray-400 hover:text-white transition-colors font-mono text-xs uppercase tracking-widest border border-white/10 px-4 py-2 rounded-full hover:bg-white/5 items-center">
             <i class="fas fa-arrow-left mr-2"></i> Back Home
         </a>
+
+         <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 bg-[#0a0a0a] border-b border-white/10 p-4 shadow-2xl md:hidden flex flex-col gap-4">
+             <a href="../index.php" class="text-sm font-mono text-white hover:text-brand px-4 py-3 hover:bg-white/5 rounded-lg transition-colors flex items-center">
+                <i class="fas fa-arrow-left mr-3"></i> Back to Home
+            </a>
+        </div>
     </nav>
 
     <main class="min-h-screen flex items-center justify-center relative overflow-hidden px-6 py-24">
