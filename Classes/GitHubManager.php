@@ -18,6 +18,8 @@ class GitHubManager{
             ":user_id" => $user_id
         ]);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ? $result["access_token"] : null;
     }
 }
