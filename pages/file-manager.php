@@ -48,7 +48,7 @@ if (isset($_GET["file"])) {
     
     if (in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
         $is_image = true;
-        $image_url = "http://" . $container_name . ".dockhosting.dev/" . $file_requested;
+        $image_url = "../includes/actions/view_image.php?container=$container_name&file=$file_requested";
     } else {
         $content = $project->getFileContent($container_name, $file_requested);
     }
