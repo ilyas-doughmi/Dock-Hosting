@@ -6,6 +6,11 @@ if (!isset($_SESSION["id"])) {
     exit;
 }
 
+require_once '../Classes/GitHubManager.php';
+$gh = new GitHubManager();
+$token = $gh->getAccessToken($_SESSION['id']);
+$is_connected = !empty($token);
+
 ?>
 
 
@@ -68,13 +73,13 @@ if (!isset($_SESSION["id"])) {
             box-shadow: 0 0 0 1px #2dd4bf;
         }
 
-        /* Upload Zone Animation */
-        .upload-zone {
-            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23333' stroke-width='2' stroke-dasharray='10%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-            transition: all 0.3s ease;
+        .framework-radio:checked + div {
+            border-color: #2dd4bf;
+            background-color: rgba(45, 212, 191, 0.05);
         }
-        .upload-zone:hover, .upload-zone.dragover {
-            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%232dd4bf' stroke-width='2' stroke-dasharray='10%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        
+        .repo-radio:checked + div {
+            border-color: #2dd4bf;
             background-color: rgba(45, 212, 191, 0.05);
         }
 
@@ -136,61 +141,99 @@ if (!isset($_SESSION["id"])) {
         <!-- Form Area -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8 relative z-10 flex justify-center">
             
-            <div class="w-full max-w-2xl">
+            <div class="w-full max-w-3xl">
                 <div class="mb-8">
                     <h1 class="text-3xl font-bold tracking-tight mb-2">Deploy New Instance</h1>
-                    <p class="text-gray-500 text-sm font-mono">Upload your PHP code to initialize a new container.</p>
+                    <p class="text-gray-500 text-sm font-mono">Create a new container from scratch or import from GitHub.</p>
                 </div>
 
-                <form action="../includes/create-project.php" method="POST" class="glass-panel p-6 md:p-8 rounded-xl space-y-8">
+                <!-- Tabs -->
+                <div class="flex items-center gap-4 mb-8 border-b border-white/10">
+                    <button onclick="switchSource('empty')" id="tab-empty" class="pb-2 border-b-2 border-brand text-brand font-bold text-sm transition-colors">
+                        <i class="fas fa-code mr-2"></i> Empty Project
+                    </button>
+                    <button onclick="switchSource('github')" id="tab-github" class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-white font-bold text-sm transition-colors">
+                        <i class="fab fa-github mr-2"></i> Import from GitHub
+                    </button>
+                </div>
+
+                <!-- Form -->
+                <form action="../includes/create-project.php" method="POST" class="glass-panel p-6 md:p-8 rounded-xl space-y-8" id="deploy-form">
                     
-                    <!-- 1. Project Name -->
-                    <div class="space-y-4">
-                        <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Project Name</label>
-                        <div class="relative">
-                            <i class="fas fa-tag absolute left-4 top-3.5 text-gray-600"></i>
-                            <input required type="text" name="project_name" placeholder="e.g. My Portfolio" 
-                                   class="input-field w-full py-3 pl-10 pr-4 rounded-lg text-sm placeholder-gray-700 font-mono focus:ring-1 focus:ring-brand" required>
+                    <input type="hidden" name="source_type" id="source_type" value="empty">
+
+                    <div id="section-empty" class="space-y-8">
+                        <div class="space-y-4">
+                            <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Project Name</label>
+                            <div class="relative">
+                                <i class="fas fa-tag absolute left-4 top-3.5 text-gray-600"></i>
+                                <input type="text" name="project_name" placeholder="e.g. My Portfolio" 
+                                       class="input-field w-full py-3 pl-10 pr-4 rounded-lg text-sm placeholder-gray-700 font-mono focus:ring-1 focus:ring-brand">
+                            </div>
                         </div>
-                        <p class="text-[10px] text-gray-600 ml-1">This will be used to identify your container.</p>
-                    </div>
 
-                    <!-- 2. Framework Selection -->
-                    <div class="space-y-4">
-                        <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Select Framework</label>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- PHP Option (Active) -->
-                            <label class="cursor-pointer relative group">
-                                <input type="radio" name="framework" value="php" checked class="peer sr-only">
-                                <div class="p-4 rounded-xl border border-[#333] bg-[#050505] peer-checked:border-brand peer-checked:bg-brand/5 hover:border-gray-500 transition-all duration-300 flex flex-col items-center gap-3">
-                                    <div class="w-12 h-12 flex items-center justify-center">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" alt="PHP" class="h-10 w-auto">
+                        <div class="space-y-4">
+                            <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Select Framework</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="cursor-pointer relative group">
+                                    <input type="radio" name="framework" value="php" checked class="peer sr-only framework-radio">
+                                    <div class="p-4 rounded-xl border border-[#333] bg-[#050505] hover:border-gray-500 transition-all duration-300 flex flex-col items-center gap-3">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/27/PHP-logo.svg" alt="PHP" class="h-10 w-auto">
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="font-bold text-sm text-white group-hover:text-brand transition-colors">PHP Native</div>
+                                            <div class="text-[10px] text-gray-500 mt-1">Version 8.2</div>
+                                        </div>
+                                        <div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity text-brand">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
                                     </div>
-                                    <div class="text-center">
-                                        <div class="font-bold text-sm text-white group-hover:text-brand transition-colors">PHP Native</div>
-                                        <div class="text-[10px] text-gray-500 mt-1">Version 8.2</div>
-                                    </div>
-                                    <div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity text-brand">
-                                        <i class="fas fa-check-circle"></i>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- Node.js Option (Disabled/Coming Soon) -->
-                            <div class="opacity-50 cursor-not-allowed relative">
-                                <div class="p-4 rounded-xl border border-[#1f1f1f] bg-[#0a0a0a] flex flex-col items-center gap-3 grayscale">
-                                    <div class="w-12 h-12 flex items-center justify-center">
-                                        <i class="fab fa-node text-3xl text-gray-600"></i>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="font-bold text-sm text-gray-500">Node.js</div>
-                                        <div class="text-[10px] text-gray-600 mt-1">Coming Soon</div>
-                                    </div>
+                                </label>
+                                <!-- Coming Soon Node.js -->
+                                <div class="opacity-50 cursor-not-allowed p-4 rounded-xl border border-[#1f1f1f] bg-[#0a0a0a] flex flex-col items-center gap-3 grayscale">
+                                    <i class="fab fa-node text-3xl text-gray-600 mb-2"></i>
+                                    <span class="text-xs text-gray-500">Node.js (Coming Soon)</span>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-[10px] text-gray-600 ml-1">Your container will be initialized with a default index.php file.</p>
+                    </div>
+
+
+                    <div id="section-github" class="space-y-8 hidden">
+                        <?php if(!$is_connected): ?>
+                            <div class="text-center py-10 bg-white/5 rounded-xl border border-dashed border-white/10">
+                                <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                                    <i class="fab fa-github text-3xl"></i>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2">Connect to GitHub</h3>
+                                <p class="text-gray-500 text-sm mb-6 max-w-sm mx-auto">Link your GitHub account to import repositories and enable auto-deployments.</p>
+                                <a href="settings.php" class="px-6 py-3 bg-brand text-black font-bold rounded-lg hover:bg-teal-400 transition-colors inline-flex items-center gap-2">
+                                    <span>Go to Settings</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-sm font-mono text-gray-400 uppercase tracking-wide ml-1">Select Repository</label>
+                                    <div class="relative w-48">
+                                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs"></i>
+                                        <input type="text" id="repo-filter" placeholder="Filter..." 
+                                               class="w-full bg-black/20 border border-white/10 rounded-md py-1.5 pl-8 pr-3 text-xs focus:border-brand focus:outline-none placeholder-gray-700">
+                                    </div>
+                                </div>
+
+                                <div id="repo-loader" class="py-8 text-center text-gray-500">
+                                    <i class="fas fa-circle-notch fa-spin mr-2"></i> Loading repositories...
+                                </div>
+
+                                <div id="repo-grid" class="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar hidden">
+                                </div>
+                                <input type="hidden" name="github_repo" id="selected_repo" required disabled>
+                                <input type="hidden" name="github_branch" id="selected_branch" value="main">
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Submit -->
@@ -211,9 +254,7 @@ if (!isset($_SESSION["id"])) {
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
-            
             sidebar.classList.toggle('-translate-x-full');
-            
             if (overlay.classList.contains('hidden')) {
                 overlay.classList.remove('hidden');
                 setTimeout(() => overlay.classList.remove('opacity-0'), 10);
@@ -222,6 +263,111 @@ if (!isset($_SESSION["id"])) {
                 setTimeout(() => overlay.classList.add('hidden'), 300);
             }
         }
+
+        function switchSource(source) {
+            const emptyTab = document.getElementById('tab-empty');
+            const githubTab = document.getElementById('tab-github');
+            const emptySec = document.getElementById('section-empty');
+            const githubSec = document.getElementById('section-github');
+            const hiddenType = document.getElementById('source_type');
+
+            hiddenType.value = source;
+
+            if(source === 'empty'){
+                emptyTab.classList.add('border-brand', 'text-brand');
+                emptyTab.classList.remove('border-transparent', 'text-gray-500');
+                githubTab.classList.remove('border-brand', 'text-brand');
+                githubTab.classList.add('border-transparent', 'text-gray-500');
+
+                emptySec.classList.remove('hidden');
+                githubSec.classList.add('hidden');
+                
+                // Toggle required fields
+                document.querySelector('[name="project_name"]').required = true;
+                document.getElementById('selected_repo').required = false;
+                document.getElementById('selected_repo').disabled = true;
+
+            } else {
+                githubTab.classList.add('border-brand', 'text-brand');
+                githubTab.classList.remove('border-transparent', 'text-gray-500');
+                emptyTab.classList.remove('border-brand', 'text-brand');
+                emptyTab.classList.add('border-transparent', 'text-gray-500');
+
+                githubSec.classList.remove('hidden');
+                emptySec.classList.add('hidden');
+
+                // Toggle required fields
+                document.querySelector('[name="project_name"]').required = false;
+                document.getElementById('selected_repo').required = true;
+                document.getElementById('selected_repo').disabled = false;
+
+                <?php if($is_connected): ?>
+                if(document.getElementById('repo-grid').children.length === 0){
+                    loadRepos();
+                }
+                <?php endif; ?>
+            }
+        }
+
+        <?php if($is_connected): ?>
+        let allRepos = [];
+
+        async function loadRepos() {
+            try {
+                const res = await fetch('../api/get_repos.php');
+                allRepos = await res.json();
+                renderRepos(allRepos);
+                document.getElementById('repo-loader').classList.add('hidden');
+                document.getElementById('repo-grid').classList.remove('hidden');
+            } catch (e) {
+                console.error(e);
+                document.getElementById('repo-loader').innerHTML = '<span class="text-red-400">Failed to load repositories.</span>';
+            }
+        }
+
+        function renderRepos(repos) {
+            const grid = document.getElementById('repo-grid');
+            if(repos.length === 0){
+                grid.innerHTML = '<div class="col-span-1 text-center text-gray-500">No repositories found.</div>';
+                return;
+            }
+
+            grid.innerHTML = repos.map(repo => `
+                <label class="cursor-pointer relative group block">
+                    <input type="radio" name="github_selection" value="${repo.id}" onclick="selectRepo('${repo.name}', '${repo.default_branch}')" class="peer sr-only repo-radio">
+                    <div class="p-4 rounded-xl border border-[#333] bg-[#050505] hover:border-gray-500 transition-all duration-300 flex items-center justify-between">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center flex-shrink-0 text-white">
+                                <i class="fab fa-github"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-sm text-white group-hover:text-brand transition-colors truncate">${repo.name}</div>
+                                <div class="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
+                                    <span class="bg-white/10 px-1.5 py-0.5 rounded text-[9px]">${repo.visibility}</span>
+                                    <span>Updated ${new Date(repo.updated_at).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="opacity-0 peer-checked:opacity-100 text-brand text-xl transition-opacity">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </label>
+            `).join('');
+        }
+
+        function selectRepo(name, branch) {
+            document.getElementById('selected_repo').value = name;
+            document.getElementById('selected_branch').value = branch;
+        }
+
+        document.getElementById('repo-filter').addEventListener('keyup', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = allRepos.filter(r => r.name.toLowerCase().includes(val));
+            renderRepos(filtered);
+        });
+        <?php endif; ?>
+
     </script>
 </body>
 </html>
