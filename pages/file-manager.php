@@ -181,10 +181,18 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                 <div class="p-4 border-b border-border flex items-center justify-between">
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Explorer</span>
                     <div class="flex gap-2 text-gray-500">
-                        <button onclick="openNewFileModal()" class="hover:text-white transition-colors"><i class="fas fa-file-circle-plus"></i></button>
-                        <button onclick="openNewFolderModal()" class="hover:text-white transition-colors"><i class="fas fa-folder-plus"></i></button>
+                        <button onclick="document.getElementById('uploadInput').click()" class="hover:text-white transition-colors" title="Upload File"><i class="fas fa-cloud-upload-alt"></i></button>
+                        <button onclick="openNewFileModal()" class="hover:text-white transition-colors" title="New File"><i class="fas fa-file-circle-plus"></i></button>
+                        <button onclick="openNewFolderModal()" class="hover:text-white transition-colors" title="New Folder"><i class="fas fa-folder-plus"></i></button>
                     </div>
                 </div>
+
+                <!-- Hidden Upload Form -->
+                <form id="uploadForm" action="../includes/actions/upload_file.php" method="POST" enctype="multipart/form-data" class="hidden">
+                    <input type="hidden" name="container" value="<?= $container_name ?>">
+                    <input type="hidden" name="path" value="<?= $new_path ?>">
+                    <input type="file" id="uploadInput" name="file" onchange="document.getElementById('uploadForm').submit()">
+                </form>
 
                 <div class="px-4 py-2 text-[10px] font-mono text-gray-600 border-b border-border bg-black/20 truncate">
                     root/<?= $new_path ?>
