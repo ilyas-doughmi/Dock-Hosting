@@ -334,7 +334,7 @@ $is_connected = !empty($token);
 
             grid.innerHTML = repos.map(repo => `
                 <label class="cursor-pointer relative group block">
-                    <input type="radio" name="github_selection" value="${repo.id}" onclick="selectRepo('${repo.name}', '${repo.default_branch}')" class="peer sr-only repo-radio">
+                    <input type="radio" name="github_selection" value="${repo.id}" onclick="selectRepo('${repo.full_name}', '${repo.default_branch}')" class="peer sr-only repo-radio">
                     <div class="p-4 rounded-xl border border-[#333] bg-[#050505] hover:border-gray-500 transition-all duration-300 flex items-center justify-between">
                         <div class="flex items-center gap-3 overflow-hidden">
                             <div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center flex-shrink-0 text-white">
