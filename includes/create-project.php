@@ -43,8 +43,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $clone_url = "https://oauth2:{$token}@github.com/{$repo_full_name}.git";
         
+        $safe_branch = escapeshellarg($branch);
+        $safe_clone_url = escapeshellarg($clone_url);
+        $safe_path = escapeshellarg($path);
         
-        $cmd = "git clone -b {$branch} {$clone_url} {$path} 2>&1";
+        $cmd = "git clone -b {$safe_branch} {$safe_clone_url} {$safe_path} 2>&1";
         exec($cmd, $output, $return_var);
 
         if ($return_var !== 0) {
@@ -90,7 +93,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $host_project_path = $host_base . "/Projects/" . $_SESSION["id"] . "/" . $project_name;
 
         $subdomain = $project_name . ".dockhosting.dev";
-        $cmd = "docker run -d -p " .$last_port.":80 --name ".$project_name." --network proxy_network -e VIRTUAL_HOST=".$subdomain." -e LETSENCRYPT_HOST=".$subdomain." -v \"".$host_project_path."\":/var/www/html php:8.2-apache";
+        
+        $safe_port = escapeshellarg($last_port . ":80");
+        $safe_name = escapeshellarg($project_name);
+        $safe_subdomain = escapeshellarg($subdomain);
+        $safe_volume = escapeshellarg($host_project_path . ":/var/www/html");
+        
+        $cmd = "docker run -d -p {$safe_port} --name {$safe_name} --network proxy_network -e VIRTUAL_HOST={$safe_subdomain} -e LETSENCRYPT_HOST={$safe_subdomain} -v {$safe_volume} php:8.2-apache";
         shell_exec($cmd);
         
         header("location: ../pages/dashboard.php?msg=Project created successfully");
