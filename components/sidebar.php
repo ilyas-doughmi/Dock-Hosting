@@ -31,7 +31,7 @@
 
             <div class="px-4 py-2 mt-8 text-[10px] font-mono text-gray-600 uppercase tracking-widest">Personal</div>
 
-            <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all group <?= $current_page == 'settings.php' ? 'bg-brand/10 text-brand border border-brand/10' : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent' ?>">
+            <a href="settings.php" class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all group <?= $current_page == 'settings.php' ? 'bg-brand/10 text-brand border border-brand/10' : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent' ?>">
                 <i class="fas fa-cog w-5 <?= $current_page == 'settings.php' ? '' : 'text-gray-600 group-hover:text-white' ?> transition-colors text-center"></i>
                 <span class="font-medium text-sm">Settings</span>
             </a>
@@ -44,10 +44,10 @@
         <div class="p-4 mx-4 mb-4 rounded-2xl bg-white/5 border border-white/5 hover:border-brand/20 transition-colors group relative">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand to-teal-600 flex items-center justify-center font-bold text-black shadow-lg">
-                    <?= substr($_SESSION["username"] ?? 'G', 0, 1) ?>
+                    <?= htmlspecialchars(substr($_SESSION["username"] ?? 'G', 0, 1)) ?>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <div class="font-bold text-sm text-white truncate"><?= $_SESSION["username"] ?? 'Guest' ?></div>
+                    <div class="font-bold text-sm text-white truncate"><?= htmlspecialchars($_SESSION["username"] ?? 'Guest') ?></div>
                     <div class="text-[10px] text-brand font-mono truncate">Online</div>
                 </div>
                 

@@ -80,6 +80,40 @@ session_start();
             <div class="relative">
                 <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>
                 <div class="flex items-baseline justify-between mb-4">
+                    <h2 class="text-2xl font-bold">GitHub Integration & Security <span class="text-brand text-sm font-mono ml-2">v1.3.0</span></h2>
+                    <span class="text-xs font-mono text-gray-500">2025-12-30</span>
+                </div>
+                
+                <div class="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6">
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">GitHub Integration</strong>
+                                <span class="text-sm text-gray-400">Full OAuth integration: connect account, list repositories, and clone directly when creating projects. Added secure disconnection.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">Security Hardening</strong>
+                                <span class="text-sm text-gray-400">Patched critical RCE and XSS vulnerabilities. Implemented strict input validation, output escaping, and safer shell command execution.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">File Manager Enhancements</strong>
+                                <span class="text-sm text-gray-400">Added secure file deletion with directory traversal protection. Implemented AJAX-based file loading and saving.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="relative">
+                <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>
+                <div class="flex items-baseline justify-between mb-4">
                     <h2 class="text-2xl font-bold">UX & Community Update <span class="text-brand text-sm font-mono ml-2">v1.2.0</span></h2>
                     <span class="text-xs font-mono text-gray-500">2025-12-29</span>
                 </div>

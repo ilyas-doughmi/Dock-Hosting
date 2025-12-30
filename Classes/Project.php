@@ -134,7 +134,7 @@ Class Project extends db{
         $files = scandir($path);
         $result = [];
         foreach($files as $file){
-            if($file == "." || $file == ".." || $file == ".htaccess"){
+            if($file == "." || $file == ".." || $file == ".htaccess" || $file == ".git"){
                 continue;
             }
 
@@ -175,6 +175,30 @@ Class Project extends db{
         else{
             return "file not found";
         }
+    }
+
+    public function deleteItem($container_name, $file_path) {
+        $base_path = dirname(__DIR__) . "/users/Projects/";
+        $path = $base_path . $_SESSION["id"] . "/" . $container_name . "/" . $file_path;
+        
+        $real_base = realpath($base_path . $_SESSION["id"] . "/" . $container_name);
+        $real_target = realpath($path);
+        
+        if ($real_target === false || strpos($real_target, $real_base) !== 0) {
+            return false;
+        }
+
+        if (basename($path) === 'error.log') {
+            return false;
+        }
+
+        if (is_dir($path)) {
+            $this->removeDir($path);
+            return true;
+        } elseif (is_file($path)) {
+            return unlink($path);
+        }
+        return false;
     }
 }
 

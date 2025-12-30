@@ -1,4 +1,10 @@
 <?php
+
+use Dotenv\Dotenv;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+
 session_start();
 
 if (!isset($_SESSION["id"])) {
@@ -12,6 +18,14 @@ $projects = new Project();
 $user_Projects = $projects->getProjects($_SESSION["id"]);
 
 $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
+
+
+// github
+
+$dotenv = Dotenv::createImmutable(__DIR__ . "/../");
+$dotenv->load();
+$clientid_github = $_ENV['GITHUB_CLIENT_ID'];
+$redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
 
 
 ?>
@@ -107,11 +121,18 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                 <span class="flex items-center gap-3"><i class="fas <?= $icon ?> <?= $icon_color ?>"></i> <?= $message ?></span>
                 <button onclick="this.closest('.animate-slide-up').remove()" class="<?= $icon_color ?> hover:text-white transition-colors"><i class="fas fa-times"></i></button>
             </div>
-            <?php if(isset($_GET['url'])): ?>
-                <a href="<?= htmlspecialchars($_GET['url']) ?>" target="_blank" class="text-xs underline hover:text-white mt-1 ml-7">
-                    Visit: <?= htmlspecialchars($_GET['domain'] ?? $_GET['url']) ?> <i class="fas fa-external-link-alt ml-1"></i>
+            <?php 
+            if(isset($_GET['url'])): 
+                $url = $_GET['url'];
+                if (filter_var($url, FILTER_VALIDATE_URL) && strpos(strtolower($url), 'javascript:') !== 0):
+            ?>
+                <a href="<?= htmlspecialchars($url) ?>" target="_blank" class="text-xs underline hover:text-white mt-1 ml-7">
+                    Visit: <?= htmlspecialchars($_GET['domain'] ?? $url) ?> <i class="fas fa-external-link-alt ml-1"></i>
                 </a>
-            <?php endif; ?>
+            <?php 
+                endif; 
+            endif; 
+            ?>
         </div>
         <script>
             setTimeout(() => {
@@ -166,7 +187,7 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                     <i class="fas fa-cubes text-3xl"></i>
                 </div>
                 <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                    Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-white"><?= $_SESSION["username"] ?></span>
+                    Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-white"><?= htmlspecialchars($_SESSION["username"]) ?></span>
                 </h1>
                 <p class="text-gray-400 text-lg">Manage and deploy your containerized PHP applications.</p>
             </div>
@@ -177,9 +198,14 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                     <h2 class="text-xl font-bold flex items-center gap-3">
                         <i class="fas fa-layer-group text-brand"></i> My Deployments
                     </h2>
-                    <a href="create-project.php" class="px-6 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-mono transition-colors flex items-center gap-2">
-                         <i class="fas fa-plus text-brand"></i> New Project
-                    </a>
+                    <div class="flex gap-5 ">
+                        <a href="create-project.php" class="px-6 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-mono transition-colors flex items-center gap-2">
+                            <i class="fas fa-plus text-brand"></i> New Project
+                        </a>
+
+                    </div>
+
+                    
                 </div>
 
                 <?php if ($user_Projects): ?>
@@ -208,8 +234,8 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                                     </div>
 
                                     <h3 class="text-xl font-bold mb-1 truncate"><?= htmlspecialchars($project['project_name']) ?></h3>
-                                    <a href="http://<?= $project['project_name'] ?>.dockhosting.dev" target="_blank" class="text-xs font-mono text-gray-500 hover:text-brand transition-colors flex items-center gap-2 mb-6">
-                                        <i class="fas fa-link"></i> <?= $project['project_name'] ?>.dockhosting.dev
+                                    <a href="http://<?= htmlspecialchars($project['project_name']) ?>.dockhosting.dev" target="_blank" class="text-xs font-mono text-gray-500 hover:text-brand transition-colors flex items-center gap-2 mb-6">
+                                        <i class="fas fa-link"></i> <?= htmlspecialchars($project['project_name']) ?>.dockhosting.dev
                                     </a>
 
                                     <div class="grid grid-cols-2 gap-2 mb-6">
@@ -224,10 +250,10 @@ $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
                                     </div>
 
                                     <div class="flex items-center gap-2 pt-4 border-t border-white/5">
-                                        <a href="./file-manager.php?container=<?= $project["container_name"] ?>" class="flex-1 py-2.5 rounded-lg bg-brand/10 hover:bg-brand text-brand hover:text-black font-bold text-xs text-center transition-all">
+                                        <a href="./file-manager.php?container=<?= htmlspecialchars($project["container_name"]) ?>" class="flex-1 py-2.5 rounded-lg bg-brand/10 hover:bg-brand text-brand hover:text-black font-bold text-xs text-center transition-all">
                                             CODE EDITOR
                                         </a>
-                                        <button onclick="deleteContainer('<?= $project["container_name"] ?>')" class="w-10 h-10 rounded-lg border border-red-500/20 hover:bg-red-500/10 text-red-400 flex items-center justify-center transition-colors">
+                                        <button onclick="deleteContainer('<?= htmlspecialchars($project["container_name"], ENT_QUOTES) ?>')" class="w-10 h-10 rounded-lg border border-red-500/20 hover:bg-red-500/10 text-red-400 flex items-center justify-center transition-colors">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
