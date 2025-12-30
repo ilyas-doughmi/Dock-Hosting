@@ -223,13 +223,21 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                            data-path="<?= htmlspecialchars($target_path) ?>"
                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-mono transition-colors mb-1 truncate group text-gray-400 hover:bg-white/5 hover:text-gray-200 user-file-link">
                             
-                            <?php if ($is_folder): ?>
-                                <i class="fas fa-folder w-4 text-center text-yellow-500/80 group-hover:text-yellow-400 transition-colors"></i>
-                            <?php else: ?>
-                                <i class="fas fa-file-code w-4 text-center text-blue-400/80 group-hover:text-blue-300 transition-colors"></i>
-                            <?php endif; ?>
+                            <div class="flex-1 flex items-center gap-2 truncate">
+                                <?php if ($is_folder): ?>
+                                    <i class="fas fa-folder w-4 text-center text-yellow-500/80 group-hover:text-yellow-400 transition-colors"></i>
+                                <?php else: ?>
+                                    <i class="fas fa-file-code w-4 text-center text-blue-400/80 group-hover:text-blue-300 transition-colors"></i>
+                                <?php endif; ?>
+                                <?= htmlspecialchars($fl["name"]) ?>
+                            </div>
                             
-                            <?= htmlspecialchars($fl["name"]) ?>
+                            <?php if($fl["name"] !== "error.log"): ?>
+                                <button onclick="event.preventDefault(); event.stopPropagation(); deleteItem('<?= htmlspecialchars($target_path, ENT_QUOTES) ?>')" 
+                                        class="w-6 h-6 flex items-center justify-center rounded text-gray-600 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100" title="Delete">
+                                    <i class="fas fa-trash-alt text-[10px]"></i>
+                                </button>
+                            <?php endif; ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
@@ -639,6 +647,29 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
             }
         }
         
+
+        async function deleteItem(filePath) {
+             if (!confirm(`Are you sure you want to delete "${filePath.split('/').pop()}"? This cannot be undone.`)) return;
+
+             try {
+                const response = await fetch(`../api/file_manager_api.php?action=delete_content&container=${CONTAINER_NAME}&file=${filePath}`, {
+                    method: 'POST',
+                    body: JSON.stringify({}),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const res = await response.json();
+                if(res.success) {
+                    showToast('Item deleted successfully');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    throw new Error(res.error || 'Unknown error');
+                }
+             } catch (error) {
+                 console.error('Delete failed:', error);
+                 showToast('Failed to delete item', 'error');
+             }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
              const urlParams = new URLSearchParams(window.location.search);
