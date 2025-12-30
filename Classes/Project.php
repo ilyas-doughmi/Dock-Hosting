@@ -131,6 +131,10 @@ Class Project extends db{
 
         // new to get files and foulders (not merged)
 
+        if (!is_dir($path)) {
+            return [];
+        }
+
         $files = scandir($path);
         $result = [];
         foreach($files as $file){
