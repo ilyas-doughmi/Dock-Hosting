@@ -7,7 +7,7 @@ services:
     restart: always
     volumes:
       - .:/var/www/html
-      - ${STORAGE_PATH:-./users}:/var/www/html/users
+      - /home/deployer/dock-hosting-data:/var/www/html/users
       - /var/run/docker.sock:/var/run/docker.sock
 
     networks:
@@ -19,7 +19,7 @@ services:
       - DB_USER=root
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=dock_hosting
-      - HOST_BASE_PATH=${HOST_BASE_PATH:-/var/www/html/users}
+      - HOST_BASE_PATH=${HOST_BASE_PATH:-/home/deployer/dock-hosting-data}
       - VIRTUAL_HOST=dockhosting.dev,www.dockhosting.dev
       - LETSENCRYPT_HOST=dockhosting.dev,www.dockhosting.dev
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@dockhosting.dev}
