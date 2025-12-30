@@ -45,4 +45,11 @@ class GitHubManager{
 
         return json_decode($response, true);
     }
+
+    public function disconnect($user_id)
+    {
+        $query = "DELETE FROM oauth_tokens WHERE user_id = :user_id";
+        $stmt = $this->db->connect()->prepare($query);
+        return $stmt->execute([":user_id" => $user_id]);
+    }
 }
