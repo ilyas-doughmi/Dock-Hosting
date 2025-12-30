@@ -9,7 +9,6 @@ require_once("../php/connect.php");
 require_once("../Classes/Project.php");
 
 $project = new Project;
-$content = "";
 $container_name = $_GET["container"] ?? null;
 
 if (!$container_name) {
@@ -33,26 +32,7 @@ if ($new_path != "") {
 
 $files = $project->getProjectFiles($container_name, $new_path);
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $file_requested = $_GET["file"];
-    $newcontent = $_POST["newcontent"];
-    $save = $project->saveFileChanges($container_name, $file_requested, $newcontent);
-}
 
-$is_image = false;
-$image_url = "";
-
-if (isset($_GET["file"])) {
-    $file_requested = $_GET["file"];
-    $ext = pathinfo($file_requested, PATHINFO_EXTENSION);
-    
-    if (in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
-        $is_image = true;
-        $image_url = "../includes/actions/view_image.php?container=$container_name&file=$file_requested";
-    } else {
-        $content = $project->getFileContent($container_name, $file_requested);
-    }
-}
 
 require_once("../Classes/DatabaseManager.php");
 $dbManager = new DatabaseManager();
@@ -97,20 +77,31 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
             color: #d4d4d4;
             line-height: 1.6;
         }
-        /* Scrollbar styles */
+
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #444; }
+        
+
+        .loader {
+            border: 2px solid #333;
+            border-top: 2px solid #2dd4bf; 
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 
 <body class="h-screen w-full flex flex-col overflow-hidden">
 
-    <!-- Top Bar / Header -->
+
     <header class="h-16 border-b border-border bg-[#0a0a0a] flex items-center justify-between px-6 z-20 flex-shrink-0">
         
-        <!-- Left: Project Info -->
+
         <div class="flex items-center gap-6">
             <a href="dashboard.php" class="text-gray-500 hover:text-white transition-colors">
                 <i class="fas fa-arrow-left"></i>
@@ -129,7 +120,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
             </div>
         </div>
 
-        <!-- Center: Editor Title/Tabs (Visual only) -->
+
         <div class="hidden md:flex items-center gap-1 bg-black/50 p-1 rounded-lg border border-white/5">
             <div class="px-3 py-1.5 rounded-md bg-white/5 text-xs font-mono text-gray-300 flex items-center gap-2 border border-white/5">
                 <i class="fas fa-code text-blue-400"></i> Editor
@@ -139,19 +130,19 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
             </div>
         </div>
 
-        <!-- Right: Actions -->
+
         <div class="flex items-center gap-4">
-            <!-- Container Controls -->
+
             <div class="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/5">
                 <form action="../includes/actions/start.php" method="POST">
-                    <input type="hidden" name="container_name" value="<?= $container_name ?>">
+                    <input type="hidden" name="container_name" value="<?= htmlspecialchars($container_name) ?>">
                     <button type="submit" class="w-8 h-8 flex items-center justify-center rounded hover:bg-green-500/20 text-green-500 transition-colors" title="Start Container">
                         <i class="fas fa-play text-xs"></i>
                     </button>
                 </form>
                 
                 <form action="../includes/actions/stop.php" method="POST">
-                    <input type="hidden" name="container_name" value="<?= $container_name ?>">
+                    <input type="hidden" name="container_name" value="<?= htmlspecialchars($container_name) ?>">
                     <button type="submit" class="w-8 h-8 flex items-center justify-center rounded hover:bg-red-500/20 text-red-500 transition-colors" title="Stop Container">
                         <i class="fas fa-stop text-xs"></i>
                     </button>
@@ -164,11 +155,10 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
 
             <div class="w-[1px] h-8 bg-white/10"></div>
 
-            <?php if (isset($file_requested) && !$is_image): ?>
-                <button onclick="document.getElementById('save-form').submit()" class="bg-brand hover:bg-brand-hover text-black text-xs font-bold py-2 px-5 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-brand/10">
-                    <i class="fas fa-save"></i> SAVE CHANGES
-                </button>
-            <?php endif; ?>
+
+            <button id="btn-save" onclick="saveFile()" class="hidden bg-brand hover:bg-brand-hover text-black text-xs font-bold py-2 px-5 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-brand/10">
+                <i class="fas fa-save"></i> <span>SAVE CHANGES</span>
+            </button>
         </div>
     </header>
 
@@ -190,10 +180,10 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                 </button>
             </nav>
 
-            <!-- Sidebar Panel -->
+
             <aside class="w-72 bg-[#0a0a0a] border-r border-border flex flex-col flex-shrink-0 relative">
                 
-                <!-- VIEW: EXPLORER -->
+
 
             <div id="view-explorer" class="flex-1 flex flex-col h-full absolute inset-0 transition-opacity duration-200">
                 <div class="p-4 border-b border-border flex items-center justify-between">
@@ -205,18 +195,18 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                     </div>
                 </div>
 
-                <!-- Hidden Upload Form -->
+
                 <form id="uploadForm" class="hidden">
                     <input type="file" id="uploadInput" multiple onchange="handleFileUpload(this.files)">
                 </form>
 
                 <div class="px-4 py-2 text-[10px] font-mono text-gray-600 border-b border-border bg-black/20 truncate">
-                    root/<?= $new_path ?>
+                    root/<?= htmlspecialchars($new_path) ?>
                 </div>
 
                 <div class="flex-1 overflow-y-auto p-2">
                     <?php if ($new_path != ""): ?>
-                        <a href="file-manager.php?container=<?= $container_name ?>&path=<?= $parent_path ?>"
+                        <a href="file-manager.php?container=<?= htmlspecialchars($container_name) ?>&path=<?= htmlspecialchars($parent_path) ?>"
                             class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-white hover:bg-white/5 transition-colors font-mono mb-1">
                             <i class="fas fa-level-up-alt w-4"></i> ..
                         </a>
@@ -225,13 +215,13 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                     <?php foreach ($files as $fl): ?>
                         <?php
                         $is_folder = ($fl["type"] == "folder");
-                        $param = $is_folder ? "path" : "file";
                         $target_path = $new_path == "" ? $fl["name"] : $new_path . "/" . $fl["name"];
-                        $active = (isset($file_requested) && $file_requested === $target_path);
                         ?>
 
-                        <a href="file-manager.php?container=<?= $container_name ?>&<?= $param ?>=<?= $target_path ?>&path=<?= $is_folder ? $target_path : $new_path ?>"
-                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-mono transition-colors mb-1 truncate group <?= $active ? 'bg-brand/10 text-brand' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200' ?>">
+                        <a href="file-manager.php?container=<?= htmlspecialchars($container_name) ?>&<?= $is_folder ? 'path' : 'file' ?>=<?= htmlspecialchars($target_path) ?>"
+                           <?= $is_folder ? '' : "onclick=\"loadFile(event, " . htmlspecialchars(json_encode($target_path), ENT_QUOTES) . ")\"" ?>
+                           data-path="<?= htmlspecialchars($target_path) ?>"
+                           class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-mono transition-colors mb-1 truncate group text-gray-400 hover:bg-white/5 hover:text-gray-200 user-file-link">
                             
                             <?php if ($is_folder): ?>
                                 <i class="fas fa-folder w-4 text-center text-yellow-500/80 group-hover:text-yellow-400 transition-colors"></i>
@@ -239,13 +229,13 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                                 <i class="fas fa-file-code w-4 text-center text-blue-400/80 group-hover:text-blue-300 transition-colors"></i>
                             <?php endif; ?>
                             
-                            <?= $fl["name"] ?>
+                            <?= htmlspecialchars($fl["name"]) ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
             </div>
 
-            <!-- VIEW: DATABASE -->
+
             <div id="view-database" class="flex-1 flex flex-col h-full absolute inset-0 opacity-0 pointer-events-none transition-opacity duration-200 bg-[#0a0a0a]">
                 <div class="p-4 border-b border-border flex items-center justify-between">
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Database</span>
@@ -266,15 +256,15 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                                 </div>
                                 <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
                                     <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">Name</label>
-                                    <div class="font-mono text-xs text-yellow-500 truncate" title="<?= $userDB['db_name'] ?>"><?= $userDB['db_name'] ?></div>
+                                    <div class="font-mono text-xs text-yellow-500 truncate" title="<?= htmlspecialchars($userDB['db_name']) ?>"><?= htmlspecialchars($userDB['db_name']) ?></div>
                                 </div>
                                 <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
                                     <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">User</label>
-                                    <div class="font-mono text-xs text-green-500 truncate" title="<?= $userDB['db_user'] ?>"><?= $userDB['db_user'] ?></div>
+                                    <div class="font-mono text-xs text-green-500 truncate" title="<?= htmlspecialchars($userDB['db_user']) ?>"><?= htmlspecialchars($userDB['db_user']) ?></div>
                                 </div>
                                 <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
                                     <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">Pass</label>
-                                    <div class="font-mono text-xs text-red-400 select-all truncate"><?= $userDB['db_password'] ?></div>
+                                    <div class="font-mono text-xs text-red-400 select-all truncate"><?= htmlspecialchars($userDB['db_password']) ?></div>
                                 </div>
                             </div>
                             
@@ -285,7 +275,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                             <div class="pt-4 border-t border-white/5">
                                 <p class="text-[10px] text-gray-500 mb-2">Danger Zone</p>
                                 <form action="../includes/actions/delete_database.php" method="POST" onsubmit="return confirm('Are you sure? This cannot be undone.');">
-                                    <input type="hidden" name="container" value="<?= $container_name ?>">
+                                    <input type="hidden" name="container" value="<?= htmlspecialchars($container_name) ?>">
                                     <button type="submit" class="w-full py-2 rounded-lg border border-red-500/20 hover:bg-red-500/10 text-red-500 text-xs transition-colors">
                                         Delete Database
                                     </button>
@@ -301,7 +291,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                             <p class="text-gray-500 text-xs mb-6">Create a MySQL database for this project.</p>
                             
                             <form action="../includes/actions/create_database.php" method="POST">
-                                <input type="hidden" name="container" value="<?= $container_name ?>">
+                                <input type="hidden" name="container" value="<?= htmlspecialchars($container_name) ?>">
                                 <button type="submit" class="w-full py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-black text-xs font-bold transition-colors">
                                     Create Database
                                 </button>
@@ -316,34 +306,36 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
 
         <!-- Editor Area -->
         <main class="flex-1 flex flex-col relative bg-[#050505]">
-            <!-- Tab/Breadcrumb Strip -->
-            <?php if (isset($file_requested)): ?>
-                <div class="h-10 bg-[#0a0a0a] border-b border-border flex items-center px-4">
-                    <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
-                        <span class="text-brand"><?= basename($file_requested) ?></span>
-                        <span class="text-gray-600 text-[10px] ml-2 opacity-50"><?= $is_image ? 'Image Preview' : 'Edited' ?></span>
-                    </div>
-                </div>
-                
-                <?php if ($is_image): ?>
-                    <div class="flex-1 flex items-center justify-center overflow-auto bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
-                        <img src="<?= $image_url ?>" class="max-w-[90%] max-h-[90%] shadow-2xl rounded-lg border border-white/10" alt="Preview">
-                    </div>
-                <?php else: ?>
-                    <form id="save-form" action="file-manager.php?container=<?= $container_name ?>&file=<?= $file_requested ?>" method="POST" class="flex-1 relative">
-                        <textarea name="newcontent" class="w-full h-full p-6 resize-none outline-none border-none text-sm font-mono focus:bg-white/[0.02] transition-colors" spellcheck="false"><?= htmlspecialchars($content) ?></textarea>
-                    </form>
-                <?php endif; ?>
 
-            <?php else: ?>
-                <div class="h-full w-full flex flex-col items-center justify-center text-gray-700">
-                    <div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center mb-6">
-                        <i class="fas fa-code text-4xl opacity-50"></i>
+            <div id="file-header" class="h-10 bg-[#0a0a0a] border-b border-border flex items-center px-4 hidden">
+                <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
+                    <span id="file-name-display" class="text-brand"></span>
+                    <span id="file-type-display" class="text-gray-600 text-[10px] ml-2 opacity-50"></span>
+                    <div id="loading-spinner" class="ml-2 hidden">
+                        <div class="loader w-3 h-3 border-[1px]"></div>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-400 mb-2">No File Selected</h3>
-                    <p class="text-sm font-mono max-w-md text-center">Select a file from the explorer sidebar to view and edit its contents.</p>
                 </div>
-            <?php endif; ?>
+            </div>
+            
+
+            <div id="no-file-state" class="h-full w-full flex flex-col items-center justify-center text-gray-700">
+                <div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center mb-6">
+                    <i class="fas fa-code text-4xl opacity-50"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-400 mb-2">No File Selected</h3>
+                <p class="text-sm font-mono max-w-md text-center">Select a file from the explorer sidebar to view and edit its contents.</p>
+            </div>
+
+
+            <div id="image-preview-container" class="hidden flex-1 flex items-center justify-center overflow-auto bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+                <img id="image-preview" src="" class="max-w-[90%] max-h-[90%] shadow-2xl rounded-lg border border-white/10" alt="Preview">
+            </div>
+
+
+             <form id="editor-form" class="hidden flex-1 relative" onsubmit="return false;">
+                <textarea id="file-content" name="newcontent" class="w-full h-full p-6 resize-none outline-none border-none text-sm font-mono focus:bg-white/[0.02] transition-colors" spellcheck="false"></textarea>
+            </form>
+
 
             <div class="h-48 border-t border-border bg-[#0a0a0a] flex flex-col">
                 <div class="h-9 border-b border-border flex items-center px-4 justify-between bg-black/20">
@@ -374,8 +366,8 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                         <i class="fas fa-file-code text-brand"></i> New File
                     </h3>
                     <form action="../includes/actions/create_file.php" method="POST">
-                        <input type="hidden" name="container" value="<?= $container_name ?>">
-                        <input type="hidden" name="path" value="<?= $new_path ?>">
+                        <input type="hidden" name="container" value="<?= htmlspecialchars($container_name) ?>">
+                        <input type="hidden" name="path" value="<?= htmlspecialchars($new_path) ?>">
                         <div class="space-y-4">
                             <div>
                                 <label class="text-xs font-mono text-gray-500 uppercase">Filename</label>
@@ -401,8 +393,8 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                         <i class="fas fa-folder text-yellow-500"></i> New Folder
                     </h3>
                     <form action="../includes/actions/create_folder.php" method="POST">
-                        <input type="hidden" name="container" value="<?= $container_name ?>">
-                        <input type="hidden" name="path" value="<?= $new_path ?>">
+                        <input type="hidden" name="container" value="<?= htmlspecialchars($container_name) ?>">
+                        <input type="hidden" name="path" value="<?= htmlspecialchars($new_path) ?>">
                         <div class="space-y-4">
                             <div>
                                 <label class="text-xs font-mono text-gray-500 uppercase">Folder Name</label>
@@ -419,7 +411,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
         </div>
     </div>
 
-    <!-- Upload Progress Modal -->
+
     <div id="uploadProgressModal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-sm"></div>
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm p-4 text-center">
@@ -434,11 +426,37 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
         </div>
     </div>
 
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+        <div class="bg-gray-900 border border-white/10 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+            <div id="toast-icon"></div>
+            <div id="toast-message" class="text-sm font-medium"></div>
+        </div>
+    </div>
+
     <script>
+        const CONTAINER_NAME = <?= json_encode($container_name) ?>;
+        const NEW_PATH = <?= json_encode($new_path) ?>;
+        let currentFilePath = null;
+
         function openNewFileModal() { document.getElementById('newFileModal').classList.remove('hidden'); }
         function closeNewFileModal() { document.getElementById('newFileModal').classList.add('hidden'); }
         function openNewFolderModal() { document.getElementById('newFolderModal').classList.remove('hidden'); }
         function closeNewFolderModal() { document.getElementById('newFolderModal').classList.add('hidden'); }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-message');
+            
+            icon.innerHTML = type === 'success' ? '<i class="fas fa-check-circle text-green-500"></i>' : '<i class="fas fa-exclamation-circle text-red-500"></i>';
+            msg.innerText = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
 
         function switchView(viewName) {
             document.getElementById('view-explorer').classList.add('opacity-0', 'pointer-events-none');
@@ -455,6 +473,98 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
             const btn = document.getElementById('btn-' + viewName);
             btn.classList.remove('text-gray-500');
             btn.classList.add('text-brand', 'bg-brand/10');
+        }
+
+        async function loadFile(event, filePath) {
+            if(event) event.preventDefault();
+            
+
+            document.getElementById('no-file-state').classList.add('hidden');
+            document.getElementById('file-header').classList.remove('hidden');
+            document.getElementById('loading-spinner').classList.remove('hidden');
+            document.getElementById('file-name-display').innerText = filePath.split('/').pop();
+            
+
+            document.querySelectorAll('.user-file-link').forEach(el => {
+                el.classList.remove('bg-brand/10', 'text-brand');
+                el.classList.add('text-gray-400', 'hover:bg-white/5');
+            });
+            const activeLink = document.querySelector(`a[data-path="${filePath}"]`);
+            if(activeLink) {
+                activeLink.classList.remove('text-gray-400', 'hover:bg-white/5');
+                activeLink.classList.add('bg-brand/10', 'text-brand');
+            }
+
+
+            const newUrl = `file-manager.php?container=${CONTAINER_NAME}&file=${filePath}`;
+            window.history.pushState({path: filePath}, '', newUrl);
+
+            try {
+                const response = await fetch(`../api/file_manager_api.php?action=get_content&container=${CONTAINER_NAME}&file=${filePath}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                currentFilePath = filePath;
+                
+
+                document.getElementById('btn-save').classList.remove('hidden');
+
+                if (data.is_image) {
+                    document.getElementById('editor-form').classList.add('hidden');
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('image-preview').src = `../includes/actions/view_image.php?container=${CONTAINER_NAME}&file=${filePath}`;
+                    document.getElementById('file-type-display').innerText = 'Image Preview';
+
+                    document.getElementById('btn-save').classList.add('hidden');
+                } else {
+                    document.getElementById('image-preview-container').classList.add('hidden');
+                    document.getElementById('editor-form').classList.remove('hidden');
+                    document.getElementById('file-content').value = data.content;
+                    document.getElementById('file-type-display').innerText = 'Edited';
+                }
+
+            } catch (error) {
+                console.error('Error loading file:', error);
+                showToast('Failed to load file', 'error');
+            } finally {
+                document.getElementById('loading-spinner').classList.add('hidden');
+            }
+        }
+
+        async function saveFile() {
+             if (!currentFilePath) return;
+
+             const btn = document.getElementById('btn-save');
+             const originalText = btn.innerHTML;
+             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+             btn.disabled = true;
+
+             const content = document.getElementById('file-content').value;
+
+             try {
+                const response = await fetch(`../api/file_manager_api.php?action=save_content&container=${CONTAINER_NAME}&file=${currentFilePath}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ content: content }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const res = await response.json();
+                if(res.success) {
+                    showToast('File saved successfully!');
+                } else {
+                    throw new Error(res.error || 'Unknown error');
+                }
+
+             } catch (error) {
+                 console.error('Save failed:', error);
+                 showToast('Failed to save changes', 'error');
+             } finally {
+                 btn.innerHTML = originalText;
+                 btn.disabled = false;
+             }
         }
 
         async function handleFileUpload(files) {
@@ -476,8 +586,8 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
 
                 const formData = new FormData();
                 formData.append('file', file);
-                formData.append('container', '<?= $container_name ?>');
-                formData.append('path', '<?= $new_path ?>');
+                formData.append('container', CONTAINER_NAME);
+                formData.append('path', NEW_PATH);
 
                 try {
                     await fetch('../includes/actions/upload_file.php', {
@@ -487,7 +597,16 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                     
                     const log = document.createElement('div');
                     log.className = "mb-1";
-                    log.innerHTML = `<span class="text-green-500">➜</span> <span class="text-gray-400">Uploaded: ${file.name}</span>`;
+                    const arrow = document.createElement('span');
+                    arrow.className = "text-green-500";
+                    arrow.textContent = "➜ ";
+                    
+                    const msg = document.createElement('span');
+                    msg.className = "text-gray-400";
+                    msg.textContent = `Uploaded: ${file.name}`;
+                    
+                    log.appendChild(arrow);
+                    log.appendChild(msg);
                     consoleOutput.appendChild(log);
                     
                 } catch (error) {
@@ -519,6 +638,15 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                 setTimeout(() => overlay.classList.add('hidden'), 300);
             }
         }
+        
+
+        document.addEventListener('DOMContentLoaded', () => {
+             const urlParams = new URLSearchParams(window.location.search);
+             const file = urlParams.get('file');
+             if(file) {
+                 loadFile(null, file);
+             }
+        });
     </script>
 </body>
 </html>
