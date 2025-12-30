@@ -103,6 +103,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $safe_volume = escapeshellarg($host_project_path . ":/var/www/html");
         
         $cmd = "docker run -d -p {$safe_port} --name {$safe_name} --network proxy_network -e VIRTUAL_HOST={$safe_subdomain} -e LETSENCRYPT_HOST={$safe_subdomain} -v {$safe_volume} php:8.2-apache";
+        
+        file_put_contents(dirname(__DIR__) . '/debug_log.txt', "CMD: $cmd\nHost Base: $host_base\nPath: $path\nTime: " . date('Y-m-d H:i:s') . "\n----------------\n", FILE_APPEND);
+
         shell_exec($cmd);
         
         header("location: ../pages/dashboard.php?msg=Project created successfully");
