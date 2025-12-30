@@ -61,9 +61,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         file_put_contents($path . "index.php", $default_content);
     }
 
+    $repo_base_name = isset($repo_full_name) ? basename($repo_full_name) : '';
+    
     if (!file_exists($path . ".htaccess")) {
-        $htaccess = "php_flag display_errors off\nphp_flag log_errors on\nphp_value error_log /var/www/html/error.log";
+        $htaccess = "php_flag display_errors off\n";
+        $htaccess .= "php_flag log_errors on\n";
+        $htaccess .= "php_value error_log /var/www/html/error.log\n\n";
+        $htaccess .= "RewriteEngine On\n";
+        if (!empty($repo_base_name)) {
+            $htaccess .= "RewriteRule ^" . preg_quote($repo_base_name, '/') . "/(.*)$ /$1 [L,R=301]\n";
+        }
         file_put_contents($path . ".htaccess", $htaccess);
+    } else {
+        $current_htaccess = file_get_contents($path . ".htaccess");
+        if (strpos($current_htaccess, "RewriteEngine") === false && !empty($repo_base_name)) {
+            $current_htaccess .= "\n\nRewriteEngine On\n";
+            $current_htaccess .= "RewriteRule ^" . preg_quote($repo_base_name, '/') . "/(.*)$ /$1 [L,R=301]\n";
+            file_put_contents($path . ".htaccess", $current_htaccess);
+        }
     }
 
     file_put_contents($path . "error.log", "");
