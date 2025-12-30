@@ -57,4 +57,26 @@ if ($action === "save_content") {
     exit;
 }
 
+if ($action === "delete_content") {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $container = $_GET["container"] ?? null;
+    $file = $_GET["file"] ?? null;
+
+    if (!$container || !$file) {
+        http_response_code(400);
+        echo json_encode(["error" => "Missing parameters"]);
+        exit;
+    }
+
+    $success = $project->deleteItem($container, $file);
+    
+    if ($success) {
+        echo json_encode(["success" => true]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["error" => "Failed to delete item"]);
+    }
+    exit;
+}
+
 echo json_encode(["error" => "Invalid action"]);
