@@ -85,12 +85,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     else{
-         if (isset($_ENV['HOST_BASE_PATH'])) {
+         if (isset($_ENV['HOST_BASE_PATH']) && !empty($_ENV['HOST_BASE_PATH'])) {
             $host_base = $_ENV['HOST_BASE_PATH'];
         } elseif (getenv('HOST_BASE_PATH')) {
             $host_base = getenv('HOST_BASE_PATH');
         } else {
-             $host_base = getcwd() . "/../users"; 
+             $host_base = '/home/deployer/dock-hosting-data'; 
         }
         
         $host_project_path = $host_base . "/Projects/" . $_SESSION["id"] . "/" . $project_name;
