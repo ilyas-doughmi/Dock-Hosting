@@ -63,21 +63,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $repo_name = isset($_POST['github_repo']) ? basename($_POST['github_repo']) : '';
 
-    $htaccess_content = "php_flag display_errors off\nphp_flag log_errors on\nphp_value error_log /var/www/html/error.log\n\n";
-    $htaccess_content .= "RewriteEngine On\n";
-    $htaccess_content .= "RewriteBase /\n\n";
-    
-    if (!empty($repo_name)) {
-        $htaccess_content .= "RewriteRule ^" . preg_quote($repo_name, '/') . "/(.*)$ /$1 [L,R=301]\n";
-    }
+    $htaccess_content = "ErrorDocument 500 \"Internal Server Error\"\n";
+    $htaccess_content .= "php_flag display_errors off\n";
+    $htaccess_content .= "php_flag log_errors on\n";
+    $htaccess_content .= "php_value error_log /var/www/html/error.log\n";
 
     if (!file_exists($path . ".htaccess")) {
         file_put_contents($path . ".htaccess", $htaccess_content);
-    } else {
-        $existing = file_get_contents($path . ".htaccess");
-        if (strpos($existing, 'RewriteEngine') === false && !empty($repo_name)) {
-            file_put_contents($path . ".htaccess", $existing . "\n\n" . "RewriteEngine On\nRewriteBase /\nRewriteRule ^" . preg_quote($repo_name, '/') . "/(.*)$ /$1 [L,R=301]\n");
-        }
     }
 
     file_put_contents($path . "error.log", "");
