@@ -171,7 +171,9 @@ $is_connected = !empty($token);
                                             <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                                             Connected
                                         </div>
-                                        <a href="#" class="text-xs text-red-400 hover:text-red-300 hover:underline">Disconnect Account</a>
+                                        <form action="../includes/user_actions/disconnect_github.php" method="POST" onsubmit="return confirm('Are you sure you want to disconnect your GitHub account?');">
+                                            <button type="submit" class="text-xs text-red-400 hover:text-red-300 hover:underline">Disconnect Account</button>
+                                        </form>
                                     </div>
                                 <?php else: ?>
                                     <a href="https://github.com/login/oauth/authorize?client_id=<?= $clientid_github ?>&redirect_uri=<?= $redirecturl_github ?>&scope=repo" 
