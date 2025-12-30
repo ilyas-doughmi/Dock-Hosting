@@ -85,8 +85,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     else{
-        $host_base = getenv('HOST_BASE_PATH');
-        if (!$host_base) {
+         if (isset($_ENV['HOST_BASE_PATH'])) {
+            $host_base = $_ENV['HOST_BASE_PATH'];
+        } elseif (getenv('HOST_BASE_PATH')) {
+            $host_base = getenv('HOST_BASE_PATH');
+        } else {
              $host_base = getcwd() . "/../users"; 
         }
         
