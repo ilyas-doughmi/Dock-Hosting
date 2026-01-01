@@ -50,10 +50,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $cmd = "git clone -b {$safe_branch} {$safe_clone_url} {$safe_path} 2>&1";
         exec($cmd, $output, $return_var);
 
+
         if ($return_var !== 0) {
             rmdir($path);
             header("location: ../pages/create-project.php?msg=Failed to clone repository.&type=error");
             exit;
+        }
+
+        $cloned_items = array_diff(scandir($path), array('.', '..', '.git'));
+        if (count($cloned_items) === 1) {
+            $only_item = reset($cloned_items);
+            $full_item_path = $path . $only_item;
+            
+            if (is_dir($full_item_path)) {
+                $inner_files = array_diff(scandir($full_item_path), array('.', '..'));
+                foreach ($inner_files as $file) {
+                    rename($full_item_path . "/" . $file, $path . $file);
+                }
+                rmdir($full_item_path);
+            }
         }
 
     } else {
