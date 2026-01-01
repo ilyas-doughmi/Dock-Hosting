@@ -3,6 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
+    image: dock-hosting-app:custom-fix
     container_name: dock-hosting-app
     restart: always
     volumes:
