@@ -137,10 +137,11 @@
 
         <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
             
-            <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-gray-300 text-xs font-mono mb-10 animate-[fade-in_1s_ease-out] hover:border-brand/30 transition-colors cursor-default">
+            <a href="pages/changelog.php" class="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-gray-300 text-xs font-mono mb-10 animate-[fade-in_1s_ease-out] hover:border-brand/30 hover:bg-white/10 transition-all cursor-pointer group">
                 <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
-                <span>Beta Access Now Open</span>
-            </div>
+                <span class="group-hover:text-white transition-colors">New Update Dropped: <span class="text-brand">v1.3.1</span></span>
+                <i class="fas fa-arrow-right opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all text-brand"></i>
+            </a>
 
             <h1 class="text-6xl md:text-8xl font-bold tracking-tighter mb-8 leading-[1.1] animate-[slide-up_0.8s_ease-out] drop-shadow-2xl">
                 Deploy <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-brand">PHP Projects</span> <br>
