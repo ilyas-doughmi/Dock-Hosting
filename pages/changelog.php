@@ -80,6 +80,43 @@ session_start();
             <div class="relative">
                 <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>
                 <div class="flex items-baseline justify-between mb-4">
+                    <h2 class="text-2xl font-bold">Platform Stabilization <span class="text-brand text-sm font-mono ml-2">v1.3.1</span></h2>
+                    <span class="text-xs font-mono text-gray-500">2026-01-01</span>
+                </div>
+                
+                <div class="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6">
+                    <div class="mb-6">
+                        <span class="px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold font-mono border border-brand/20">LATEST</span>
+                    </div>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">Port Intelligence</strong>
+                                <span class="text-sm text-gray-400">Enhanced automatic port management and conflict resolution for containers.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">GitHub Import</strong>
+                                <span class="text-sm text-gray-400">Improved support for single-folder repositories with auto-flattening structure.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <strong class="text-white block">Security Fixes</strong>
+                                <span class="text-sm text-gray-400">Hardened session cookies and enhanced SSL certificate verification.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="relative">
+                <span class="absolute -left-[45px] top-1 w-4 h-4 rounded-full bg-brand border-2 border-black ring-4 ring-brand/20"></span>
+                <div class="flex items-baseline justify-between mb-4">
                     <h2 class="text-2xl font-bold">GitHub Integration & Security <span class="text-brand text-sm font-mono ml-2">v1.3.0</span></h2>
                     <span class="text-xs font-mono text-gray-500">2025-12-30</span>
                 </div>
@@ -120,7 +157,6 @@ session_start();
                 
                 <div class="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6">
                     <div class="mb-6">
-                        <span class="px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold font-mono border border-brand/20">LATEST</span>
                     </div>
                     <ul class="space-y-4 text-gray-300">
                         <li class="flex gap-3">
