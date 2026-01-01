@@ -2,11 +2,13 @@ FROM php:8.2-apache
 
 RUN apt-get update && apt-get install -y \
     libzip-dev \
+    zip \
     unzip \
     docker.io \
+    default-mysql-client \
+    && docker-php-ext-install -j$(nproc) pdo pdo_mysql mysqli zip \
+    && docker-php-ext-enable pdo_mysql mysqli \
     && rm -rf /var/lib/apt/lists/*
-
-RUN docker-php-ext-install pdo pdo_mysql mysqli zip
 
 RUN a2enmod rewrite
 
