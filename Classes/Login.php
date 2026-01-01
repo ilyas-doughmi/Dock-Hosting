@@ -1,4 +1,12 @@
 <?php
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '.dockhosting.dev',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     session_start();
     Class Login extends db{
         private   $email;

@@ -260,7 +260,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                             <div class="space-y-2">
                                 <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
                                     <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">Host</label>
-                                    <div class="font-mono text-xs text-white">db</div>
+                                    <div class="font-mono text-xs text-white">dock-hosting-db</div>
                                 </div>
                                 <div class="bg-[#050505] p-2.5 rounded-lg border border-[#1f1f1f]">
                                     <label class="text-[9px] uppercase text-gray-500 font-bold block mb-0.5">Name</label>

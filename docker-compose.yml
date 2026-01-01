@@ -36,6 +36,7 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - default
+      - proxy_network
 
   pma:
     image: phpmyadmin/phpmyadmin
