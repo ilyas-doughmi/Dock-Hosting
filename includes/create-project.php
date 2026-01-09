@@ -154,13 +154,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $command = "sh -c \"apk add --no-cache bash && cd /var/www/html && if [ -f package.json ]; then npm install; fi && if [ -f index.js ]; then node index.js; else npm start; fi\"";
             
         } elseif ($framework === 'python') {
+            // Python Logic
             if($source_type !== 'github' && !file_exists($path . "app.py")) {
                 file_put_contents($path . "app.py", "from flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef hello():\n    return 'Hello from Python!'\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)");
                 file_put_contents($path . "requirements.txt", "flask");
             }
             $command = "sh -c \"if [ -f requirements.txt ]; then pip install -r requirements.txt; fi && python app.py\"";
 
-        } else {
         } else {
             $internal_port = "80"; 
             $image = "dock-hosting-user"; 
