@@ -34,6 +34,7 @@ services:
       MYSQL_DATABASE: dock_hosting
     volumes:
       - db_data:/var/lib/mysql
+      - ./sql/install.sql:/docker-entrypoint-initdb.d/install.sql
     networks:
       - default
       - proxy_network

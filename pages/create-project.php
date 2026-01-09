@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/traffic_middleware.php';
 
 if (!isset($_SESSION["id"])) {
     header("location: ../index.php");
@@ -282,7 +283,6 @@ $is_connected = !empty($token);
                 emptySec.classList.remove('hidden');
                 githubSec.classList.add('hidden');
                 
-                // Toggle required fields
                 document.querySelector('[name="project_name"]').required = true;
                 document.getElementById('selected_repo').required = false;
                 document.getElementById('selected_repo').disabled = true;
@@ -296,7 +296,6 @@ $is_connected = !empty($token);
                 githubSec.classList.remove('hidden');
                 emptySec.classList.add('hidden');
 
-                // Toggle required fields
                 document.querySelector('[name="project_name"]').required = false;
                 document.getElementById('selected_repo').required = true;
                 document.getElementById('selected_repo').disabled = false;
