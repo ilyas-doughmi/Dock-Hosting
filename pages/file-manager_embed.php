@@ -174,7 +174,7 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
 
         <main class="flex-1 flex flex-col relative bg-[#050505]">
 
-            <div id="file-header" class="h-10 bg-[#0a0a0a] border-b border-border flex items-center px-4 hidden">
+            <div id="file-header" class="h-10 bg-[#0a0a0a] border-b border-border flex items-center justify-between px-4 hidden">
                 <div class="flex items-center gap-2 text-xs font-mono text-gray-400">
                     <span id="file-name-display" class="text-brand"></span>
                     <span id="file-type-display" class="text-gray-600 text-[10px] ml-2 opacity-50"></span>
@@ -182,6 +182,9 @@ $userDB = $dbManager->getDatabase($_SESSION["id"], $container_name);
                         <div class="loader w-3 h-3 border-[1px]"></div>
                     </div>
                 </div>
+                <button id="btn-save" onclick="saveFile()" class="hidden px-3 py-1 rounded bg-brand hover:bg-brand-hover text-black text-xs font-bold transition-all flex items-center gap-2">
+                    <i class="fas fa-save"></i> Save
+                </button>
             </div>
             
 
