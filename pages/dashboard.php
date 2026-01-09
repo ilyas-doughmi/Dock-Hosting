@@ -281,13 +281,25 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                                     </a>
 
                                     <div class="grid grid-cols-2 gap-2 mb-6">
+                                        <?php 
+                                        $cpu = '0%';
+                                        $ram = '0MB';
+                                        if (strtolower($project['status']) === 'running') {
+                                            $stats = $projects->getContainerStats($project['container_name']);
+                                            if ($stats) {
+                                                $cpu = $stats['CPUPerc'] ?? '0%';
+                                                $memParts = explode('/', $stats['MemUsage'] ?? '');
+                                                $ram = trim($memParts[0] ?? '0MB');
+                                            }
+                                        }
+                                        ?>
                                         <div class="bg-white/5 rounded-lg p-3 text-center">
                                             <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">CPU</div>
-                                            <div class="font-mono text-sm font-bold">4%</div>
+                                            <div class="font-mono text-sm font-bold"><?= $cpu ?></div>
                                         </div>
                                         <div class="bg-white/5 rounded-lg p-3 text-center">
                                             <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">RAM</div>
-                                            <div class="font-mono text-sm font-bold">128MB</div>
+                                            <div class="font-mono text-sm font-bold"><?= $ram ?></div>
                                         </div>
                                     </div>
 
