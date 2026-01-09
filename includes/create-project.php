@@ -6,6 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once "../Classes/Project.php";
     require_once '../Classes/GitHubManager.php';
 
+    $framework = $_POST['framework'] ?? 'php';
     $source_type = $_POST['source_type'] ?? 'empty';
     $project_name_input = "";
 
@@ -115,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $last_port = 8000;
     }
 
-    $framework = $_POST['framework'] ?? 'php';
+
     
     $create = $Projects->createProject($project_name, $last_port, $project_name, $_SESSION["id"], $framework);
 
