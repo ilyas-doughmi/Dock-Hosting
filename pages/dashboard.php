@@ -293,13 +293,18 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                                             }
                                         }
                                         ?>
+                                    <div class="grid grid-cols-2 gap-2 mb-6" data-container="<?= htmlspecialchars($project['container_name']) ?>" data-status="<?= strtolower($project['status']) ?>">
                                         <div class="bg-white/5 rounded-lg p-3 text-center">
                                             <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">CPU</div>
-                                            <div class="font-mono text-sm font-bold"><?= $cpu ?></div>
+                                            <div class="font-mono text-sm font-bold text-brand" id="cpu-<?= $project['container_name'] ?>">
+                                                <?= strtolower($project['status']) === 'running' ? '<i class="fas fa-circle-notch fa-spin"></i>' : '0%' ?>
+                                            </div>
                                         </div>
                                         <div class="bg-white/5 rounded-lg p-3 text-center">
                                             <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">RAM</div>
-                                            <div class="font-mono text-sm font-bold"><?= $ram ?></div>
+                                            <div class="font-mono text-sm font-bold text-blue-400" id="ram-<?= $project['container_name'] ?>">
+                                                <?= strtolower($project['status']) === 'running' ? '<i class="fas fa-circle-notch fa-spin"></i>' : '0MB' ?>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -406,6 +411,37 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
         }
           
         
+
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Find all running container cards
+            const containers = document.querySelectorAll('[data-status="running"]');
+
+            containers.forEach(containerDiv => {
+                const containerName = containerDiv.getAttribute('data-container');
+
+                // Fetch stats asynchronously
+                fetch(`../api/get_stats.php?container=${containerName}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update the DOM
+                            document.getElementById(`cpu-${containerName}`).innerText = data.cpu;
+                            
+                            // Clean up RAM string (e.g., "12MB / 1GB" -> "12MB")
+                            let ramText = data.ram.split('/')[0].trim();
+                            document.getElementById(`ram-${containerName}`).innerText = ramText;
+                        } else {
+                            document.getElementById(`cpu-${containerName}`).innerText = "Err";
+                            document.getElementById(`ram-${containerName}`).innerText = "Err";
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Stats error:', err);
+                    });
+            });
+        });
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
