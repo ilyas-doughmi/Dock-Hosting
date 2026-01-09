@@ -113,7 +113,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $last_port = 8000;
     }
 
-    $create = $Projects->createProject($project_name, $last_port, $project_name, $_SESSION["id"]);
+    $framework = $_POST['framework'] ?? 'php';
+    
+    $create = $Projects->createProject($project_name, $last_port, $project_name, $_SESSION["id"], $framework);
 
     if(!$create){
         header("location: ../pages/create-project.php?msg=Database error&type=error");
@@ -132,18 +134,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $subdomain = $project_name . ".dockhosting.dev";
         
-        $safe_port = escapeshellarg($last_port . ":80");
+        $safe_port = escapeshellarg($last_port);
         $safe_name = escapeshellarg($project_name);
         $safe_subdomain = escapeshellarg($subdomain);
         $safe_volume = escapeshellarg($host_project_path . ":/var/www/html");
         
-        $cmd = "docker run -d -p {$safe_port} --name {$safe_name} --network proxy_network -e VIRTUAL_HOST={$safe_subdomain} -e LETSENCRYPT_HOST={$safe_subdomain} -v {$safe_volume} dock-hosting-user";
+
+        if ($framework === 'node') {
+
+            $internal_port = "3000";
+            $image = "node:18-alpine";
+
+            if($source_type !== 'github' && !file_exists($path . "index.js")) {
+                file_put_contents($path . "index.js", "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.statusCode = 200;\n  res.setHeader('Content-Type', 'text/plain');\n  res.end('Hello from Node.js!');\n});\n\nconst port = process.env.PORT || 3000;\nserver.listen(port, () => {\n  console.log(`Server running at http://localhost:${port}/`);\n});");
+                file_put_contents($path . "package.json", "{\n  \"name\": \"$project_name\",\n  \"version\": \"1.0.0\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"start\": \"node index.js\"\n  }\n}");
+            }
+            $command = "sh -c \"apk add --no-cache bash && cd /var/www/html && if [ -f package.json ]; then npm install; fi && if [ -f index.js ]; then node index.js; else npm start; fi\"";
+            
+        } elseif ($framework === 'python') {
+            // Python Configuration
+            $internal_port = "5000";
+            $image = "python:3.11-alpine";
+             // Default file for Python
+             if($source_type !== 'github' && !file_exists($path . "app.py")) {
+                file_put_contents($path . "app.py", "from flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef hello():\n    return 'Hello from Python!'\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)");
+                file_put_contents($path . "requirements.txt", "flask");
+            }
+            $command = "sh -c \"pip install -r requirements.txt && python app.py\"";
+
+        } else {
+            // PHP Configuration (Default)
+            $internal_port = "80"; // Apache defaults to 80
+            $image = "dock-hosting-user"; // Custom image with Apache/PHP
+            $command = ""; // Uses default entrypoint/cmd of the image
+        }
+
+        $safe_internal_port = escapeshellarg($internal_port);
+        
+        // Build Docker Run Command
+        $cmd = "docker run -d -p {$safe_port}:{$internal_port} --name {$safe_name} --network proxy_network -e VIRTUAL_HOST={$safe_subdomain} -e LETSENCRYPT_HOST={$safe_subdomain} -e VIRTUAL_PORT={$internal_port} -e PORT={$internal_port} -v {$safe_volume}";
+        
+        // Add DB Connection Env Vars (DB is named dock-hosting-db on default network, but users utilize proxy_network. 
+        // Need to ensure DB is reachable. Assuming 'dock-hosting-db' is reachable by name if they share network, 
+        // OR we pass the network alias. The db service in compose has 'proxy_network', so it IS reachable by name 'db' or 'dock-hosting-db'.)
+        
+        $cmd .= " -e DB_HOST=dock-hosting-db -e DB_USER=root -e DB_PASSWORD=" . escapeshellarg(getenv('DB_PASSWORD')); 
+        
+        $cmd .= " {$image} {$command}";
         
         shell_exec($cmd);
         
         require_once __DIR__ . '/Logger.php';
         $logger = new Logger();
-        $logger->logActivity($_SESSION["id"], 'CREATE_PROJECT', "Created project: $project_name");
+        $logger->logActivity($_SESSION["id"], 'CREATE_PROJECT', "Created ($framework) project: $project_name");
 
         header("location: ../pages/dashboard.php?msg=Project created successfully");
         exit();
