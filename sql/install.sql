@@ -1,13 +1,47 @@
-CREATE DATABASE dockhosting;
-USE dockhosting;
+CREATE DATABASE IF NOT EXISTS dock_hosting;
+USE dock_hosting;
 
 CREATE TABLE users(
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(100) UNIQUE,
     email VARCHAR(100) UNIQUE,
     password VARCHAR(255),
+    role ENUM('user', 'admin') DEFAULT 'user',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    action VARCHAR(255) NOT NULL,
+    details TEXT,
+    ip_address VARCHAR(45),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS site_analytics (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    ip_address VARCHAR(45),
+    page_url VARCHAR(255),
+    user_agent VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS announcements (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    message TEXT NOT NULL,
+    type ENUM('info', 'warning', 'danger', 'success') DEFAULT 'info',
+    is_active TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS settings (
+    key_name VARCHAR(50) PRIMARY KEY,
+    value TEXT
+);
+
+INSERT IGNORE INTO settings (key_name, value) VALUES ('maintenance_mode', '0');
 
 CREATE TABLE Project(
 
@@ -41,7 +75,7 @@ CREATE TABLE oauth_tokens(
     access_token VARCHAR(255) NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-)
+);
 
 
 ALTER TABLE Project
