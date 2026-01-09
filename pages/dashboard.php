@@ -14,13 +14,16 @@ if (!isset($_SESSION["id"])) {
 require_once("../php/connect.php");
 require_once("../Classes/Project.php");
 
+$db = new db();
+$pdo = $db->connect();
+
 $projects = new Project();
 $user_Projects = $projects->getProjects($_SESSION["id"]);
 
 $user_projects_count = $projects->getContainersCount($_SESSION["id"]);
 
 
-// github
+
 
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
@@ -180,6 +183,34 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
 
         <!-- Content Scroll Area -->
         <div class="flex-1 overflow-y-auto p-8 relative z-10">
+
+            <!-- Announcements -->
+            <?php
+            try {
+                
+                $ann_stmt = $pdo->query("SELECT * FROM announcements WHERE is_active = 1 ORDER BY created_at DESC");
+                $announcements = $ann_stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                if ($announcements): ?>
+                    <div class="max-w-7xl mx-auto mb-8 flex flex-col gap-4">
+                        <?php foreach($announcements as $ann): 
+                            $bg = 'bg-blue-500/10 border-blue-500/20 text-blue-200';
+                            $icon = 'fa-info-circle text-blue-400';
+                            if($ann['type'] == 'warning') { $bg = 'bg-yellow-500/10 border-yellow-500/20 text-yellow-200'; $icon = 'fa-exclamation-triangle text-yellow-400'; }
+                            if($ann['type'] == 'danger') { $bg = 'bg-red-500/10 border-red-500/20 text-red-200'; $icon = 'fa-ban text-red-400'; }
+                            if($ann['type'] == 'success') { $bg = 'bg-green-500/10 border-green-500/20 text-green-200'; $icon = 'fa-check-circle text-green-400'; }
+                        ?>
+                        <div class="<?= $bg ?> border px-6 py-4 rounded-xl flex items-start gap-4 animate-slide-up shadow-lg backdrop-blur-sm">
+                            <i class="fas <?= $icon ?> mt-1"></i>
+                            <div>
+                                <h4 class="font-bold text-sm uppercase tracking-wide mb-1"><?= strtoupper($ann['type']) ?></h4>
+                                <p class="text-sm opacity-90 leading-relaxed"><?= htmlspecialchars($ann['message']) ?></p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+            <?php endif; 
+            } catch (Exception $e) {  } ?>
 
             <!-- Welcome Message -->
             <div class="mb-12 text-center max-w-2xl mx-auto">
