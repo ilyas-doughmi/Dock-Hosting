@@ -123,19 +123,8 @@ class Admin extends db {
     
 
     public function getDockerStats() {
-        $cmd = "docker stats --no-stream --format \"{{json .}}\"";
-        $output = shell_exec($cmd);
-        
-        $containers = [];
-        if ($output) {
-            $lines = explode("\n", trim($output));
-            foreach ($lines as $line) {
-                if (!empty($line)) {
-                    $containers[] = json_decode($line, true);
-                }
-            }
-        }
-        return $containers;
+        $query = "SELECT * FROM container_stats ORDER BY container_name ASC";
+        return $this->connect()->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getDockerImages() {
