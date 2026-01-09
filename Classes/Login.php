@@ -31,7 +31,18 @@
                 $_SESSION["id"] = $user["id"];
                 $_SESSION["username"] = $user["username"];
                 $_SESSION["email"] = $user["email"];
-                header("location: ../pages/dashboard.php");
+                $_SESSION["role"] = $user["role"] ?? 'user'; 
+                
+                
+                require_once __DIR__ . '/../includes/Logger.php';
+                $logger = new Logger();
+                $logger->logActivity($user['id'], 'LOGIN', 'User logged in successfully');
+
+                if($_SESSION["role"] === 'admin') {
+                     header("location: ../pages/admin/dashboard.php");
+                } else {
+                     header("location: ../pages/dashboard.php");
+                }
                 exit;
             }
             else{
