@@ -242,14 +242,19 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                 <?php if ($user_Projects): ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <?php foreach ($user_Projects as $project): ?>
-                            <!-- Project Card -->
+
                             <div class="glass-panel group rounded-2xl p-6 relative overflow-hidden transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-brand/5 hover:border-brand/30">
                                 <div class="absolute inset-0 bg-gradient-to-br from-brand/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 
                                 <div class="relative z-10">
                                     <div class="flex justify-between items-start mb-6">
                                         <div class="w-12 h-12 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-xl">
-                                            <i class="fab fa-php text-blue-400"></i>
+                                            <?php 
+                                            $pType = $project['type'] ?? 'php';
+                                            if($pType == 'node') echo '<i class="fab fa-node text-green-500"></i>';
+                                            elseif($pType == 'python') echo '<i class="fab fa-python text-yellow-500"></i>';
+                                            else echo '<i class="fab fa-php text-blue-400"></i>';
+                                            ?>
                                         </div>
                                         <?php if(strtolower($project['status']) === 'running'): ?>
                                             <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold font-mono uppercase">
@@ -287,8 +292,8 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                                     </div>
 
                                     <div class="flex items-center gap-2 pt-4 border-t border-white/5">
-                                        <a href="./file-manager.php?container=<?= htmlspecialchars($project["container_name"]) ?>" class="flex-1 py-2.5 rounded-lg bg-brand/10 hover:bg-brand text-brand hover:text-black font-bold text-xs text-center transition-all">
-                                            CODE EDITOR
+                                        <a href="./project.php?container=<?= htmlspecialchars($project["container_name"]) ?>" class="flex-1 py-2.5 rounded-lg bg-brand/10 hover:bg-brand text-brand hover:text-black font-bold text-xs text-center transition-all">
+                                            OPEN DASHBOARD
                                         </a>
                                         <button onclick="deleteContainer('<?= htmlspecialchars($project["container_name"], ENT_QUOTES) ?>')" class="w-10 h-10 rounded-lg border border-red-500/20 hover:bg-red-500/10 text-red-400 flex items-center justify-center transition-colors">
                                             <i class="fas fa-trash"></i>
@@ -298,7 +303,7 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                             </div>
                         <?php endforeach; ?>
                         
-                        <!-- Add New Card -->
+
                         <a href="create-project.php" class="border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-6 text-gray-500 hover:text-brand hover:border-brand/30 hover:bg-white/5 transition-all group cursor-pointer h-full min-h-[300px]">
                             <div class="w-16 h-16 rounded-full bg-white/5 group-hover:bg-brand/10 flex items-center justify-center mb-4 transition-colors">
                                 <i class="fas fa-plus text-2xl group-hover:scale-110 transition-transform"></i>
@@ -321,26 +326,23 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
             </div>
         </div>
     </main>
-    <!-- delete modal -->
+
     <div id="deleteModal" class="fixed inset-0 z-50 hidden">
         
-        <!-- Backdrop (Click to close) -->
         <div onclick="closeDeleteModal()" class="absolute inset-0 backdrop transition-opacity duration-300"></div>
 
-        <!-- Modal Content -->
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
             <div class="glass-panel rounded-xl shadow-2xl animate-modal-in overflow-hidden">
 
-                <!-- Red Warning Strip -->
                 <div class="h-1 w-full bg-danger"></div>
 
                 <div class="p-6">
-                    <!-- Icon -->
+
                     <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center text-danger mb-4 mx-auto">
                         <i class="fas fa-exclamation-triangle text-xl"></i>
                     </div>
 
-                    <!-- Text -->
+
                     <div class="text-center mb-6">
                         <h3 class="text-xl font-bold mb-2">Delete Project?</h3>
                         <p class="text-gray-400 text-sm">
@@ -350,7 +352,7 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                         </p>
                     </div>
 
-                    <!-- Actions -->
+
                     <div class="flex gap-3">
                         <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-lg border border-[#333] hover:bg-[#1a1a1a] text-gray-300 font-medium transition-colors">
                             Cancel
@@ -365,12 +367,10 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
     </div>
     
     <script>
-        // Simple Open Function
         function openDeleteModal() {
             document.getElementById('deleteModal').classList.remove('hidden');
         }
 
-        // Simple Close Function
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.add('hidden');
         }
