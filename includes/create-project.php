@@ -14,7 +14,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $parts = explode('/', $repo_full_name);
         $project_name_input = end($parts); 
     } else {
-        $project_name_input = $_POST["project_name"];
+        $project_name_input = trim($_POST["project_name"]);
+        if (empty($project_name_input)) {
+            header("location: ../pages/create-project.php?msg=Project name cannot be empty&type=error");
+            exit;
+        }
     }
 
     $clean_name = preg_replace('/[^a-zA-Z0-9-]/', '', str_replace(" ", "-", $project_name_input));
