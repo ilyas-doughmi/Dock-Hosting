@@ -12,11 +12,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($source_type === 'github') {
         $repo_full_name = $_POST['github_repo']; 
         $parts = explode('/', $repo_full_name);
-        $project_name_input = end($parts); 
+        $project_name_input = end($parts);
+        
+        if (strlen($project_name_input) > 20) {
+            $project_name_input = substr($project_name_input, 0, 20);
+        }
     } else {
         $project_name_input = trim($_POST["project_name"]);
+        
         if (empty($project_name_input)) {
             header("location: ../pages/create-project.php?msg=Project name cannot be empty&type=error");
+            exit;
+        }
+        
+        if (strlen($project_name_input) > 20) {
+            header("location: ../pages/create-project.php?msg=Project name too long (max 20 chars)&type=error");
             exit;
         }
     }
