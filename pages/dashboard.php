@@ -265,7 +265,13 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                                     </div>
 
                                     <h3 class="text-xl font-bold mb-1 truncate"><?= htmlspecialchars($project['project_name']) ?></h3>
-                                    <a href="http://<?= htmlspecialchars($project['project_name']) ?>.dockhosting.dev" target="_blank" class="text-xs font-mono text-gray-500 hover:text-brand transition-colors flex items-center gap-2 mb-6">
+                                    <?php 
+                                        $projectUrl = "http://" . htmlspecialchars($project['project_name']) . ".dockhosting.dev"; 
+                                        $createdAt = strtotime($project['created_at'] ?? '2000-01-01');
+                                        $isNew = (time() - $createdAt) < 90;
+                                        $displayUrl = $isNew ? "./ssl_pending.php?url=" . urlencode($projectUrl) . "&domain=" . htmlspecialchars($project['project_name']) . ".dockhosting.dev" : $projectUrl;
+                                    ?>
+                                    <a href="<?= $displayUrl ?>" target="_blank" class="text-xs font-mono text-gray-500 hover:text-brand transition-colors flex items-center gap-2 mb-6">
                                         <i class="fas fa-link"></i> <?= htmlspecialchars($project['project_name']) ?>.dockhosting.dev
                                     </a>
 

@@ -117,7 +117,13 @@ foreach ($dockerStats as $stat) {
                                 <?php endif; ?>
                             </td>
                             <td class="px-6 py-4 text-right flex justify-end gap-2">
-                                <a href="http://<?= htmlspecialchars($project['project_name']) ?>.dockhosting.dev" target="_blank" class="w-8 h-8 rounded flex items-center justify-center border border-white/10 hover:bg-brand/10 hover:text-brand transition-colors text-gray-400" title="Open Website">
+                                <?php 
+                                    $projectUrl = "http://" . htmlspecialchars($project['project_name']) . ".dockhosting.dev"; 
+                                    $createdAt = strtotime($project['created_at'] ?? '2000-01-01');
+                                    $isNew = (time() - $createdAt) < 90;
+                                    $displayUrl = $isNew ? "../../pages/ssl_pending.php?url=" . urlencode($projectUrl) . "&domain=" . htmlspecialchars($project['project_name']) . ".dockhosting.dev" : $projectUrl;
+                                ?>
+                                <a href="<?= $displayUrl ?>" target="_blank" class="w-8 h-8 rounded flex items-center justify-center border border-white/10 hover:bg-brand/10 hover:text-brand transition-colors text-gray-400" title="Open Website">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                                 <form action="../../includes/admin_actions.php" method="POST" class="inline">
