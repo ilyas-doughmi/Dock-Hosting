@@ -191,11 +191,39 @@ $is_connected = !empty($token);
                                         </div>
                                     </div>
                                 </label>
-                                <!-- Coming Soon Node.js -->
-                                <div class="opacity-50 cursor-not-allowed p-4 rounded-xl border border-[#1f1f1f] bg-[#0a0a0a] flex flex-col items-center gap-3 grayscale">
-                                    <i class="fab fa-node text-3xl text-gray-600 mb-2"></i>
-                                    <span class="text-xs text-gray-500">Node.js (Coming Soon)</span>
-                                </div>
+                                <!-- Node.js -->
+                                <label class="cursor-pointer relative group">
+                                    <input type="radio" name="framework" value="node" class="peer sr-only framework-radio">
+                                    <div class="p-4 rounded-xl border border-[#333] bg-[#050505] hover:border-gray-500 transition-all duration-300 flex flex-col items-center gap-3">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <i class="fab fa-node text-green-500 text-3xl"></i>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="font-bold text-sm text-white group-hover:text-brand transition-colors">Node.js</div>
+                                            <div class="text-[10px] text-gray-500 mt-1">Version 18-alpine</div>
+                                        </div>
+                                        <div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity text-brand">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <!-- Python -->
+                                <label class="cursor-pointer relative group">
+                                    <input type="radio" name="framework" value="python" class="peer sr-only framework-radio">
+                                    <div class="p-4 rounded-xl border border-[#333] bg-[#050505] hover:border-gray-500 transition-all duration-300 flex flex-col items-center gap-3">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <i class="fab fa-python text-yellow-500 text-3xl"></i>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="font-bold text-sm text-white group-hover:text-brand transition-colors">Python</div>
+                                            <div class="text-[10px] text-gray-500 mt-1">Version 3.11-alpine</div>
+                                        </div>
+                                        <div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 transition-opacity text-brand">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                     </div>
