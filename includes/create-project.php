@@ -22,12 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $project_name_input = trim($_POST["project_name"]);
         
         if (empty($project_name_input)) {
-            header("location: ../pages/create-project.php?msg=Project name cannot be empty&type=error");
+            echo json_encode(['success' => false, 'error' => 'Project name cannot be empty']);
             exit;
         }
         
         if (strlen($project_name_input) > 20) {
-            header("location: ../pages/create-project.php?msg=Project name too long (max 20 chars)&type=error");
+            echo json_encode(['success' => false, 'error' => 'Project name too long (max 20 chars)']);
             exit;
         }
     }
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!is_dir($path)) {
         if (!mkdir($path, 0777, true)) {
-            header("location: ../pages/create-project.php?msg=Failed to create project directory&type=error");
+            echo json_encode(['success' => false, 'error' => 'Failed to create project directory']);
             exit;
         }
     }
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $branch = $_POST['github_branch'] ?? 'main';
 
         if (!$token) {
-            header("location: ../pages/create-project.php?msg=GitHub token not found. Please reconnect.&type=error");
+            echo json_encode(['success' => false, 'error' => 'GitHub token not found']);
             exit;
         }
 
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($return_var !== 0) {
             rmdir($path);
-            header("location: ../pages/create-project.php?msg=Failed to clone repository.&type=error");
+            echo json_encode(['success' => false, 'error' => 'Failed to clone repository', 'details' => implode("\n", $output)]);
             exit;
         }
 
@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $create = $Projects->createProject($project_name, $last_port, $project_name, $_SESSION["id"], $framework);
 
     if(!$create){
-        header("location: ../pages/create-project.php?msg=Database error&type=error");
+        echo json_encode(['success' => false, 'error' => 'Database error']);
         exit;
     }
     else{
@@ -185,7 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $logger = new Logger();
         $logger->logActivity($_SESSION["id"], 'CREATE_PROJECT', "Created ($framework) project: $project_name");
 
-        header("location: ../pages/dashboard.php?msg=Project created successfully");
+        echo json_encode(['success' => true, 'project_name' => $project_name]);
         exit();
     }
 }

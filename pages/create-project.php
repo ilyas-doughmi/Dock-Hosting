@@ -277,6 +277,32 @@ $is_connected = !empty($token);
             </div>
 
         </div>
+
+        <!-- Deployment Overlay -->
+        <div id="deploy-overlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex-col items-center justify-center">
+            <div class="w-full max-w-md p-8 text-center">
+                
+                <div class="w-24 h-24 mx-auto mb-8 relative">
+                    <div class="absolute inset-0 rounded-full border-4 border-white/10"></div>
+                    <div class="absolute inset-0 rounded-full border-4 border-brand border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <i class="fas fa-rocket text-3xl text-brand animate-pulse"></i>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-bold mb-2">Deploying Container</h2>
+                <p class="text-gray-500 mb-8">Please wait while we set up your environment...</p>
+
+                <!-- Terminal Log -->
+                <div class="bg-black border border-white/10 rounded-lg p-4 font-mono text-xs text-left h-32 overflow-hidden relative">
+                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-black/50 pointer-events-none"></div>
+                    <div id="deploy-logs" class="space-y-1 text-green-400">
+                        <div>> Initializing deployment sequence...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
     
     <script>
@@ -395,6 +421,66 @@ $is_connected = !empty($token);
         });
         <?php endif; ?>
 
+        
+        
+        const deployForm = document.getElementById('deploy-form');
+        const overlay = document.getElementById('deploy-overlay');
+        const logs = document.getElementById('deploy-logs');
+
+        function addLog(msg) {
+            const div = document.createElement('div');
+            div.textContent = `> ${msg}`;
+            logs.appendChild(div);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        deployForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = deployForm.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+            
+            // Show Overlay
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            
+            // Simulating steps for UX (since PHP blocks)
+            addLog('Validating configuration...');
+            await new Promise(r => setTimeout(r, 800));
+            addLog('Allocating resources...');
+            await new Promise(r => setTimeout(r, 800));
+            addLog('Pulling Docker image...');
+            
+            const formData = new FormData(deployForm);
+
+            try {
+                const res = await fetch('../includes/create-project.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    addLog('Container started successfully!');
+                    addLog('Redirecting to dashboard...');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.php?msg=Project deployed successfully';
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+
+            } catch (err) {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+                
+                alert('Deployment Failed: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<span>Initialize Container</span><i class="fas fa-rocket"></i>';
+            }
+        });
     </script>
 </body>
 </html>
