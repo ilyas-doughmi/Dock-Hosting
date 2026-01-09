@@ -60,6 +60,11 @@ Class Project extends db{
     public function getContainerStats($container_name) {
         $cmd = "docker stats --no-stream --format \"{{json .}}\" " . escapeshellarg($container_name);
         $output = shell_exec($cmd);
+        
+        if ($output === null || trim($output) === '') {
+            return null;
+        }
+        
         return json_decode($output, true);
     }
 
