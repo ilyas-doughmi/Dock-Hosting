@@ -38,9 +38,9 @@ Class Project extends db{
         }
     }
 
-    public function createProject($project_name,$port,$container_name,$user_id){
-        $create_query = "INSERT INTO Project(project_name,port,container_name,status,user_id) 
-                        VALUES(:project_name,:port,:container_name,:status,:user_id)";
+    public function createProject($project_name,$port,$container_name,$user_id, $type = 'php'){
+        $create_query = "INSERT INTO Project(project_name,port,container_name,status,user_id, type) 
+                        VALUES(:project_name,:port,:container_name,:status,:user_id, :type)";
 
         $stmt = $this->connect()->prepare($create_query);
         $stmt->bindParam(":project_name",$project_name);
@@ -48,7 +48,19 @@ Class Project extends db{
         $stmt->bindParam(":port",$port);
         $stmt->bindValue(":status","running");
         $stmt->bindParam(":user_id",$user_id);
+        $stmt->bindParam(":type", $type);
         return $stmt->execute();
+    }
+    
+    public function getContainerLogs($container_name) {
+        $cmd = "docker logs --tail 100 " . escapeshellarg($container_name) . " 2>&1";
+        return shell_exec($cmd);
+    }
+
+    public function getContainerStats($container_name) {
+        $cmd = "docker stats --no-stream --format \"{{json .}}\" " . escapeshellarg($container_name);
+        $output = shell_exec($cmd);
+        return json_decode($output, true);
     }
 
     public function stopContainer($container_name){
