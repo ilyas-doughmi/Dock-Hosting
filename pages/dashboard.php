@@ -223,26 +223,23 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                 <p class="text-gray-400 text-lg">Manage and deploy your containerized PHP applications.</p>
             </div>
 
-            <!-- Projects Grid -->
             <div class="max-w-7xl mx-auto">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-xl font-bold flex items-center gap-3">
                         <i class="fas fa-layer-group text-brand"></i> My Deployments
                     </h2>
-                    <div class="flex gap-5 ">
+                    <div class="flex gap-5">
                         <a href="create-project.php" class="px-6 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-mono transition-colors flex items-center gap-2">
                             <i class="fas fa-plus text-brand"></i> New Project
                         </a>
-
                     </div>
-
-                    
                 </div>
 
                 <?php if ($user_Projects): ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
                         <?php foreach ($user_Projects as $project): ?>
-
+                            
                             <div class="glass-panel group rounded-2xl p-6 relative overflow-hidden transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-brand/5 hover:border-brand/30">
                                 <div class="absolute inset-0 bg-gradient-to-br from-brand/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                 
@@ -256,15 +253,14 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                                             else echo '<i class="fab fa-php text-blue-400"></i>';
                                             ?>
                                         </div>
+                                        
                                         <?php if(strtolower($project['status']) === 'running'): ?>
                                             <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold font-mono uppercase">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                                                Running
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> Running
                                             </div>
                                         <?php else: ?>
                                             <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold font-mono uppercase">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
-                                                Stopped
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Stopped
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -303,19 +299,16 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                        
 
+                                </div> </div> <?php endforeach; ?>
                         <a href="create-project.php" class="border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center p-6 text-gray-500 hover:text-brand hover:border-brand/30 hover:bg-white/5 transition-all group cursor-pointer h-full min-h-[300px]">
                             <div class="w-16 h-16 rounded-full bg-white/5 group-hover:bg-brand/10 flex items-center justify-center mb-4 transition-colors">
                                 <i class="fas fa-plus text-2xl group-hover:scale-110 transition-transform"></i>
                             </div>
                             <span class="font-bold">Deploy New Container</span>
                         </a>
-                    </div>
-                <?php else: ?>
+
+                    </div> <?php else: ?>
                     <div class="text-center py-20">
                         <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
                             <i class="fas fa-box-open text-3xl text-gray-600"></i>
