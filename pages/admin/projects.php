@@ -117,6 +117,9 @@ foreach ($dockerStats as $stat) {
                                 <?php endif; ?>
                             </td>
                             <td class="px-6 py-4 text-right flex justify-end gap-2">
+                                <a href="http://<?= htmlspecialchars($project['project_name']) ?>.dockhosting.dev" target="_blank" class="w-8 h-8 rounded flex items-center justify-center border border-white/10 hover:bg-brand/10 hover:text-brand transition-colors text-gray-400" title="Open Website">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
                                 <form action="../../includes/admin_actions.php" method="POST" class="inline">
                                     <input type="hidden" name="action" value="toggle_container">
                                     <input type="hidden" name="container_name" value="<?= htmlspecialchars($project['container_name']) ?>">
