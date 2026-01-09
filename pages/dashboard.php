@@ -280,19 +280,6 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
                                         <i class="fas fa-link"></i> <?= htmlspecialchars($project['project_name']) ?>.dockhosting.dev
                                     </a>
 
-                                    <div class="grid grid-cols-2 gap-2 mb-6">
-                                        <?php 
-                                        $cpu = '0%';
-                                        $ram = '0MB';
-                                        if (strtolower($project['status']) === 'running') {
-                                            $stats = $projects->getContainerStats($project['container_name']);
-                                            if ($stats) {
-                                                $cpu = $stats['CPUPerc'] ?? '0%';
-                                                $memParts = explode('/', $stats['MemUsage'] ?? '');
-                                                $ram = trim($memParts[0] ?? '0MB');
-                                            }
-                                        }
-                                        ?>
                                     <div class="grid grid-cols-2 gap-2 mb-6" data-container="<?= htmlspecialchars($project['container_name']) ?>" data-status="<?= strtolower($project['status']) ?>">
                                         <div class="bg-white/5 rounded-lg p-3 text-center">
                                             <div class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">CPU</div>
@@ -412,7 +399,7 @@ $redirecturl_github = $_ENV['GITHUB_CALLBACK_URL'];
           
         
 
-        }
+
 
         document.addEventListener("DOMContentLoaded", function() {
             // Find all running container cards
