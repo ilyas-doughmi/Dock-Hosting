@@ -84,31 +84,43 @@ class Admin extends db {
     }
 
     public function getTrafficStats() {
-
-        $sql = "SELECT DATE(created_at) as date, COUNT(*) as count 
-                FROM site_analytics 
-                WHERE created_at >= DATE(NOW()) - INTERVAL 7 DAY 
-                GROUP BY DATE(created_at) 
-                ORDER BY date ASC";
+        $sql = "SELECT DATE(created_at) as date, COUNT(*) as count FROM site_analytics WHERE created_at >= DATE(NOW()) - INTERVAL 7 DAY GROUP BY DATE(created_at) ORDER BY date ASC";
         $daily = $this->connect()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-
-        $sql = "SELECT page_url, COUNT(*) as count 
-                FROM site_analytics 
-                GROUP BY page_url 
-                ORDER BY count DESC 
-                LIMIT 5";
+        $sql = "SELECT page_url, COUNT(*) as count FROM site_analytics GROUP BY page_url ORDER BY count DESC LIMIT 5";
         $pages = $this->connect()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $sql = "SELECT COUNT(*) as count FROM site_analytics WHERE DATE(created_at) = DATE(NOW())";
         $today = $this->connect()->query($sql)->fetchColumn();
         
+        $sql = "SELECT (COUNT(CASE WHEN page_views = 1 THEN 1 END) / COUNT(*)) * 100 as bounce_rate FROM (SELECT session_id, COUNT(*) as page_views FROM site_analytics WHERE session_id IS NOT NULL GROUP BY session_id) as sessions";
+        $bounce = $this->connect()->query($sql)->fetchColumn();
+
+        $sql = "SELECT referrer, COUNT(*) as count FROM site_analytics WHERE referrer != '' AND referrer IS NOT NULL GROUP BY referrer ORDER BY count DESC LIMIT 5";
+        $referrers = $this->connect()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        
         return [
             'daily' => $daily,
             'pages' => $pages,
-            'today' => $today
+            'today' => $today,
+            'bounce_rate' => round($bounce ?? 0, 1),
+            'referrers' => $referrers
         ];
     }
+
+    public function getConversionFunnel() {
+        $pdo = $this->connect();
+        $funnel = [];
+        
+        $funnel['home'] = $pdo->query("SELECT COUNT(DISTINCT session_id) FROM site_analytics WHERE page_url LIKE '%index.php%' OR page_url LIKE '%/'")->fetchColumn();
+        $funnel['login'] = $pdo->query("SELECT COUNT(DISTINCT session_id) FROM site_analytics WHERE page_url LIKE '%login.php%'")->fetchColumn();
+        $funnel['dashboard'] = $pdo->query("SELECT COUNT(DISTINCT session_id) FROM site_analytics WHERE page_url LIKE '%dashboard.php%'")->fetchColumn();
+        $funnel['create'] = $pdo->query("SELECT COUNT(DISTINCT session_id) FROM site_analytics WHERE page_url LIKE '%create-project.php%'")->fetchColumn();
+        $funnel['deployed'] = $pdo->query("SELECT COUNT(*) FROM audit_logs WHERE action = 'CREATE_PROJECT'")->fetchColumn();
+        
+        return $funnel;
+    }
+    
 
     public function getDockerStats() {
         $cmd = "docker stats --no-stream --format \"{{json .}}\"";

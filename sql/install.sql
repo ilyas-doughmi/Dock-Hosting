@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS site_analytics (
     id INT PRIMARY KEY AUTO_INCREMENT,
     ip_address VARCHAR(45),
     page_url VARCHAR(255),
+    referrer VARCHAR(255),
+    session_id VARCHAR(64),
     user_agent VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
