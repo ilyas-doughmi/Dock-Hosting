@@ -127,6 +127,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         shell_exec($cmd);
         
+        require_once __DIR__ . '/Logger.php';
+        $logger = new Logger();
+        $logger->logActivity($_SESSION["id"], 'CREATE_PROJECT', "Created project: $project_name");
+
         header("location: ../pages/dashboard.php?msg=Project created successfully");
         exit();
     }

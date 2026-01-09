@@ -39,6 +39,11 @@ if(isset($_GET["code"])){
 
     if(isset($data["access_token"])){
         saveToken($db, $_SESSION["id"], $data["access_token"]); 
+        
+        require_once __DIR__ . '/../Logger.php';
+        $logger = new Logger();
+        $logger->logActivity($_SESSION["id"], 'GITHUB_LINK', 'Linked GitHub Account');
+
         header("Location: ../../pages/dashboard.php?msg=GitHub Connected Successfully!");
         exit;
     }

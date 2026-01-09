@@ -26,6 +26,14 @@ class Signup extends db
         $stmt->bindParam(":password", $this->password);
         try{
             $stmt->execute();
+            
+            require_once __DIR__ . '/../includes/Logger.php';
+            $logger = new Logger();
+            
+            
+            $userId = $this->connect()->lastInsertId();
+            $logger->logActivity($userId, 'SIGNUP', "User {$this->username} registered");
+
             header("location: ../login.php?msg=Account created successfully! Please login");
             exit;
         }catch(PDOException $e){
