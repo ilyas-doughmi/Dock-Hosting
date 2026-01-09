@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../php/connect.php';
+
 Class Project extends db{
     
     public function __construct() {
@@ -117,19 +119,19 @@ Class Project extends db{
         $base_path = dirname(__DIR__) . "/users/Projects/";
         $path = $base_path . $_SESSION["id"] . "/" . $container_name . "/" . $sub_path ."/";
 
-        // old that only give us names of files & foulders
-
-        // if(is_dir($path)){
-        //     $files = scandir($path); 
-        //     $files = array_diff($files,array('.','..'));
-        //     return $files;
-        // }
-        // else{
-        //     return [];
-        // }
         
 
-        // new to get files and foulders (not merged)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        
 
         if (!is_dir($path)) {
             return [];
@@ -203,6 +205,43 @@ Class Project extends db{
             return unlink($path);
         }
         return false;
+    }
+
+    
+
+    public function getAllProjects() {
+        $query = "SELECT Project.*, users.username FROM Project LEFT JOIN users ON Project.user_id = users.id ORDER BY created_at DESC";
+        $stmt = $this->connect()->query($query);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function adminStopContainer($container_name) {
+        shell_exec("docker stop ".$container_name);
+        $query = "UPDATE Project SET status = 'stopped' WHERE container_name = :container_name";
+        $stmt = $this->connect()->prepare($query);
+        $stmt->bindParam(":container_name", $container_name);
+        return $stmt->execute();
+    }
+
+    public function adminStartContainer($container_name) {
+        shell_exec("docker start ".$container_name);
+        $query = "UPDATE Project SET status = 'running' WHERE container_name = :container_name";
+        $stmt = $this->connect()->prepare($query);
+        $stmt->bindParam(":container_name", $container_name);
+        return $stmt->execute();
+    }
+
+    public function adminDeleteProject($container_name, $user_id) {
+        $this->removeContainer($container_name);
+        
+        $base_path = dirname(__DIR__) . "/users/Projects/";
+        $path = $base_path . $user_id . "/" . $container_name;
+        $this->removeDir($path);
+
+        $query = "DELETE FROM Project WHERE container_name = :container_name";
+        $stmt = $this->connect()->prepare($query);
+        $stmt->bindParam(":container_name", $container_name);
+        return $stmt->execute();
     }
 }
 
