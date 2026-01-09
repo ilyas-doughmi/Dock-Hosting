@@ -1,5 +1,8 @@
 <?php
     session_start();
+    include_once 'includes/traffic_middleware.php';
+    include_once 'includes/maintenance_middleware.php';
+    checkMaintenance();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,6 +65,13 @@
     </style>
 </head>
 <body class="font-sans antialiased selection:bg-brand selection:text-black">
+
+    <?php if(checkMaintenance() && (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')): ?>
+    <div class="fixed top-0 left-0 right-0 z-[60] bg-red-500/10 border-b border-red-500/20 backdrop-blur-md text-red-500 px-4 py-2 text-center font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3">
+        <i class="fas fa-hammer"></i>
+        <span>System is currently under maintenance</span>
+    </div>
+    <?php endif; ?>
 
     <!-- Navbar -->
     <nav class="fixed top-12 left-0 right-0 z-50 flex justify-center px-4">
