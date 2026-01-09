@@ -146,7 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $image = "node:18-alpine";
 
             if($source_type !== 'github' && !file_exists($path . "index.js")) {
-                file_put_contents($path . "index.js", "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.statusCode = 200;\n  res.setHeader('Content-Type', 'text/plain');\n  res.end('Hello from Node.js!');\n});\n\nconst port = process.env.PORT || 3000;\nserver.listen(port, () => {\n  console.log(`Server running at http://localhost:${port}/`);\n});");
+                file_put_contents($path . "index.js", "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.statusCode = 200;\n  res.setHeader('Content-Type', 'text/plain');\n  res.end('Hello from Node.js!');\n});\n\nconst port = process.env.PORT || 3000;\nserver.listen(port, () => {\n  console.log(`Server running at http://localhost:\${port}/`);\n});");
                 file_put_contents($path . "package.json", "{\n  \"name\": \"$project_name\",\n  \"version\": \"1.0.0\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"start\": \"node index.js\"\n  }\n}");
             }
             $command = "sh -c \"apk add --no-cache bash && cd /var/www/html && if [ -f package.json ]; then npm install; fi && if [ -f index.js ]; then node index.js; else npm start; fi\"";
