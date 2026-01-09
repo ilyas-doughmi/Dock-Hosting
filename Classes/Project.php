@@ -97,6 +97,22 @@ Class Project extends db{
         }
     }
     
+    public function restartContainer($container_name){
+         shell_exec("docker restart ".$container_name);
+        $start_query = "UPDATE Project SET status = 'running' WHERE user_id = :user_id AND container_name = :container_name";
+
+        $stmt = $this->connect()->prepare($start_query);
+        $stmt->bindParam(":user_id",$_SESSION["id"]);
+        $stmt->bindParam(":container_name",$container_name);
+        $result = $stmt->execute();
+
+        if($result){
+            return $result;
+        }
+        else{
+            return false;
+        }
+    }
     public function deleteProject($container_name,$file_dir){
         $this->removeContainer($container_name);
         $this->removeDir($file_dir);

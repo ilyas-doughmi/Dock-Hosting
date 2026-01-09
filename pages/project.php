@@ -147,6 +147,13 @@ if ($type === 'python') { $iconClass = 'fab fa-python'; $iconColor = 'text-yello
                 <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
 
 
+                <form action="../includes/actions/start.php" method="POST" class="inline">
+                    <input type="hidden" name="container_name" value="<?= htmlspecialchars($container_name) ?>">
+                    <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 hover:text-green-400 hover:bg-green-400/10 transition-all border border-white/5" title="Start">
+                        <i class="fas fa-play text-xs"></i>
+                    </button>
+                </form>
+
                  <form action="../includes/actions/restart.php" method="POST" class="inline">
                     <input type="hidden" name="container_name" value="<?= htmlspecialchars($container_name) ?>">
                     <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 hover:text-yellow-400 hover:bg-yellow-400/10 transition-all border border-white/5" title="Restart">
