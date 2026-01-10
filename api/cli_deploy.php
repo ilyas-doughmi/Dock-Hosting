@@ -207,7 +207,7 @@ if (!$targetProject) {
 }
 
 $containerName = $targetProject['container_name'];
-$realProjectName = $targetProject['project_name'];
+$realProjectName = isset($finalName) ? $finalName : $targetProject['project_name'];
 $projectType = $targetProject['type'] ?? $detectedType;
 
 if ($incomingProjectId) {
