@@ -138,6 +138,11 @@ if ($incomingProjectId) {
         file_put_contents($baseDir . "error.log", "");
         chmod($baseDir . "error.log", 0666);
         
+        if ($detectedType === 'php' && !file_exists($baseDir . "index.php")) {
+            $default_content = "<?php\n\necho '<h1>" . htmlspecialchars($finalName) . "</h1>';\n";
+            file_put_contents($baseDir . "index.php", $default_content);
+        }
+        
         $created = $projectObj->createProject($finalName, $port, $finalName, $userId, $detectedType);
         
         if ($created) {
