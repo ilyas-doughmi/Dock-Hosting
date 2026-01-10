@@ -130,9 +130,9 @@ if ($incomingProjectId) {
         file_put_contents($baseDir . "error.log", "");
         chmod($baseDir . "error.log", 0666);
         
-        $created = $projectObj->createProject($finalName, $port, $finalName, $userId, $detectedType);
+        $newProjectId = $projectObj->createProject($finalName, $port, $finalName, $userId, $detectedType);
         
-        if ($created) {
+        if ($newProjectId) {
             if (isset($_ENV['HOST_BASE_PATH']) && !empty($_ENV['HOST_BASE_PATH'])) {
                 $host_base = $_ENV['HOST_BASE_PATH'];
             } elseif (getenv('HOST_BASE_PATH')) {
@@ -171,13 +171,13 @@ if ($incomingProjectId) {
             
             shell_exec($dockerCmd);
             
-            $userProjects = $projectObj->getProjects($userId);
-            foreach ($userProjects as $p) {
-                if ($p['project_name'] === $finalName) {
-                    $targetProject = $p;
-                    break;
-                }
-            }
+            $targetProject = [
+                'id' => $newProjectId,
+                'project_name' => $finalName,
+                'container_name' => $finalName,
+                'type' => $detectedType,
+                'port' => $port
+            ];
         }
     }
 }
