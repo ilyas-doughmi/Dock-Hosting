@@ -1,12 +1,16 @@
 <?php
-header('Content-Type: application/json');
-session_start();
 use Dotenv\Dotenv;
-require_once("../Classes/Project.php");
-require_once("../php/connect.php");
+
+require_once __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
+
+header('Content-Type: application/json');
+session_start();
+
+require_once("../Classes/Project.php");
+require_once("../php/connect.php");
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode([
