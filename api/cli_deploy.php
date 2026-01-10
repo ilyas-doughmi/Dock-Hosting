@@ -71,24 +71,6 @@ $_SESSION['id'] = $userId;
 $projectObj = new Project();
 $targetProject = null;
 
-function flattenProjectDirectory($baseDir) {
-    $items = array_diff(scandir($baseDir), array('.', '..', '__MACOSX'));
-    $items = array_values($items);
-
-    if (count($items) === 1) {
-        $onlyItem = $items[0];
-        $fullPath = $baseDir . $onlyItem;
-        
-        if (is_dir($fullPath)) {
-            $innerFiles = array_diff(scandir($fullPath), array('.', '..'));
-            foreach ($innerFiles as $file) {
-                rename($fullPath . "/" . $file, $baseDir . $file);
-            }
-            rmdir($fullPath);
-        }
-    }
-}
-
 if ($incomingProjectId) {
     $userProjects = $projectObj->getProjects($userId);
     foreach ($userProjects as $p) {
@@ -126,15 +108,7 @@ if ($incomingProjectId) {
         $lastPort = $projectObj->trackPort();
         $port = $lastPort ? $lastPort + 1 : 8000;
         
-        if (isset($_ENV['HOST_BASE_PATH']) && !empty($_ENV['HOST_BASE_PATH'])) {
-            $host_base = $_ENV['HOST_BASE_PATH'];
-        } elseif (getenv('HOST_BASE_PATH')) {
-            $host_base = getenv('HOST_BASE_PATH');
-        } else {
-            $host_base = str_replace('\\', '/', dirname(__DIR__) . '/users');
-        }
-        
-        $baseDir = $host_base . "/Projects/$userId/$finalName/";
+        $baseDir = dirname(__DIR__) . "/users/Projects/$userId/$finalName/";
         
         if (!is_dir($baseDir)) {
             mkdir($baseDir, 0777, true);
@@ -144,9 +118,6 @@ if ($incomingProjectId) {
         if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
             $zip->extractTo($baseDir);
             $zip->close();
-            
-            flattenProjectDirectory($baseDir);
-            
         } else {
             http_response_code(500);
             echo json_encode(['message' => 'Failed to extract project zip.']);
@@ -228,15 +199,7 @@ $realProjectName = $targetProject['project_name'];
 $projectType = $targetProject['type'] ?? $detectedType;
 
 if ($incomingProjectId) {
-    if (isset($_ENV['HOST_BASE_PATH']) && !empty($_ENV['HOST_BASE_PATH'])) {
-        $host_base = $_ENV['HOST_BASE_PATH'];
-    } elseif (getenv('HOST_BASE_PATH')) {
-        $host_base = getenv('HOST_BASE_PATH');
-    } else {
-        $host_base = str_replace('\\', '/', dirname(__DIR__) . '/users');
-    }
-    
-    $baseDir = $host_base . "/Projects/$userId/$containerName/";
+    $baseDir = dirname(__DIR__) . "/users/Projects/$userId/$containerName/";
     
     if (!is_dir($baseDir)) {
         mkdir($baseDir, 0777, true);
@@ -246,9 +209,6 @@ if ($incomingProjectId) {
     if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
         $zip->extractTo($baseDir);
         $zip->close();
-        
-        flattenProjectDirectory($baseDir);
-        
     } else {
         http_response_code(500);
         echo json_encode(['message' => 'Failed to extract project zip.']);
