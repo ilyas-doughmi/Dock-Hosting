@@ -130,7 +130,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } elseif (getenv('HOST_BASE_PATH')) {
             $host_base = getenv('HOST_BASE_PATH');
         } else {
-             // Fallback to local path if env not set (Fixes Windows/XAMPP volume issues)
              $host_base = str_replace('\\', '/', dirname(__DIR__) . '/users'); 
         }
         
@@ -153,11 +152,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 file_put_contents($path . "index.js", "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.statusCode = 200;\n  res.setHeader('Content-Type', 'text/plain');\n  res.end('Hello from Node.js (Hot Reload Active)!');\n});\n\nconst port = process.env.PORT || 3000;\nserver.listen(port, () => {\n  console.log(`Server running at http://localhost:\${port}/`);\n});");
                 file_put_contents($path . "package.json", "{\n  \"name\": \"$project_name\",\n  \"version\": \"1.0.0\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"start\": \"node --watch index.js\"\n  }\n}");
             }
-            // Use --watch flag for auto-reloading on file changes
             $command = "sh -c \"apk add --no-cache bash && cd /var/www/html && if [ -f package.json ]; then npm install; fi && if [ -f index.js ]; then node --watch index.js; else npm start; fi\"";
             
         } elseif ($framework === 'python') {
-            // Python Logic
             if($source_type !== 'github' && !file_exists($path . "app.py")) {
                 file_put_contents($path . "app.py", "from flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef hello():\n    return 'Hello from Python!'\n\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000)");
                 file_put_contents($path . "requirements.txt", "flask");

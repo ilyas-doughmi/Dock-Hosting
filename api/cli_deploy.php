@@ -105,6 +105,44 @@ if ($incomingProjectId) {
         $created = $projectObj->createProject($finalName, $port, $finalName, $userId, $detectedType);
         
         if ($created) {
+            if (isset($_ENV['HOST_BASE_PATH']) && !empty($_ENV['HOST_BASE_PATH'])) {
+                $host_base = $_ENV['HOST_BASE_PATH'];
+            } elseif (getenv('HOST_BASE_PATH')) {
+                $host_base = getenv('HOST_BASE_PATH');
+            } else {
+                $host_base = str_replace('\\', '/', dirname(__DIR__) . '/users');
+            }
+            
+            $host_project_path = $host_base . "/Projects/" . $userId . "/" . $finalName;
+            $subdomain = $finalName . ".dockhosting.dev";
+            
+            $safe_port = escapeshellarg($port);
+            $safe_name = escapeshellarg($finalName);
+            $safe_subdomain = escapeshellarg($subdomain);
+            $safe_volume = escapeshellarg($host_project_path . ":/var/www/html");
+            
+            if ($detectedType === 'node') {
+                $internal_port = "3000";
+                $image = "node:18-alpine";
+                $command = "sh -c \"apk add --no-cache bash && cd /var/www/html && if [ -f package.json ]; then npm install; fi && if [ -f index.js ]; then node --watch index.js; else npm start; fi\"";
+            } elseif ($detectedType === 'python') {
+                $internal_port = "5000";
+                $image = "python:3.9-slim";
+                $command = "sh -c \"cd /var/www/html && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi && if [ -f app.py ]; then python app.py; fi\"";
+            } else {
+                $internal_port = "80";
+                $image = "dock-hosting-user";
+                $command = "";
+            }
+            
+            $safe_internal_port = escapeshellarg($internal_port);
+            
+            $dockerCmd = "docker run -d -p {$safe_port}:{$internal_port} --name {$safe_name} --network proxy_network -e VIRTUAL_HOST={$safe_subdomain} -e LETSENCRYPT_HOST={$safe_subdomain} -e VIRTUAL_PORT={$internal_port} -e PORT={$internal_port} -v {$safe_volume}";
+            $dockerCmd .= " -e DB_HOST=dock-hosting-db -e DB_USER=root -e DB_PASSWORD=" . escapeshellarg(getenv('DB_PASSWORD'));
+            $dockerCmd .= " {$image} {$command}";
+            
+            shell_exec($dockerCmd);
+            
             $userProjects = $projectObj->getProjects($userId);
             foreach ($userProjects as $p) {
                 if ($p['project_name'] === $finalName) {
