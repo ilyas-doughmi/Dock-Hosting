@@ -49,11 +49,7 @@ Class Project extends db{
         $stmt->bindValue(":status","running");
         $stmt->bindParam(":user_id",$user_id);
         $stmt->bindParam(":type", $type);
-        
-        if ($stmt->execute()) {
-            return $this->connect()->lastInsertId();
-        }
-        return false;
+        return $stmt->execute();
     }
     
     public function getContainerLogs($container_name) {
