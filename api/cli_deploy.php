@@ -2,13 +2,8 @@
 header('Content-Type: application/json');
 session_start();
 
-use Dotenv\Dotenv;
-
 require_once("../Classes/Project.php");
 require_once("../php/connect.php");
-
-$dotenv = Dotenv::createImmutable(__DIR__ . "/../");
-$dotenv->load();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -143,11 +138,6 @@ if ($incomingProjectId) {
         file_put_contents($baseDir . "error.log", "");
         chmod($baseDir . "error.log", 0666);
         
-        if ($detectedType === 'php' && !file_exists($baseDir . "index.php")) {
-            $default_content = "<?php\n\necho '<h1>" . htmlspecialchars($finalName) . "</h1>';\n";
-            file_put_contents($baseDir . "index.php", $default_content);
-        }
-        
         $created = $projectObj->createProject($finalName, $port, $finalName, $userId, $detectedType);
         
         if ($created) {
@@ -207,7 +197,7 @@ if (!$targetProject) {
 }
 
 $containerName = $targetProject['container_name'];
-$realProjectName = isset($finalName) ? $finalName : $targetProject['project_name'];
+$realProjectName = $targetProject['project_name'];
 $projectType = $targetProject['type'] ?? $detectedType;
 
 if ($incomingProjectId) {
