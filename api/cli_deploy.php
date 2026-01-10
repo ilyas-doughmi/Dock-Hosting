@@ -124,6 +124,27 @@ if ($incomingProjectId) {
         if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
             $zip->extractTo($baseDir);
             $zip->close();
+            
+            $items = array_diff(scandir($baseDir), ['.', '..', '__MACOSX']);
+            if (count($items) === 1) {
+                $firstItem = reset($items);
+                $firstItemPath = $baseDir . '/' . $firstItem;
+                if (is_dir($firstItemPath)) {
+                    $innerFiles = array_diff(scandir($firstItemPath), ['.', '..']);
+                    foreach ($innerFiles as $inner) {
+                        rename($firstItemPath . '/' . $inner, $baseDir . '/' . $inner);
+                    }
+                    rmdir($firstItemPath);
+                }
+            }
+            
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($baseDir, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+            foreach ($iterator as $item) {
+                chmod($item->getPathname(), $item->isDir() ? 0755 : 0644);
+            }
         } else {
             http_response_code(500);
             echo json_encode(['message' => 'Failed to extract project zip.']);
@@ -223,6 +244,27 @@ if ($incomingProjectId) {
     if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
         $zip->extractTo($baseDir);
         $zip->close();
+
+        $items = array_diff(scandir($baseDir), ['.', '..', '__MACOSX']);
+        if (count($items) === 1) {
+            $firstItem = reset($items);
+            $firstItemPath = $baseDir . '/' . $firstItem;
+            if (is_dir($firstItemPath)) {
+                $innerFiles = array_diff(scandir($firstItemPath), ['.', '..']);
+                foreach ($innerFiles as $inner) {
+                    rename($firstItemPath . '/' . $inner, $baseDir . '/' . $inner);
+                }
+                rmdir($firstItemPath);
+            }
+        }
+        
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($baseDir, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($iterator as $item) {
+            chmod($item->getPathname(), $item->isDir() ? 0755 : 0644);
+        }
     } else {
         http_response_code(500);
         echo json_encode(['message' => 'Failed to extract project zip.']);
