@@ -102,7 +102,15 @@ if ($incomingProjectId) {
         $lastPort = $projectObj->trackPort();
         $port = $lastPort ? $lastPort + 1 : 8000;
         
-        $baseDir = dirname(__DIR__) . "/users/Projects/$userId/$finalName/";
+        if (isset($_ENV['HOST_BASE_PATH']) && !empty($_ENV['HOST_BASE_PATH'])) {
+            $host_base = $_ENV['HOST_BASE_PATH'];
+        } elseif (getenv('HOST_BASE_PATH')) {
+            $host_base = getenv('HOST_BASE_PATH');
+        } else {
+            $host_base = str_replace('\\', '/', dirname(__DIR__) . '/users');
+        }
+        
+        $baseDir = $host_base . "/Projects/$userId/$finalName/";
         
         if (!is_dir($baseDir)) {
             mkdir($baseDir, 0777, true);
@@ -193,7 +201,15 @@ $realProjectName = $targetProject['project_name'];
 $projectType = $targetProject['type'] ?? $detectedType;
 
 if ($incomingProjectId) {
-    $baseDir = dirname(__DIR__) . "/users/Projects/$userId/$containerName/";
+    if (isset($_ENV['HOST_BASE_PATH']) && !empty($_ENV['HOST_BASE_PATH'])) {
+        $host_base = $_ENV['HOST_BASE_PATH'];
+    } elseif (getenv('HOST_BASE_PATH')) {
+        $host_base = getenv('HOST_BASE_PATH');
+    } else {
+        $host_base = str_replace('\\', '/', dirname(__DIR__) . '/users');
+    }
+    
+    $baseDir = $host_base . "/Projects/$userId/$containerName/";
     
     if (!is_dir($baseDir)) {
         mkdir($baseDir, 0777, true);
