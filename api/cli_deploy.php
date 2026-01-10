@@ -102,6 +102,34 @@ if ($incomingProjectId) {
         $lastPort = $projectObj->trackPort();
         $port = $lastPort ? $lastPort + 1 : 8000;
         
+        $baseDir = dirname(__DIR__) . "/users/Projects/$userId/$finalName/";
+        
+        if (!is_dir($baseDir)) {
+            mkdir($baseDir, 0777, true);
+        }
+        
+        $zip = new ZipArchive;
+        if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
+            $zip->extractTo($baseDir);
+            $zip->close();
+        } else {
+            http_response_code(500);
+            echo json_encode(['message' => 'Failed to extract project zip.']);
+            exit;
+        }
+        
+        $htaccess_content = "ErrorDocument 500 \"Internal Server Error\"\n";
+        $htaccess_content .= "php_flag display_errors off\n";
+        $htaccess_content .= "php_flag log_errors on\n";
+        $htaccess_content .= "php_value error_log /var/www/html/error.log\n";
+        
+        if (!file_exists($baseDir . ".htaccess")) {
+            file_put_contents($baseDir . ".htaccess", $htaccess_content);
+        }
+        
+        file_put_contents($baseDir . "error.log", "");
+        chmod($baseDir . "error.log", 0666);
+        
         $created = $projectObj->createProject($finalName, $port, $finalName, $userId, $detectedType);
         
         if ($created) {
@@ -164,23 +192,27 @@ $containerName = $targetProject['container_name'];
 $realProjectName = $targetProject['project_name'];
 $projectType = $targetProject['type'] ?? $detectedType;
 
-$baseDir = dirname(__DIR__) . "/users/Projects/$userId/$containerName/";
-
-if (!is_dir($baseDir)) {
-    mkdir($baseDir, 0777, true);
-}
-
-$zip = new ZipArchive;
-if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
-    $zip->extractTo($baseDir);
-    $zip->close();
+if ($incomingProjectId) {
+    $baseDir = dirname(__DIR__) . "/users/Projects/$userId/$containerName/";
+    
+    if (!is_dir($baseDir)) {
+        mkdir($baseDir, 0777, true);
+    }
+    
+    $zip = new ZipArchive;
+    if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
+        $zip->extractTo($baseDir);
+        $zip->close();
+    } else {
+        http_response_code(500);
+        echo json_encode(['message' => 'Failed to extract project zip.']);
+        exit;
+    }
+    
+    $restartResult = $projectObj->restartContainer($containerName);
 } else {
-    http_response_code(500);
-    echo json_encode(['message' => 'Failed to extract project zip.']);
-    exit;
+    $restartResult = true;
 }
-
-$restartResult = $projectObj->restartContainer($containerName);
 
 echo json_encode([
     'status' => 'success',
