@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 session_start();
 
 require_once("../Classes/Project.php");
+require_once("../php/connect.php");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -22,11 +23,12 @@ if (empty($_POST) && empty($_FILES) && isset($_SERVER['CONTENT_LENGTH']) && $_SE
 }
 
 $token = $_POST['token'] ?? '';
-$projectName = $_POST['project_name'] ?? '';
+$incomingProjectId = $_POST['project_id'] ?? null;
+$incomingProjectName = $_POST['project_name'] ?? '';
 
-if (empty($token) || empty($projectName)) {
+if (empty($token)) {
     http_response_code(400);
-    echo json_encode(['message' => "Missing token or project name."]);
+    echo json_encode(['message' => "Missing token."]);
     exit;
 }
 
@@ -61,40 +63,62 @@ if (!$userId) {
 $_SESSION['id'] = $userId;
 
 $projectObj = new Project();
-$userProjects = $projectObj->getProjects($userId);
 $targetProject = null;
 
-foreach ($userProjects as $p) {
-    if ($p['project_name'] === $projectName) {
-        $targetProject = $p;
-        break;
+if ($incomingProjectId) {
+    $userProjects = $projectObj->getProjects($userId);
+    foreach ($userProjects as $p) {
+        if ($p['id'] == $incomingProjectId) {
+            $targetProject = $p;
+            break;
+        }
     }
-    if (strpos($p['project_name'], $projectName . '-') === 0) {
-        $targetProject = $p;
-        break;
+    
+    if (!$targetProject) {
+        http_response_code(404);
+        echo json_encode(['message' => 'Linked project not found or access denied. Try deleting .dock folder to unlink.']);
+        exit;
     }
-}
+} else {
+    if (empty($incomingProjectName)) {
+        http_response_code(400);
+        echo json_encode(['message' => "Project name is required for new deployments."]);
+        exit;
+    }
 
-if (!$targetProject) {
-    $newSuffix = substr(bin2hex(random_bytes(3)), 0, 6);
-    $newProjectName = $projectName . '-' . $newSuffix;
+    $userProjects = $projectObj->getProjects($userId);
+    
+    foreach ($userProjects as $p) {
+        if ($p['project_name'] === $incomingProjectName) {
+            $targetProject = $p;
+            break;
+        }
+    }
 
-    if (method_exists($projectObj, 'createProject')) {
-        $projectObj->createProject($userId, $newProjectName, $detectedType);
+    if (!$targetProject) {
+        $newSuffix = substr(bin2hex(random_bytes(3)), 0, 6);
+        $finalName = $incomingProjectName . '-' . $newSuffix;
         
-        $userProjects = $projectObj->getProjects($userId);
-        foreach ($userProjects as $p) {
-            if ($p['project_name'] === $newProjectName) {
-                $targetProject = $p;
-                break;
+        $lastPort = $projectObj->trackPort();
+        $port = $lastPort ? $lastPort + 1 : 8000;
+        
+        $created = $projectObj->createProject($finalName, $port, $finalName, $userId, $detectedType);
+        
+        if ($created) {
+            $userProjects = $projectObj->getProjects($userId);
+            foreach ($userProjects as $p) {
+                if ($p['project_name'] === $finalName) {
+                    $targetProject = $p;
+                    break;
+                }
             }
         }
     }
 }
 
 if (!$targetProject) {
-    http_response_code(404);
-    echo json_encode(['message' => "Project '$projectName' not found and could not be auto-created."]);
+    http_response_code(500);
+    echo json_encode(['message' => "Could not find or create project."]);
     exit;
 }
 
@@ -118,29 +142,14 @@ if ($zip->open($_FILES['project_zip']['tmp_name']) === TRUE) {
     exit;
 }
 
-$warning = null;
-if ($projectType === 'node' && !file_exists($baseDir . 'package.json')) {
-    $warning = "Warning: Deployed to Node.js container but 'package.json' is missing.";
-} elseif ($projectType === 'python' && !file_exists($baseDir . 'app.py') && !file_exists($baseDir . 'requirements.txt')) {
-    $warning = "Warning: Deployed to Python container but 'app.py' or 'requirements.txt' is missing.";
-} elseif ($projectType === 'php' && !file_exists($baseDir . 'index.php')) {
-    $warning = "Warning: Deployed to PHP container but 'index.php' is missing.";
-}
-
 $restartResult = $projectObj->restartContainer($containerName);
 
-$response = [
-    'status' => $restartResult ? 'success' : 'warning',
-    'message' => $restartResult 
-        ? "Successfully deployed to $projectType container '$realProjectName'!" 
-        : "Files deployed, but container restart had issues.",
+echo json_encode([
+    'status' => 'success',
+    'message' => 'Deployment successful!',
     'url' => "http://" . $realProjectName . ".dockhosting.dev",
+    'project_id' => $targetProject['id'],
+    'project_name' => $realProjectName,
     'type' => $projectType
-];
-
-if ($warning) {
-    $response['validation_warning'] = $warning;
-}
-
-echo json_encode($response);
+]);
 ?>
